@@ -1,4 +1,10 @@
-export default {
+import { Gun } from './interfaces'
+
+interface GunsData {
+  [key: string]: Gun
+}
+
+const guns: GunsData = {
   // Pistols
 
   'Desert Eagle': {
@@ -491,3 +497,5 @@ export default {
     },
   },
 }
+
+export default guns

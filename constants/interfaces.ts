@@ -5,7 +5,7 @@ export interface Gun {
   killAward: number
   inaccuracy: number
   fireRate: number
-  DamagePerSecond: number
+  damagePerSecond: number
   damage: {
     withArmor: {
       head: number

@@ -1,17 +1,23 @@
-import { StatusBar } from 'expo-status-bar'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
+import guns from './constants/guns'
+import { Gun } from './constants/interfaces'
+import RenderGunItem from './components/RenderGunItem'
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-      <Image
-        source={{
-          uri: 'https://wiki.cs.money/_next/static/images/ak-47-714163b7deae61b72d41d3b9c3cd8385.png',
-        }}
-        height={200}
-        width={300}
+      <FlatList
+        data={Object.values(guns) as Gun[]}
+        renderItem={RenderGunItem}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   )
