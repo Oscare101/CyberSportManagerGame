@@ -21,3 +21,19 @@ export interface Gun {
     }
   }
 }
+
+export interface InRoundPlayer {
+  armor: boolean
+  armorHealth: number
+  gun: string
+  health: number
+}
+
+export interface PlayerStat {
+  name: string
+  role: 'sniper' | 'rifler' | 'support' | 'capitan'
+  reaction: number // 0 - inf
+  accuracy: number // 0 - 1
+  sprayControl: number // 0 - 1
+  flicksControl: number // 0 - 1
+}

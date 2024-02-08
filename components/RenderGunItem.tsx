@@ -1,6 +1,7 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import GunImage from './GunImage'
 import { Gun } from '../constants/interfaces'
+import { Ionicons } from '@expo/vector-icons'
 
 const width = Dimensions.get('screen').width
 
@@ -12,7 +13,11 @@ export default function RenderGunItem(item: any) {
       <Text style={styles.gunTitle}>{gun.name}</Text>
       <Text style={styles.gunStat}>Price {gun.price}</Text>
       <Text style={styles.gunStat}>Kill Award {gun.killAward}</Text>
-
+      <View>
+        <Text style={styles.gunStat}>Price</Text>
+        <Ionicons name="pricetag-outline" size={24} color="black" />
+        <Text style={styles.gunStat}>{gun.price}</Text>
+      </View>
       <View
         style={{
           width: '200%',
