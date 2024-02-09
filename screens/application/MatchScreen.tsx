@@ -298,15 +298,13 @@ export default function MathScreen() {
     const APR = player.assist / (team1Score + team2Score)
 
     const KAST = +(
-      player.roundsWithKAST.filter(onlyUniqueRounds).length /
+      (player.roundsWithKAST.filter(onlyUniqueRounds).length * 100) /
       (team1Score + team2Score)
-    ).toFixed(2)
+    ).toFixed(1)
     const rating = +(
-      0.0073 * KAST +
-      0.3591 * KPR +
+      (0.0073 * KAST) / 100 +
       (-0.5329 * DPR) / 3 +
-      // 0.2372 * (2.13 * KPR + APR) +
-      0.4 * KPR +
+      0.86 * KPR +
       APR +
       0.0032 * ADR +
       0.1584
