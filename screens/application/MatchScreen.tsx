@@ -145,7 +145,8 @@ export default function MathScreen() {
   const [team1Score, setTeam1Score] = useState<number>(0)
   const [team2Score, setTeam2Score] = useState<number>(0)
   const [isGameActive, setIsGameActive] = useState<boolean>(false)
-
+  const [overtimeRounds, setOvertimeRounds] = useState<number>(0)
+  const [lastUpdate, setLastUpdate] = useState<number>(0)
   function Match() {
     function RoundAction() {
       const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
@@ -233,11 +234,20 @@ export default function MathScreen() {
         setTeam2Players(newTeam2Players)
       }
     }
+    console.log(team1Score, team2Score)
 
-    if (team1Score + team2Score < rules.MRsystem * 2) {
+    if (
+      team1Score < rules.MRsystem + overtimeRounds + 1 &&
+      team2Score < rules.MRsystem + overtimeRounds + 1 &&
+      team1Score + team2Score < (rules.MRsystem + overtimeRounds) * 2
+    ) {
       Round()
     } else {
-      setIsGameActive(false)
+      if (team1Score === team2Score) {
+        setOvertimeRounds(overtimeRounds + rules.MRovertime)
+      } else {
+        setIsGameActive(false)
+      }
     }
   }
 
@@ -274,19 +284,20 @@ export default function MathScreen() {
     let timer = setTimeout(() => {
       if (isGameActive) {
         Match()
+        setLastUpdate(new Date().getTime())
         // console.log('match')
       }
     }, 100)
     return () => {
       clearTimeout(timer)
     }
-  }, [team1Score + team2Score, isGameActive, team1Players, team2Players])
+  }, [lastUpdate, isGameActive])
 
   return (
     <View style={styles.container}>
       <View style={styles.scoreHeader}>
         <Text>
-          {team1Score} - {team2Score}
+          {team1Score} - {team2Score} ({overtimeRounds})
         </Text>
       </View>
       <View style={styles.teamColumnsBlock}>
