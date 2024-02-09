@@ -16,6 +16,7 @@ import {
   TeamsAlive,
   onlyUniqueRounds,
   CalculateSide,
+  IsSideChangeRound,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -247,13 +248,6 @@ export default function MathScreen() {
       if (TeamsAlive(team1Players, team2Players)) {
         RoundAction()
       } else {
-        console.log(
-          team1Score,
-          team2Score,
-          team1Score + team2Score + 2,
-          CalculateSide(team1Score + team2Score + 2)
-        )
-
         setTeam1Side(CalculateSide(team1Score + team2Score + 2)[0])
         setTeam2Side(CalculateSide(team1Score + team2Score + 2)[1])
 
@@ -266,13 +260,15 @@ export default function MathScreen() {
         const newTeam1Players = SetAlive(
           team1Players,
           team1Score + team2Score,
-          !!TeamAlive(team1Players)
+          !!TeamAlive(team1Players),
+          IsSideChangeRound(team1Score + team2Score + 1)
         )
         setTeam1Players(newTeam1Players)
         const newTeam2Players = SetAlive(
           team2Players,
           team1Score + team2Score,
-          !!TeamAlive(team2Players)
+          !!TeamAlive(team2Players),
+          IsSideChangeRound(team1Score + team2Score + 1)
         )
         setTeam2Players(newTeam2Players)
       }
@@ -335,7 +331,6 @@ export default function MathScreen() {
       if (isGameActive) {
         Match()
         setLastUpdate(new Date().getTime())
-        // console.log('match')
       }
     }, 100)
     return () => {
@@ -390,6 +385,15 @@ export default function MathScreen() {
         </View>
       </View>
       <Button title={'start'} onPress={() => setIsGameActive(true)} />
+      {/* {[
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+        39, 40,
+      ].map((num: number) => (
+        <Text>
+          {num} - {IsSideChangeRound(num) ? 'change' : '-'}
+        </Text>
+      ))} */}
     </View>
   )
 }

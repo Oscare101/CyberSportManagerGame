@@ -9,6 +9,6 @@ export default {
   lossBonus: 1400,
   defaultGunT: 'Glock-18',
   defaultGunCT: 'USP-S',
-
+  defaultCash: 1000,
   armorCost: 1000,
 }

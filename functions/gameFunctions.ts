@@ -55,11 +55,24 @@ export function CalculateSide(roundNumber: number) {
   if (isMainRound) {
     return roundNumber <= mainRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
   } else {
-    console.log((roundNumber - mainRounds) % overtimeRounds)
-
     const extraRoundOffset =
       (roundNumber - mainRounds) % overtimeRounds || overtimeRounds
     return extraRoundOffset <= overtimeRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+  }
+}
+
+export function IsSideChangeRound(roundNumber: number) {
+  const mainRounds = rules.MRsystem * 2
+  const overtimeRounds = rules.MRovertime * 2
+
+  const isMainRound = roundNumber <= mainRounds
+
+  if (isMainRound) {
+    return roundNumber % (mainRounds / 2) === 0
+  } else {
+    const extraRoundOffset =
+      (roundNumber - mainRounds) % overtimeRounds || overtimeRounds
+    return extraRoundOffset % (overtimeRounds / 2) === 0
   }
 }
 
@@ -134,12 +147,15 @@ export function PrepareTeam(team: Team, side: string) {
 export function SetAlive(
   team: InRoundPlayer[],
   recentRoundNumber: number,
-  win: boolean
+  win: boolean,
+  isResetCash: boolean
 ) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
     let playerGun: string = player.gun
     let playerArmor: boolean = player.armor
-    let playerCash = win
+    let playerCash = isResetCash
+      ? rules.defaultCash
+      : win
       ? player.cash + rules.winnBonus
       : player.cash + rules.lossBonus
     if (playerCash >= rules.armorCost && !playerArmor) {
@@ -360,8 +376,8 @@ export function Match(team1: Team, team2: Team) {
 
   while (team1Score + team2Score < rules.MRsystem * 2) {
     Round()
-    team1Players = SetAlive(team1Players, team1Score + team2Score, false) // TODO
-    team2Players = SetAlive(team2Players, team1Score + team2Score, false) // TODO
+    team1Players = SetAlive(team1Players, team1Score + team2Score, false, false) // TODO
+    team2Players = SetAlive(team2Players, team1Score + team2Score, false, false) // TODO
     if (
       team1Score === rules.MRsystem + 1 ||
       team2Score === rules.MRsystem + 1
