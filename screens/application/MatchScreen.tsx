@@ -15,6 +15,7 @@ import {
   TeamAlive,
   TeamsAlive,
   onlyUniqueRounds,
+  CalculateSide,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -61,7 +62,7 @@ const team1: Team = {
     {
       name: 'Sky',
       stat: {
-        role: 'capitan',
+        role: 'rifler',
         reaction: 0.2,
         accuracy: 0.72,
         sprayControl: 0.8,
@@ -72,7 +73,7 @@ const team1: Team = {
     {
       name: 'Moon',
       stat: {
-        role: 'capitan',
+        role: 'support',
         reaction: 0.3,
         accuracy: 0.9,
         sprayControl: 0.9,
@@ -121,7 +122,7 @@ const team2: Team = {
     {
       name: 'Phoenix',
       stat: {
-        role: 'capitan',
+        role: 'support',
         reaction: 0.35,
         accuracy: 0.9,
         sprayControl: 0.8,
@@ -132,7 +133,7 @@ const team2: Team = {
     {
       name: 'Pall',
       stat: {
-        role: 'capitan',
+        role: 'sniper',
         reaction: 0.22,
         accuracy: 0.7,
         sprayControl: 0.8,
@@ -147,16 +148,18 @@ const width = Dimensions.get('screen').width
 
 export default function MathScreen() {
   const [team1Players, setTeam1Players] = useState<InRoundPlayer[]>(
-    PrepareTeam(team1)
+    PrepareTeam(team1, CalculateSide(1)[0])
   )
   const [team2Players, setTeam2Players] = useState<InRoundPlayer[]>(
-    PrepareTeam(team2)
+    PrepareTeam(team2, CalculateSide(1)[1])
   )
   const [team1Score, setTeam1Score] = useState<number>(0)
   const [team2Score, setTeam2Score] = useState<number>(0)
   const [isGameActive, setIsGameActive] = useState<boolean>(false)
   const [overtimeRounds, setOvertimeRounds] = useState<number>(0)
   const [lastUpdate, setLastUpdate] = useState<number>(0)
+  const [team1Side, setTeam1Side] = useState<string>(CalculateSide(1)[0])
+  const [team2Side, setTeam2Side] = useState<string>(CalculateSide(1)[1])
 
   function Match() {
     function RoundAction() {
@@ -191,7 +194,11 @@ export default function MathScreen() {
                 ? player.cash + guns[player.gun].killAward
                 : player.cash,
             health: Math.floor(player1Health),
-            gun: !player1Health ? rules.defaultGun : player.gun,
+            gun: !player1Health
+              ? team1Side === 'CT'
+                ? rules.defaultGunCT
+                : rules.defaultGunT
+              : player.gun,
           }
         } else {
           return player
@@ -223,7 +230,11 @@ export default function MathScreen() {
                 ? player.cash + guns[player.gun].killAward
                 : player.cash,
             health: Math.floor(player2Health),
-            gun: !player2Health ? rules.defaultGun : player.gun,
+            gun: !player2Health
+              ? team2Side === 'CT'
+                ? rules.defaultGunCT
+                : rules.defaultGunT
+              : player.gun,
           }
         } else {
           return player
@@ -236,11 +247,22 @@ export default function MathScreen() {
       if (TeamsAlive(team1Players, team2Players)) {
         RoundAction()
       } else {
+        console.log(
+          team1Score,
+          team2Score,
+          team1Score + team2Score + 2,
+          CalculateSide(team1Score + team2Score + 2)
+        )
+
+        setTeam1Side(CalculateSide(team1Score + team2Score + 2)[0])
+        setTeam2Side(CalculateSide(team1Score + team2Score + 2)[1])
+
         if (TeamAlive(team1Players)) {
           setTeam1Score(team1Score + 1)
         } else {
           setTeam2Score(team2Score + 1)
         }
+
         const newTeam1Players = SetAlive(
           team1Players,
           team1Score + team2Score,
@@ -281,6 +303,14 @@ export default function MathScreen() {
             borderRadius: 2,
             margin: 1,
             opacity: player.alive ? 0.8 : 0.4,
+            backgroundColor:
+              team1.name === player.team
+                ? team1Side === 'CT'
+                  ? '#396782'
+                  : '#897432'
+                : team2Side === 'CT'
+                ? '#396782'
+                : '#897432',
           },
         ]}
       >
@@ -359,7 +389,7 @@ export default function MathScreen() {
           />
         </View>
       </View>
-      <Button title="start" onPress={() => setIsGameActive(true)} />
+      <Button title={'start'} onPress={() => setIsGameActive(true)} />
     </View>
   )
 }
@@ -393,7 +423,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     height: width * 0.07,
-    backgroundColor: '#396782',
     paddingHorizontal: '2%',
   },
   playerName: { width: '20%' },

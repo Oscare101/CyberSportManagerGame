@@ -15,6 +15,7 @@ const guns: GunsData = {
     inaccuracy: 6.2,
     fireRate: 267,
     damagePerSecond: 186,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 191,
@@ -38,6 +39,7 @@ const guns: GunsData = {
     inaccuracy: 20,
     fireRate: 120,
     damagePerSecond: 83,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 319,
@@ -61,6 +63,7 @@ const guns: GunsData = {
     inaccuracy: 11.1,
     fireRate: 400,
     damagePerSecond: 153,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 115,
@@ -84,6 +87,7 @@ const guns: GunsData = {
     inaccuracy: 6.9,
     fireRate: 500,
     damagePerSecond: 191,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 118,
@@ -107,6 +111,7 @@ const guns: GunsData = {
     inaccuracy: 13.43,
     fireRate: 600,
     damagePerSecond: 200,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 95,
@@ -130,6 +135,7 @@ const guns: GunsData = {
     inaccuracy: 9,
     fireRate: 120,
     damagePerSecond: 141,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 79,
@@ -153,6 +159,7 @@ const guns: GunsData = {
     inaccuracy: 11.1,
     fireRate: 400,
     damagePerSecond: 140,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 96,
@@ -176,6 +183,7 @@ const guns: GunsData = {
     inaccuracy: 7.6,
     fireRate: 400,
     damagePerSecond: 80,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 56,
@@ -199,6 +207,7 @@ const guns: GunsData = {
     inaccuracy: 6.9,
     fireRate: 353,
     damagePerSecond: 94,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 70,
@@ -222,6 +231,7 @@ const guns: GunsData = {
     inaccuracy: 7.4,
     fireRate: 353,
     damagePerSecond: 94,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 70,
@@ -248,6 +258,7 @@ const guns: GunsData = {
     inaccuracy: 9.37,
     fireRate: 667,
     damagePerSecond: 244,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 92,
@@ -271,6 +282,7 @@ const guns: GunsData = {
     inaccuracy: 7.01,
     fireRate: 600,
     damagePerSecond: 270,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 111,
@@ -294,6 +306,7 @@ const guns: GunsData = {
     inaccuracy: 5.5,
     fireRate: 600,
     damagePerSecond: 250,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 92,
@@ -317,6 +330,7 @@ const guns: GunsData = {
     inaccuracy: 5.5,
     fireRate: 667,
     damagePerSecond: 244,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 92,
@@ -340,6 +354,7 @@ const guns: GunsData = {
     inaccuracy: 5.5,
     fireRate: 545,
     damagePerSecond: 263,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 119,
@@ -363,6 +378,7 @@ const guns: GunsData = {
     inaccuracy: 5.4,
     fireRate: 600,
     damagePerSecond: 240,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 100,
@@ -386,6 +402,7 @@ const guns: GunsData = {
     inaccuracy: 10.45,
     fireRate: 667,
     damagePerSecond: 222,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 84,
@@ -412,6 +429,7 @@ const guns: GunsData = {
     inaccuracy: 2.2,
     fireRate: 41,
     damagePerSecond: 76,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 448,
@@ -435,6 +453,7 @@ const guns: GunsData = {
     inaccuracy: 3.23,
     fireRate: 48,
     damagePerSecond: 58,
+    usedBy: 'T CT',
     damage: {
       withArmor: {
         head: 229,
@@ -458,6 +477,7 @@ const guns: GunsData = {
     inaccuracy: 2.3,
     fireRate: 240,
     damagePerSecond: 256,
+    usedBy: 'CT',
     damage: {
       withArmor: {
         head: 263,
@@ -481,6 +501,7 @@ const guns: GunsData = {
     inaccuracy: 2.3,
     fireRate: 240,
     damagePerSecond: 256,
+    usedBy: 'T',
     damage: {
       withArmor: {
         head: 263,

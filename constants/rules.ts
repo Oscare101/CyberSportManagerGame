@@ -7,6 +7,8 @@ export default {
   MRovertime: 3,
   winnBonus: 3000,
   lossBonus: 1400,
-  defaultGun: 'Glock-18',
+  defaultGunT: 'Glock-18',
+  defaultGunCT: 'USP-S',
+
   armorCost: 1000,
 }

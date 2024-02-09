@@ -6,6 +6,7 @@ export interface Gun {
   inaccuracy: number
   fireRate: number
   damagePerSecond: number
+  usedBy: string
   damage: {
     withArmor: {
       head: number

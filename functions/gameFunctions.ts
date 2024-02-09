@@ -46,6 +46,23 @@ function CalculateDamage(
   }
 }
 
+export function CalculateSide(roundNumber: number) {
+  const mainRounds = rules.MRsystem * 2
+  const overtimeRounds = rules.MRovertime * 2
+
+  const isMainRound = roundNumber <= mainRounds
+
+  if (isMainRound) {
+    return roundNumber <= mainRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+  } else {
+    console.log((roundNumber - mainRounds) % overtimeRounds)
+
+    const extraRoundOffset =
+      (roundNumber - mainRounds) % overtimeRounds || overtimeRounds
+    return extraRoundOffset <= overtimeRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+  }
+}
+
 export function CalculateDPS(
   hitPoint: string,
   gunName: string,
@@ -87,7 +104,7 @@ export function TeamsAlive(team1: InRoundPlayer[], team2: InRoundPlayer[]) {
   return !!(team1Alive && team2Alive)
 }
 
-export function PrepareTeam(team: Team) {
+export function PrepareTeam(team: Team, side: string) {
   return team.players.map((player: Player) => {
     return {
       kills: 0,
@@ -98,7 +115,7 @@ export function PrepareTeam(team: Team) {
       alive: true,
       armor: false,
       cash: 1000,
-      gun: 'Glock-18',
+      gun: side === 'CT' ? rules.defaultGunCT : rules.defaultGunT,
       health: 100,
       name: player.name,
       team: team.name,
@@ -198,15 +215,21 @@ export function onlyUniqueRounds(value: any, index: any, array: any) {
 export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
   const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
   const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
+
   const player1Shot = PlayerHitPoint(
-    player1.stat.accuracy * (1 - guns[player1.gun].inaccuracy / 100)
+    player1.stat.accuracy *
+      (1 - guns[player1.gun].inaccuracy / 100) *
+      player1.stat.flicksControl
   )
   const player2Shot = PlayerHitPoint(
-    player2.stat.accuracy * (1 - guns[player1.gun].inaccuracy / 100)
+    player2.stat.accuracy *
+      (1 - guns[player2.gun].inaccuracy / 100) *
+      player2.stat.flicksControl
   )
   const player1Damage = Math.floor(
     CalculateDamage(player1Shot, player1.gun, player2)
   )
+
   const player2Damage = Math.floor(
     CalculateDamage(player2Shot, player2.gun, player1)
   )
@@ -237,8 +260,8 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
 }
 
 export function Match(team1: Team, team2: Team) {
-  let team1Players = PrepareTeam(team1)
-  let team2Players = PrepareTeam(team2)
+  let team1Players = PrepareTeam(team1, 'CT') // TODO
+  let team2Players = PrepareTeam(team2, 'CT')
 
   let team1Score = 0
   let team2Score = 0
