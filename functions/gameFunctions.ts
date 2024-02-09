@@ -93,6 +93,8 @@ function PrepareTeam(team: Team) {
       kills: 0,
       assist: 0,
       death: 0,
+      totalDamage: 0,
+      roundsWithKAST: [],
       alive: true,
       armor: false,
       cash: 1000,
@@ -112,11 +114,14 @@ function PrepareTeam(team: Team) {
   })
 }
 
-function SetAlive(team: InRoundPlayer[]) {
+function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
     return {
       ...player,
       alive: true,
+      roundsWithKAST: player.health
+        ? [...player.roundsWithKAST, recentRoundNumber]
+        : [...player.roundsWithKAST],
       health: rules.maxPlayerHealth,
     }
   })
@@ -163,6 +168,10 @@ function SprayDuel(
   } else {
     return [player1.health, player1.health - damage]
   }
+}
+
+function onlyUniqueRounds(value: any, index: any, array: any) {
+  return array.indexOf(value) === index
 }
 
 export function Match(team1: Team, team2: Team) {
@@ -216,6 +225,13 @@ export function Match(team1: Team, team2: Team) {
               ? player.assist + 1
               : player.assist,
           death: !player1Health ? player.death + 1 : player.death,
+          roundsWithKAST:
+            team2PlayerExecute.health - player2Health > rules.assistDamageMin ||
+            !player2Health
+              ? [...player.roundsWithKAST, team1Score + team1Score + 1]
+              : [...player.roundsWithKAST],
+          totalDamage:
+            player.totalDamage + (team2PlayerExecute.health - player2Health),
           alive: player1Health ? true : false,
           cash:
             player1Health && !player2Health
@@ -240,6 +256,13 @@ export function Match(team1: Team, team2: Team) {
               ? player.assist + 1
               : player.assist,
           death: !player2Health ? player.death + 1 : player.death,
+          roundsWithKAST:
+            team1PlayerExecute.health - player1Health > rules.assistDamageMin ||
+            !player1Health
+              ? [...player.roundsWithKAST, team1Score + team1Score + 1]
+              : [...player.roundsWithKAST],
+          totalDamage:
+            player.totalDamage + (team1PlayerExecute.health - player1Health),
           alive: player2Health ? true : false,
           cash:
             player2Health && !player1Health
@@ -257,31 +280,11 @@ export function Match(team1: Team, team2: Team) {
     while (TeamsAlive(team1Players, team2Players)) {
       console.log('')
       team1Players.forEach((p: InRoundPlayer) => {
-        console.log(
-          p.name,
-          'H',
-          p.health,
-          'K',
-          p.kills,
-          'A',
-          p.assist,
-          'D',
-          p.death
-        )
+        console.log(p.name, p.totalDamage)
       })
       console.log('===')
       team2Players.forEach((p: InRoundPlayer) => {
-        console.log(
-          p.name,
-          'H',
-          p.health,
-          'K',
-          p.kills,
-          'A',
-          p.assist,
-          'D',
-          p.death
-        )
+        console.log(p.name, p.totalDamage)
       })
       console.log('')
 
@@ -296,9 +299,9 @@ export function Match(team1: Team, team2: Team) {
   }
 
   while (team1Score + team2Score < rules.MRsystem * 2) {
-    team1Players = SetAlive(team1Players)
-    team2Players = SetAlive(team2Players)
     Round()
+    team1Players = SetAlive(team1Players, team1Score + team2Score)
+    team2Players = SetAlive(team2Players, team1Score + team2Score)
     if (
       team1Score === rules.MRsystem + 1 ||
       team2Score === rules.MRsystem + 1
@@ -307,13 +310,63 @@ export function Match(team1: Team, team2: Team) {
     }
   }
 
+  // console.log(team1Players)
+  // console.log(team2Players)
+
+  console.log(''.padEnd(8, ' '), 'K', 'A', 'D', 'ADR'.padStart(20, ' '))
+
   team1Players.forEach((p: InRoundPlayer) => {
-    console.log(p.name, p.kills, p.assist, p.death)
+    const ADR = p.totalDamage / (team1Score + team2Score)
+    const DPR = p.death / (team1Score + team2Score)
+    const KPR = p.kills / (team1Score + team2Score)
+    const APR = p.assist / (team1Score + team2Score)
+
+    const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
+    const rating =
+      0.0073 * KAST +
+      0.3591 * KPR +
+      (-0.5329 * DPR) / 2 +
+      0.2372 * (2.13 * KPR + 0.42 * APR) +
+      0.0032 * ADR +
+      0.1584
+    console.log(
+      p.name.padEnd(8, ' '),
+      p.kills,
+      p.assist,
+      p.death,
+      // ADR,
+      // KAST,
+      // p.roundsWithKAST,
+      rating.toFixed(2),
+      (p.kills / p.death).toFixed(2)
+    )
   })
   console.log('---')
-
   team2Players.forEach((p: InRoundPlayer) => {
-    console.log(p.name, p.kills, p.assist, p.death)
+    const ADR = p.totalDamage / (team1Score + team2Score)
+    const DPR = p.death / (team1Score + team2Score)
+    const KPR = p.kills / (team1Score + team2Score)
+    const APR = p.assist / (team1Score + team2Score)
+    const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
+    const rating =
+      0.0073 * KAST +
+      0.3591 * KPR +
+      (-0.5329 * DPR) / 2 +
+      0.2372 * (2.13 * KPR + 0.42 * APR) +
+      0.0032 * ADR +
+      0.1584
+
+    console.log(
+      p.name.padEnd(8, ' '),
+      p.kills,
+      p.assist,
+      p.death,
+      // ADR,
+      // KAST,
+      // p.roundsWithKAST,
+      rating.toFixed(2),
+      (p.kills / p.death).toFixed(2)
+    )
   })
 }
 
@@ -357,20 +410,20 @@ const team1: Team = {
       name: 'Sky',
       stat: {
         role: 'capitan',
-        reaction: 0.25,
+        reaction: 0.2,
         accuracy: 0.72,
         sprayControl: 0.8,
         flicksControl: 0.8,
-        agression: 0.2,
+        agression: 0.3,
       },
     },
     {
       name: 'Moon',
       stat: {
         role: 'capitan',
-        reaction: 0.25,
-        accuracy: 0.72,
-        sprayControl: 0.8,
+        reaction: 0.3,
+        accuracy: 0.9,
+        sprayControl: 0.9,
         flicksControl: 0.8,
         agression: 0.2,
       },
