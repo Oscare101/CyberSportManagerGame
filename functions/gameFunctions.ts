@@ -2,7 +2,7 @@ import guns from '../constants/guns'
 import { Gun, InRoundPlayer, Player, Team } from '../constants/interfaces'
 import rules from '../constants/rules'
 
-function PlayerHitPoint(accuracy: number) {
+export function PlayerHitPoint(accuracy: number) {
   return Math.random() >= accuracy
     ? 'miss'
     : Math.random() >= accuracy
@@ -14,7 +14,7 @@ function PlayerHitPoint(accuracy: number) {
     : 'head'
 }
 
-function PlayerReactionTime(player: InRoundPlayer) {
+export function PlayerReactionTime(player: InRoundPlayer) {
   return (
     Math.random() *
       (player.stat.reaction * rules.playerReactionTimeMaxKoef -
@@ -23,7 +23,7 @@ function PlayerReactionTime(player: InRoundPlayer) {
   )
 }
 
-function CalculateDamage(
+export function CalculateDamage(
   hitPoint: string,
   gunName: string,
   opponent: InRoundPlayer
@@ -46,7 +46,7 @@ function CalculateDamage(
   }
 }
 
-function CalculateDPS(
+export function CalculateDPS(
   hitPoint: string,
   gunName: string,
   opponent: InRoundPlayer
@@ -72,22 +72,22 @@ function CalculateDPS(
   }
 }
 
-function GetRandomPlayersToExecute(team: InRoundPlayer[]) {
+export function GetRandomPlayersToExecute(team: InRoundPlayer[]) {
   const alivePlayers = team.filter((player: InRoundPlayer) => player.alive)
   return alivePlayers[Math.floor(Math.random() * alivePlayers.length)]
 }
 
-function TeamAlive(team: InRoundPlayer[]) {
+export function TeamAlive(team: InRoundPlayer[]) {
   return team.find((player: InRoundPlayer) => player.alive)
 }
 
-function TeamsAlive(team1: InRoundPlayer[], team2: InRoundPlayer[]) {
+export function TeamsAlive(team1: InRoundPlayer[], team2: InRoundPlayer[]) {
   const team1Alive = TeamAlive(team1)
   const team2Alive = TeamAlive(team2)
   return !!(team1Alive && team2Alive)
 }
 
-function PrepareTeam(team: Team) {
+export function PrepareTeam(team: Team) {
   return team.players.map((player: Player) => {
     return {
       kills: 0,
@@ -114,7 +114,7 @@ function PrepareTeam(team: Team) {
   })
 }
 
-function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
+export function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
     return {
       ...player,
@@ -128,7 +128,7 @@ function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
   return alivePLayers
 }
 
-function SprayDuel(
+export function SprayDuel(
   player1: InRoundPlayer,
   player2: InRoundPlayer,
   damage: number
@@ -170,11 +170,11 @@ function SprayDuel(
   }
 }
 
-function onlyUniqueRounds(value: any, index: any, array: any) {
+export function onlyUniqueRounds(value: any, index: any, array: any) {
   return array.indexOf(value) === index
 }
 
-function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
+export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
   const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
   const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
   const player1Shot = PlayerHitPoint(player1.stat.accuracy)
@@ -375,126 +375,4 @@ export function Match(team1: Team, team2: Team) {
   })
 }
 
-const team1: Team = {
-  name: 'NOVA',
-  players: [
-    {
-      name: 'Oscare',
-      stat: {
-        role: 'sniper',
-        reaction: 0.2,
-        accuracy: 0.77,
-        sprayControl: 0.82,
-        flicksControl: 0.8,
-        agression: 0.4,
-      },
-    },
-    {
-      name: 'Modest',
-      stat: {
-        role: 'rifler',
-        reaction: 0.22,
-        accuracy: 0.7,
-        sprayControl: 0.82,
-        flicksControl: 0.8,
-        agression: 0.8,
-      },
-    },
-    {
-      name: 'Cloudy',
-      stat: {
-        role: 'capitan',
-        reaction: 0.25,
-        accuracy: 0.72,
-        sprayControl: 0.8,
-        flicksControl: 0.8,
-        agression: 0.2,
-      },
-    },
-    {
-      name: 'Sky',
-      stat: {
-        role: 'capitan',
-        reaction: 0.2,
-        accuracy: 0.72,
-        sprayControl: 0.8,
-        flicksControl: 0.8,
-        agression: 0.3,
-      },
-    },
-    {
-      name: 'Moon',
-      stat: {
-        role: 'capitan',
-        reaction: 0.3,
-        accuracy: 0.9,
-        sprayControl: 0.9,
-        flicksControl: 0.8,
-        agression: 0.2,
-      },
-    },
-  ],
-}
-
-const team2: Team = {
-  name: 'Quazars',
-  players: [
-    {
-      name: 'Header',
-      stat: {
-        role: 'rifler',
-        reaction: 0.22,
-        accuracy: 0.79,
-        sprayControl: 0.85,
-        flicksControl: 0.8,
-        agression: 0.7,
-      },
-    },
-    {
-      name: 'Xantarex',
-      stat: {
-        role: 'rifler',
-        reaction: 0.18,
-        accuracy: 0.79,
-        sprayControl: 0.85,
-        flicksControl: 0.8,
-        agression: 0.7,
-      },
-    },
-    {
-      name: 'Long',
-      stat: {
-        role: 'capitan',
-        reaction: 0.25,
-        accuracy: 0.7,
-        sprayControl: 0.8,
-        flicksControl: 0.8,
-        agression: 0.25,
-      },
-    },
-    {
-      name: 'Phoenix',
-      stat: {
-        role: 'capitan',
-        reaction: 0.35,
-        accuracy: 0.9,
-        sprayControl: 0.8,
-        flicksControl: 0.8,
-        agression: 0.25,
-      },
-    },
-    {
-      name: 'Pall',
-      stat: {
-        role: 'capitan',
-        reaction: 0.22,
-        accuracy: 0.7,
-        sprayControl: 0.8,
-        flicksControl: 0.8,
-        agression: 0.25,
-      },
-    },
-  ],
-}
-
-Match(team1, team2)
+// Match(team1, team2)
