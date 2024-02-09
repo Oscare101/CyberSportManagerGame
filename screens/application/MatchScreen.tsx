@@ -290,22 +290,56 @@ export default function MathScreen() {
     }
   }
 
-  function RenderPlayer(item: any) {
-    const player: InRoundPlayer = item.item
-    const ADR = player.totalDamage / (team1Score + team2Score)
+  function PlayerResults(props: any) {
+    const player: InRoundPlayer = props.player
+    const ADR = +(player.totalDamage / (team1Score + team2Score)).toFixed(2)
     const DPR = player.death / (team1Score + team2Score)
     const KPR = player.kills / (team1Score + team2Score)
     const APR = player.assist / (team1Score + team2Score)
 
-    const KAST = player.roundsWithKAST.filter(onlyUniqueRounds).length
+    const KAST = +(
+      player.roundsWithKAST.filter(onlyUniqueRounds).length /
+      (team1Score + team2Score)
+    ).toFixed(2)
     const rating = +(
       0.0073 * KAST +
       0.3591 * KPR +
-      (-0.5329 * DPR) / 2 +
-      0.2372 * (2.13 * KPR + 0.42 * APR) +
+      (-0.5329 * DPR) / 3 +
+      // 0.2372 * (2.13 * KPR + APR) +
+      0.4 * KPR +
+      APR +
       0.0032 * ADR +
       0.1584
     ).toFixed(2)
+    return (
+      <View
+        style={[
+          styles.playerBlock,
+          {
+            borderRadius: 2,
+            margin: 1,
+            opacity: player.alive ? 0.8 : 0.4,
+            backgroundColor: '#ffffff30',
+          },
+        ]}
+      >
+        <Text style={styles.playerName}>{player.name}</Text>
+        <Text style={styles.playerStat}>
+          {player.kills}-{player.death}
+        </Text>
+        <Text style={styles.playerStat}>{ADR}</Text>
+        <Text style={styles.playerStat}>{KAST}</Text>
+        <Text style={styles.playerStat}>{rating}</Text>
+      </View>
+    )
+  }
+
+  function RenderPlayer(item: any) {
+    const player: InRoundPlayer = item.item
+
+    if (!isGameActive) {
+      return <PlayerResults player={player} />
+    }
 
     return (
       <View
@@ -355,6 +389,25 @@ export default function MathScreen() {
   }, [lastUpdate, isGameActive])
 
   function TeamHeader(props: any) {
+    if (!isGameActive) {
+      return (
+        <View
+          style={[
+            styles.playerBlock,
+            {
+              borderRadius: 2,
+              margin: 1,
+            },
+          ]}
+        >
+          <Text style={styles.playerName}>{props.teamName}</Text>
+          <Text style={styles.playerStat}>K-D</Text>
+          <Text style={styles.playerStat}>ADR</Text>
+          <Text style={styles.playerStat}>KAST</Text>
+          <Text style={styles.playerStat}>rating</Text>
+        </View>
+      )
+    }
     return (
       <View
         style={[
