@@ -174,37 +174,45 @@ function onlyUniqueRounds(value: any, index: any, array: any) {
   return array.indexOf(value) === index
 }
 
+function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
+  const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
+  const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
+  const player1Shot = PlayerHitPoint(player1.stat.accuracy)
+  const player2Shot = PlayerHitPoint(player2.stat.accuracy)
+  const player1Damage = CalculateDamage(player1Shot, player1.gun, player2)
+  const player2Damage = CalculateDamage(player2Shot, player2.gun, player1)
+
+  if (player1ReactionTime < player2ReactionTime) {
+    if (player1Damage >= player2.health) {
+      return [player1.health, 0]
+    } else {
+      if (Math.random() > 0.5) {
+        return SprayDuel(player1, player2, player1Damage)
+      } else {
+        return [player1.health, 0]
+      }
+    }
+  } else if (player2ReactionTime < player1ReactionTime) {
+    if (player2Damage >= player1.health) {
+      return [0, player2.health]
+    } else {
+      if (Math.random() > 0.5) {
+        return SprayDuel(player2, player1, player2Damage).reverse()
+      } else {
+        return [0, player2.health]
+      }
+    }
+  } else {
+    return SprayDuel(player1, player2, 0)
+  }
+}
+
 export function Match(team1: Team, team2: Team) {
   let team1Players = PrepareTeam(team1)
   let team2Players = PrepareTeam(team2)
 
   let team1Score = 0
   let team2Score = 0
-
-  function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
-    const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
-    const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
-    const player1Shot = PlayerHitPoint(player1.stat.accuracy)
-    const player2Shot = PlayerHitPoint(player2.stat.accuracy)
-    const player1Damage = CalculateDamage(player1Shot, player1.gun, player2)
-    const player2Damage = CalculateDamage(player2Shot, player2.gun, player1)
-
-    if (player1ReactionTime < player2ReactionTime) {
-      if (player1Damage >= player2.health) {
-        return [player1.health, 0]
-      } else {
-        return SprayDuel(player1, player2, player1Damage)
-      }
-    } else if (player2ReactionTime < player1ReactionTime) {
-      if (player2Damage >= player1.health) {
-        return [0, player2.health]
-      } else {
-        return SprayDuel(player2, player1, player2Damage).reverse()
-      }
-    } else {
-      return SprayDuel(player1, player2, 0)
-    }
-  }
 
   function RoundAction() {
     const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
@@ -309,9 +317,6 @@ export function Match(team1: Team, team2: Team) {
       break
     }
   }
-
-  // console.log(team1Players)
-  // console.log(team2Players)
 
   console.log(''.padEnd(8, ' '), 'K', 'A', 'D', 'ADR'.padStart(20, ' '))
 
