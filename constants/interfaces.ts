@@ -22,18 +22,34 @@ export interface Gun {
   }
 }
 
-export interface InRoundPlayer {
-  armor: boolean
-  armorHealth: number
-  gun: string
-  health: number
-}
-
-export interface PlayerStat {
-  name: string
+export interface PlayerStatistic {
   role: 'sniper' | 'rifler' | 'support' | 'capitan'
   reaction: number // 0 - inf
   accuracy: number // 0 - 1
   sprayControl: number // 0 - 1
   flicksControl: number // 0 - 1
+  agression: number // 0 - 1
+}
+
+export interface InRoundPlayer {
+  kills: number
+  death: number
+  alive: boolean
+  armor: boolean
+  cash: number
+  gun: string
+  health: number
+  name: string
+  team: string
+  stat: PlayerStatistic
+}
+
+export interface Player {
+  name: string
+  stat: PlayerStatistic
+}
+
+export interface Team {
+  name: string
+  players: Player[]
 }
