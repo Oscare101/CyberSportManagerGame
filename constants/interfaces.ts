@@ -33,6 +33,7 @@ export interface PlayerStatistic {
 
 export interface InRoundPlayer {
   kills: number
+  assist: number
   death: number
   alive: boolean
   armor: boolean
