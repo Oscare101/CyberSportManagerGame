@@ -148,12 +148,17 @@ export function SetAlive(
   team: InRoundPlayer[],
   recentRoundNumber: number,
   win: boolean,
-  isResetCash: boolean
+  isResetRound: boolean,
+  side: string
 ) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
-    let playerGun: string = player.gun
+    let playerGun: string = isResetRound
+      ? side === 'CT'
+        ? rules.defaultGunCT
+        : rules.defaultGunT
+      : player.gun
     let playerArmor: boolean = player.armor
-    let playerCash = isResetCash
+    let playerCash = isResetRound
       ? rules.defaultCash
       : win
       ? player.cash + rules.winnBonus
@@ -376,8 +381,20 @@ export function Match(team1: Team, team2: Team) {
 
   while (team1Score + team2Score < rules.MRsystem * 2) {
     Round()
-    team1Players = SetAlive(team1Players, team1Score + team2Score, false, false) // TODO
-    team2Players = SetAlive(team2Players, team1Score + team2Score, false, false) // TODO
+    team1Players = SetAlive(
+      team1Players,
+      team1Score + team2Score,
+      false,
+      false,
+      ''
+    ) // TODO
+    team2Players = SetAlive(
+      team2Players,
+      team1Score + team2Score,
+      false,
+      false,
+      ''
+    ) // TODO
     if (
       team1Score === rules.MRsystem + 1 ||
       team2Score === rules.MRsystem + 1

@@ -261,14 +261,16 @@ export default function MathScreen() {
           team1Players,
           team1Score + team2Score,
           !!TeamAlive(team1Players),
-          IsSideChangeRound(team1Score + team2Score + 1)
+          IsSideChangeRound(team1Score + team2Score + 1),
+          CalculateSide(team1Score + team2Score + 2)[0]
         )
         setTeam1Players(newTeam1Players)
         const newTeam2Players = SetAlive(
           team2Players,
           team1Score + team2Score,
           !!TeamAlive(team2Players),
-          IsSideChangeRound(team1Score + team2Score + 1)
+          IsSideChangeRound(team1Score + team2Score + 1),
+          CalculateSide(team1Score + team2Score + 2)[1]
         )
         setTeam2Players(newTeam2Players)
       }
@@ -290,6 +292,20 @@ export default function MathScreen() {
 
   function RenderPlayer(item: any) {
     const player: InRoundPlayer = item.item
+    const ADR = player.totalDamage / (team1Score + team2Score)
+    const DPR = player.death / (team1Score + team2Score)
+    const KPR = player.kills / (team1Score + team2Score)
+    const APR = player.assist / (team1Score + team2Score)
+
+    const KAST = player.roundsWithKAST.filter(onlyUniqueRounds).length
+    const rating = +(
+      0.0073 * KAST +
+      0.3591 * KPR +
+      (-0.5329 * DPR) / 2 +
+      0.2372 * (2.13 * KPR + 0.42 * APR) +
+      0.0032 * ADR +
+      0.1584
+    ).toFixed(2)
 
     return (
       <View
@@ -315,7 +331,7 @@ export default function MathScreen() {
           <HealthBlock health={player.health} />
         </View>
         <View style={{ width: '10%' }}>
-          <GunImage name={player.gun} />
+          {player.alive ? <GunImage name={player.gun} /> : <></>}
         </View>
         <Text style={styles.playerStat}>{player.cash}</Text>
         <Text style={styles.playerStat}>{player.armor ? '+' : '-'}</Text>
