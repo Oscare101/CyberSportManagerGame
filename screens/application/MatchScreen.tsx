@@ -1,4 +1,11 @@
-import { Button, FlatList, StyleSheet, Text, View } from 'react-native'
+import {
+  Button,
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 import { InRoundPlayer, Team } from '../../constants/interfaces'
 import {
   Duel,
@@ -12,6 +19,8 @@ import {
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
 import { useEffect, useState } from 'react'
+import GunImage from '../../components/GunImage'
+import HealthBlock from '../../components/HealthBlock'
 
 const team1: Team = {
   name: 'NOVA',
@@ -73,7 +82,6 @@ const team1: Team = {
     },
   ],
 }
-
 const team2: Team = {
   name: 'Quazars',
   players: [
@@ -135,18 +143,21 @@ const team2: Team = {
   ],
 }
 
+const width = Dimensions.get('screen').width
+
 export default function MathScreen() {
   const [team1Players, setTeam1Players] = useState<InRoundPlayer[]>(
     PrepareTeam(team1)
   )
   const [team2Players, setTeam2Players] = useState<InRoundPlayer[]>(
-    PrepareTeam(team1)
+    PrepareTeam(team2)
   )
   const [team1Score, setTeam1Score] = useState<number>(0)
   const [team2Score, setTeam2Score] = useState<number>(0)
   const [isGameActive, setIsGameActive] = useState<boolean>(false)
   const [overtimeRounds, setOvertimeRounds] = useState<number>(0)
   const [lastUpdate, setLastUpdate] = useState<number>(0)
+
   function Match() {
     function RoundAction() {
       const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
@@ -179,7 +190,8 @@ export default function MathScreen() {
               player1Health && !player2Health
                 ? player.cash + guns[player.gun].killAward
                 : player.cash,
-            health: player1Health,
+            health: Math.floor(player1Health),
+            gun: !player1Health ? rules.defaultGun : player.gun,
           }
         } else {
           return player
@@ -210,7 +222,8 @@ export default function MathScreen() {
               player2Health && !player1Health
                 ? player.cash + guns[player.gun].killAward
                 : player.cash,
-            health: player2Health,
+            health: Math.floor(player2Health),
+            gun: !player2Health ? rules.defaultGun : player.gun,
           }
         } else {
           return player
@@ -228,14 +241,20 @@ export default function MathScreen() {
         } else {
           setTeam2Score(team2Score + 1)
         }
-        const newTeam1Players = SetAlive(team1Players, team1Score + team2Score)
+        const newTeam1Players = SetAlive(
+          team1Players,
+          team1Score + team2Score,
+          !!TeamAlive(team1Players)
+        )
         setTeam1Players(newTeam1Players)
-        const newTeam2Players = SetAlive(team2Players, team1Score + team2Score)
+        const newTeam2Players = SetAlive(
+          team2Players,
+          team1Score + team2Score,
+          !!TeamAlive(team2Players)
+        )
         setTeam2Players(newTeam2Players)
       }
     }
-    console.log(team1Score, team2Score)
-
     if (
       team1Score < rules.MRsystem + overtimeRounds + 1 &&
       team2Score < rules.MRsystem + overtimeRounds + 1 &&
@@ -251,31 +270,32 @@ export default function MathScreen() {
     }
   }
 
-  function RenderPlayer({ item }: any) {
+  function RenderPlayer(item: any) {
+    const player: InRoundPlayer = item.item
+
     return (
       <View
         style={[
           styles.playerBlock,
           {
-            backgroundColor: item.alive ? '#fff' : '#00000000',
             borderRadius: 2,
             margin: 1,
+            opacity: player.alive ? 0.8 : 0.4,
           },
         ]}
       >
-        <Text style={styles.playerName}>{item.name}</Text>
+        <Text style={styles.playerName}>{player.name}</Text>
         <View style={[styles.healthBlock]}>
-          <View
-            style={{
-              width: `${item.health}%`,
-              height: '100%',
-              backgroundColor: '#000',
-            }}
-          />
+          <HealthBlock health={player.health} />
         </View>
-        <Text style={styles.playerStat}>{item.kills}</Text>
-        <Text style={styles.playerStat}>{item.assist}</Text>
-        <Text style={styles.playerStat}>{item.death}</Text>
+        <View style={{ width: '10%' }}>
+          <GunImage name={player.gun} />
+        </View>
+        <Text style={styles.playerStat}>{player.cash}</Text>
+        <Text style={styles.playerStat}>{player.armor ? '+' : '-'}</Text>
+        <Text style={styles.playerStat}>{player.kills}</Text>
+        <Text style={styles.playerStat}>{player.assist}</Text>
+        <Text style={styles.playerStat}>{player.death}</Text>
       </View>
     )
   }
@@ -293,6 +313,29 @@ export default function MathScreen() {
     }
   }, [lastUpdate, isGameActive])
 
+  function TeamHeader(props: any) {
+    return (
+      <View
+        style={[
+          styles.playerBlock,
+          {
+            borderRadius: 2,
+            margin: 1,
+          },
+        ]}
+      >
+        <Text style={styles.playerName}>{props.teamName}</Text>
+        <Text style={styles.playerStat}>+</Text>
+        <Text style={styles.playerStat}>gun</Text>
+        <Text style={styles.playerStat}>armor</Text>
+        <Text style={styles.playerStat}>$</Text>
+        <Text style={styles.playerStat}>K</Text>
+        <Text style={styles.playerStat}>A</Text>
+        <Text style={styles.playerStat}>D</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.scoreHeader}>
@@ -302,10 +345,18 @@ export default function MathScreen() {
       </View>
       <View style={styles.teamColumnsBlock}>
         <View style={styles.teamColumn}>
-          <FlatList data={team1Players} renderItem={RenderPlayer} />
+          <TeamHeader teamName={team1.name} />
+          <FlatList
+            data={team1Players as InRoundPlayer[]}
+            renderItem={RenderPlayer}
+          />
         </View>
         <View style={styles.teamColumn}>
-          <FlatList data={team2Players} renderItem={RenderPlayer} />
+          <TeamHeader teamName={team2.name} />
+          <FlatList
+            data={team2Players as InRoundPlayer[]}
+            renderItem={RenderPlayer}
+          />
         </View>
       </View>
       <Button title="start" onPress={() => setIsGameActive(true)} />
@@ -328,23 +379,31 @@ const styles = StyleSheet.create({
   },
   teamColumnsBlock: {
     width: '100%',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   teamColumn: {
     flexDirection: 'column',
-    width: '50%',
+    width: '100%',
   },
   playerBlock: {
-    flex: 1,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    height: width * 0.07,
+    backgroundColor: '#396782',
+    paddingHorizontal: '2%',
   },
-  playerName: { width: '40%' },
-  healthBlock: { width: '20%', height: '100%' },
-  playerStat: { width: '10%' },
+  playerName: { width: '20%' },
+  healthBlock: {
+    width: '10%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playerStat: { width: '10%', fontSize: width * 0.03, textAlign: 'center' },
   playerEconomic: {},
   playerHealth: {},
 })

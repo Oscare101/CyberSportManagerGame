@@ -2,7 +2,7 @@ import guns from '../constants/guns'
 import { Gun, InRoundPlayer, Player, Team } from '../constants/interfaces'
 import rules from '../constants/rules'
 
-export function PlayerHitPoint(accuracy: number) {
+function PlayerHitPoint(accuracy: number) {
   return Math.random() >= accuracy
     ? 'miss'
     : Math.random() >= accuracy
@@ -14,7 +14,7 @@ export function PlayerHitPoint(accuracy: number) {
     : 'head'
 }
 
-export function PlayerReactionTime(player: InRoundPlayer) {
+function PlayerReactionTime(player: InRoundPlayer) {
   return (
     Math.random() *
       (player.stat.reaction * rules.playerReactionTimeMaxKoef -
@@ -23,7 +23,7 @@ export function PlayerReactionTime(player: InRoundPlayer) {
   )
 }
 
-export function CalculateDamage(
+function CalculateDamage(
   hitPoint: string,
   gunName: string,
   opponent: InRoundPlayer
@@ -114,8 +114,26 @@ export function PrepareTeam(team: Team) {
   })
 }
 
-export function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
+export function SetAlive(
+  team: InRoundPlayer[],
+  recentRoundNumber: number,
+  win: boolean
+) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
+    let playerGun: string = player.gun
+    let playerArmor: boolean = player.armor
+    let playerCash = win
+      ? player.cash + rules.winnBonus
+      : player.cash + rules.lossBonus
+    if (playerCash >= rules.armorCost && !playerArmor) {
+      playerArmor = true
+      playerCash -= rules.armorCost
+    }
+    if (playerCash >= guns['AWP'].price && playerGun !== 'AWP') {
+      playerGun = 'AWP'
+      playerCash -= guns['AWP'].price
+    }
+
     return {
       ...player,
       alive: true,
@@ -123,6 +141,9 @@ export function SetAlive(team: InRoundPlayer[], recentRoundNumber: number) {
         ? [...player.roundsWithKAST, recentRoundNumber]
         : [...player.roundsWithKAST],
       health: rules.maxPlayerHealth,
+      cash: playerCash,
+      gun: playerGun,
+      armor: playerArmor,
     }
   })
   return alivePLayers
@@ -177,10 +198,18 @@ export function onlyUniqueRounds(value: any, index: any, array: any) {
 export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
   const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
   const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
-  const player1Shot = PlayerHitPoint(player1.stat.accuracy)
-  const player2Shot = PlayerHitPoint(player2.stat.accuracy)
-  const player1Damage = CalculateDamage(player1Shot, player1.gun, player2)
-  const player2Damage = CalculateDamage(player2Shot, player2.gun, player1)
+  const player1Shot = PlayerHitPoint(
+    player1.stat.accuracy * (1 - guns[player1.gun].inaccuracy / 100)
+  )
+  const player2Shot = PlayerHitPoint(
+    player2.stat.accuracy * (1 - guns[player1.gun].inaccuracy / 100)
+  )
+  const player1Damage = Math.floor(
+    CalculateDamage(player1Shot, player1.gun, player2)
+  )
+  const player2Damage = Math.floor(
+    CalculateDamage(player2Shot, player2.gun, player1)
+  )
 
   if (player1ReactionTime < player2ReactionTime) {
     if (player1Damage >= player2.health) {
@@ -308,8 +337,8 @@ export function Match(team1: Team, team2: Team) {
 
   while (team1Score + team2Score < rules.MRsystem * 2) {
     Round()
-    team1Players = SetAlive(team1Players, team1Score + team2Score)
-    team2Players = SetAlive(team2Players, team1Score + team2Score)
+    team1Players = SetAlive(team1Players, team1Score + team2Score, false) // TODO
+    team2Players = SetAlive(team2Players, team1Score + team2Score, false) // TODO
     if (
       team1Score === rules.MRsystem + 1 ||
       team2Score === rules.MRsystem + 1
