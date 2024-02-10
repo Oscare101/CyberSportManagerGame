@@ -254,6 +254,7 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
   const player2Damage = Math.floor(
     CalculateDamage(player2Shot, player2.gun, player1)
   )
+  console.log(player1Damage, player2Damage)
 
   if (player1ReactionTime < player2ReactionTime) {
     if (player1Damage >= player2.health) {
@@ -262,7 +263,7 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
       if (Math.random() > 0.5) {
         return SprayDuel(player1, player2, player1Damage)
       } else {
-        return [player1.health, 0]
+        return [player1.health, player2.health - player1Damage]
       }
     }
   } else if (player2ReactionTime < player1ReactionTime) {
@@ -272,7 +273,7 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
       if (Math.random() > 0.5) {
         return SprayDuel(player2, player1, player2Damage).reverse()
       } else {
-        return [0, player2.health]
+        return [player1.health - player2Damage, player2.health]
       }
     }
   } else {
