@@ -167,9 +167,31 @@ export function SetAlive(
       playerArmor = true
       playerCash -= rules.armorCost
     }
-    if (playerCash >= guns['AWP'].price && playerGun !== 'AWP') {
-      playerGun = 'AWP'
-      playerCash -= guns['AWP'].price
+    const availableGuns = Object.values(guns)
+      .filter(
+        (gun: Gun) =>
+          gun.usedBy.split(' ').includes(side) &&
+          gun.price <= playerCash &&
+          ((player.stat.role === 'sniper' && gun.type === 'Sniper Rifle') ||
+            (player.stat.role === 'rifler' && gun.type === 'Rifle') ||
+            (player.stat.role === 'capitan' && gun.type === 'Rifle') ||
+            (player.stat.role === 'support' && gun.type === 'Rifle'))
+      )
+      .sort(
+        (a: Gun, b: Gun) =>
+          b.damage.withoutArmor.head - a.damage.withoutArmor.head
+      )
+    const topGun = availableGuns[0]
+
+    if (
+      availableGuns.length &&
+      playerCash >= topGun.price &&
+      playerGun !== topGun.name &&
+      (topGun.damage.withArmor.head > guns[playerGun].damage.withArmor.head ||
+        (guns[player.gun].type === 'Pistol' && topGun.type !== 'Pistol'))
+    ) {
+      playerGun = topGun.name
+      playerCash -= topGun.price
     }
 
     return {
@@ -250,12 +272,9 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
   const player1Damage = Math.floor(
     CalculateDamage(player1Shot, player1.gun, player2)
   )
-
   const player2Damage = Math.floor(
     CalculateDamage(player2Shot, player2.gun, player1)
   )
-  console.log(player1Damage, player2Damage)
-
   if (player1ReactionTime < player2ReactionTime) {
     if (player1Damage >= player2.health) {
       return [player1.health, 0]

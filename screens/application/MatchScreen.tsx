@@ -365,6 +365,8 @@ export default function MathScreen() {
         <View style={{ width: '10%' }}>
           {player.alive ? <GunImage name={player.gun} /> : <></>}
         </View>
+        {/* <Text style={styles.playerStat}>{player.gun}</Text> */}
+
         <Text style={styles.playerStat}>{player.cash}</Text>
         <Text style={styles.playerStat}>{player.armor ? '+' : '-'}</Text>
         <Text style={styles.playerStat}>{player.kills}</Text>
