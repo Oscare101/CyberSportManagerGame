@@ -10,7 +10,7 @@ const nades: NadesData = {
     name: 'HE Grenade',
     price: 300,
     killAward: 300,
-    damage: { withArmor: 57, withoutArmor: 98 }, // 0-50 hp
+    damage: { withArmor: 57, withoutArmor: 98 },
     delay: 0,
   },
   'Incendiary Grenade': {
@@ -18,24 +18,24 @@ const nades: NadesData = {
     name: 'Incendiary Grenade',
     price: 600,
     killAward: 300,
-    damage: { withArmor: 40, withoutArmor: 40 }, // 0-50 hp
+    damage: { withArmor: 40, withoutArmor: 40 },
     delay: 0,
   },
-  'HE Grenade': {
+  Smoke: {
     type: 'damage',
-    name: 'HE Grenade',
+    name: 'Smoke',
     price: 300,
     killAward: 300,
-    damage: { withArmor: 57, withoutArmor: 98 }, // 0-50 hp
-    delay: 0,
+    damage: { withArmor: 0, withoutArmor: 0 },
+    delay: 2,
   },
   'Flash Bang': {
     type: 'damage',
     name: 'Flash Bang',
     price: 200,
     killAward: 300,
-    damage: { withArmor: 0, withoutArmor: 0 }, // 0-50 hp
-    delay: 0,
+    damage: { withArmor: 0, withoutArmor: 0 },
+    delay: 2,
   },
 }
 

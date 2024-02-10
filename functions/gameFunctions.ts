@@ -1,5 +1,6 @@
 import guns from '../constants/guns'
-import { Gun, InRoundPlayer, Player, Team } from '../constants/interfaces'
+import { Gun, InRoundPlayer, Nade, Player, Team } from '../constants/interfaces'
+import nades from '../constants/nades'
 import rules from '../constants/rules'
 
 function PlayerHitPoint(accuracy: number) {
@@ -145,6 +146,104 @@ export function PrepareTeam(team: Team, side: string) {
   })
 }
 
+export function NadeUsage(player: InRoundPlayer) {
+  const usedNade =
+    Math.random() > 0.5
+      ? player.nades[Math.floor(Math.random() * player.nades.length)] || ''
+      : ''
+  return usedNade as string
+}
+
+function GetNewNades(player: InRoundPlayer, cash: number) {
+  interface newNadesInterface {
+    newNades: string[]
+    nadesPrice: number
+  }
+
+  const shuffle = (array: Nade[]) => {
+    return array.sort(() => Math.random() - 0.5)
+  }
+
+  const avalableNades = Object.values(nades).filter(
+    (nade: Nade) => !player.nades.includes(nade.name)
+  )
+  const nadesToBuy = shuffle(avalableNades)
+  let nadesPrice: number = 0
+  let newNades: string[] = []
+
+  nadesToBuy.forEach((nade: Nade) => {
+    if (cash >= nade.price * 2) {
+      newNades.push(nade.name)
+      nadesPrice += nade.price
+    }
+  })
+
+  return {
+    newNades: [...player.nades, ...newNades],
+    nadesPrice: 0,
+  } as newNadesInterface
+}
+
+function GetNewGun(
+  player: InRoundPlayer,
+  side: string,
+  isResetRound: boolean,
+  cash: number
+) {
+  interface newGunInterface {
+    newGun: string
+    gunPrice: number
+  }
+  let playerGun: string = isResetRound
+    ? side === 'CT'
+      ? rules.defaultGunCT
+      : rules.defaultGunT
+    : player.gun
+
+  const availableGuns = Object.values(guns)
+    .filter(
+      (gun: Gun) =>
+        gun.usedBy.split(' ').includes(side) &&
+        gun.price <= cash &&
+        ((player.stat.role === 'sniper' && gun.type === 'Sniper Rifle') ||
+          (player.stat.role === 'rifler' && gun.type === 'Rifle') ||
+          (player.stat.role === 'capitan' && gun.type === 'Rifle') ||
+          (player.stat.role === 'support' &&
+            gun.damagePerSecond > guns[playerGun].damagePerSecond &&
+            gun.type === 'Rifle'))
+    )
+    .sort(
+      (a: Gun, b: Gun) =>
+        b.damage.withoutArmor.head - a.damage.withoutArmor.head
+    )
+  const topGun = availableGuns[0] || false
+
+  if (
+    availableGuns.length &&
+    topGun &&
+    cash >= topGun.price &&
+    playerGun !== topGun.name &&
+    (topGun.damage.withArmor.head > guns[playerGun].damage.withArmor.head ||
+      (guns[player.gun].type === 'Pistol' && topGun.type !== 'Pistol'))
+  ) {
+    return { newGun: topGun.name, gunPrice: topGun.price } as newGunInterface
+  } else {
+    return { newGun: playerGun, gunPrice: 0 } as newGunInterface
+  }
+}
+
+function GetNewArmor(player: InRoundPlayer, cash: number) {
+  interface newArmorInterface {
+    newArmor: boolean
+    armorPrice: number
+  }
+  if (cash >= rules.armorCost * 2 && !player.armor) {
+    return { newArmor: true, armorPrice: rules.armorCost } as newArmorInterface
+  } else {
+    return { newArmor: player.armor, armorPrice: 0 } as newArmorInterface
+  }
+}
+
 export function SetAlive(
   team: InRoundPlayer[],
   recentRoundNumber: number,
@@ -153,49 +252,23 @@ export function SetAlive(
   side: string
 ) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
-    let playerGun: string = isResetRound
-      ? side === 'CT'
-        ? rules.defaultGunCT
-        : rules.defaultGunT
-      : player.gun
-    let playerArmor: boolean = player.armor
     let playerCash = isResetRound
       ? rules.defaultCash
       : win
       ? player.cash + rules.winnBonus
       : player.cash + rules.lossBonus
-    if (playerCash >= rules.armorCost && !playerArmor) {
-      playerArmor = true
-      playerCash -= rules.armorCost
-    }
-    const availableGuns = Object.values(guns)
-      .filter(
-        (gun: Gun) =>
-          gun.usedBy.split(' ').includes(side) &&
-          gun.price <= playerCash &&
-          ((player.stat.role === 'sniper' && gun.type === 'Sniper Rifle') ||
-            (player.stat.role === 'rifler' && gun.type === 'Rifle') ||
-            (player.stat.role === 'capitan' && gun.type === 'Rifle') ||
-            (player.stat.role === 'support' &&
-              gun.damagePerSecond > guns[playerGun].damagePerSecond &&
-              gun.type === 'Rifle'))
-      )
-      .sort(
-        (a: Gun, b: Gun) =>
-          b.damage.withoutArmor.head - a.damage.withoutArmor.head
-      )
-    const topGun = availableGuns[0]
 
-    if (
-      availableGuns.length &&
-      playerCash >= topGun.price &&
-      playerGun !== topGun.name &&
-      (topGun.damage.withArmor.head > guns[playerGun].damage.withArmor.head ||
-        (guns[player.gun].type === 'Pistol' && topGun.type !== 'Pistol'))
-    ) {
-      playerGun = topGun.name
-      playerCash -= topGun.price
-    }
+    const { newArmor, armorPrice } = GetNewArmor(player, playerCash)
+    playerCash -= armorPrice
+    const { newGun, gunPrice } = GetNewGun(
+      player,
+      side,
+      isResetRound,
+      playerCash
+    )
+    playerCash -= gunPrice
+    const { newNades, nadesPrice } = GetNewNades(player, playerCash)
+    playerCash -= nadesPrice
 
     return {
       ...player,
@@ -205,8 +278,9 @@ export function SetAlive(
         : [...player.roundsWithKAST],
       health: rules.maxPlayerHealth,
       cash: playerCash,
-      gun: playerGun,
-      armor: playerArmor,
+      gun: newGun,
+      armor: newArmor,
+      nades: newNades,
     }
   })
   return alivePLayers
@@ -258,9 +332,39 @@ export function onlyUniqueRounds(value: any, index: any, array: any) {
   return array.indexOf(value) === index
 }
 
-export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
-  const player1ReactionTime = +PlayerReactionTime(player1).toFixed(1)
-  const player2ReactionTime = +PlayerReactionTime(player2).toFixed(1)
+export function Duel(
+  player1: InRoundPlayer,
+  player2: InRoundPlayer,
+  player1Nade: string,
+  player2Nade: string
+) {
+  const player1NadeDamage =
+    player1Nade && nades[player1Nade].type === 'damage'
+      ? nades[player1Nade].damage[
+          player2.armor ? 'withArmor' : 'withoutArmor'
+        ] * Math.random()
+      : 0
+  const player2NadeDamage =
+    player2Nade && nades[player2Nade].type === 'damage'
+      ? nades[player2Nade].damage[
+          player1.armor ? 'withArmor' : 'withoutArmor'
+        ] * Math.random()
+      : 0
+  const player1NadeDelay =
+    player1Nade && nades[player1Nade].type === 'delay'
+      ? nades[player1Nade].delay * Math.random()
+      : 0
+  const player2NadeDelay =
+    player2Nade && nades[player2Nade].type === 'delay'
+      ? nades[player2Nade].delay * Math.random()
+      : 0
+
+  const player1ReactionTime = +(
+    PlayerReactionTime(player1) + player2NadeDelay
+  ).toFixed(1)
+  const player2ReactionTime = +(
+    PlayerReactionTime(player2) + player1NadeDelay
+  ).toFixed(1)
 
   const player1Shot = PlayerHitPoint(
     player1.stat.accuracy *
@@ -272,12 +376,12 @@ export function Duel(player1: InRoundPlayer, player2: InRoundPlayer) {
       (1 - guns[player2.gun].inaccuracy / 100) *
       player2.stat.flicksControl
   )
-  const player1Damage = Math.floor(
-    CalculateDamage(player1Shot, player1.gun, player2)
-  )
-  const player2Damage = Math.floor(
-    CalculateDamage(player2Shot, player2.gun, player1)
-  )
+  const player1Damage =
+    Math.floor(CalculateDamage(player1Shot, player1.gun, player2)) +
+    player1NadeDamage
+  const player2Damage =
+    Math.floor(CalculateDamage(player2Shot, player2.gun, player1)) +
+    player2NadeDamage
   if (player1ReactionTime < player2ReactionTime) {
     if (player1Damage >= player2.health) {
       return [player1.health, 0]
@@ -315,8 +419,10 @@ export function Match(team1: Team, team2: Team) {
     const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
     const [player1Health, player2Health] = Duel(
       team1PlayerExecute,
-      team2PlayerExecute
-    )
+      team2PlayerExecute,
+      '',
+      ''
+    ) // TODO
     team1Players = team1Players.map((player: InRoundPlayer) => {
       if (player === team1PlayerExecute) {
         return {
@@ -483,4 +589,37 @@ export function Match(team1: Team, team2: Team) {
   })
 }
 
-// Match(team1, team2)
+export function CalculateRating(player: InRoundPlayer, rounds: number) {
+  const ADR = +(player.totalDamage / rounds).toFixed(2)
+  const DPR = player.death / rounds
+  const KPR = player.kills / rounds
+  const APR = player.assist / rounds
+
+  const KAST = +(
+    (player.roundsWithKAST.filter(onlyUniqueRounds).length * 100) /
+    rounds
+  ).toFixed(1)
+  const rating = +(
+    (0.0073 * KAST) / 100 +
+    (-0.5329 * DPR) / 3 +
+    0.86 * KPR +
+    APR +
+    0.0032 * ADR +
+    0.1584
+  ).toFixed(2)
+  return {
+    ADR: ADR,
+    DPR: DPR,
+    KPR: KPR,
+    APR: APR,
+    KAST: KAST,
+    rating: rating,
+  } as {
+    ADR: number
+    DPR: number
+    KPR: number
+    APR: number
+    KAST: number
+    rating: number
+  }
+}

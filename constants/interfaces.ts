@@ -49,7 +49,7 @@ export interface InRoundPlayer {
   armor: boolean
   cash: number
   gun: string
-  nades: Nade[]
+  nades: string[]
   health: number
   name: string
   team: string

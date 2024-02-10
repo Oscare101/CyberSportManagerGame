@@ -2,6 +2,7 @@ import {
   Button,
   Dimensions,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   View,
@@ -17,12 +18,16 @@ import {
   onlyUniqueRounds,
   CalculateSide,
   IsSideChangeRound,
+  CalculateRating,
+  NadeUsage,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
 import { useEffect, useState } from 'react'
 import GunImage from '../../components/GunImage'
 import HealthBlock from '../../components/HealthBlock'
+import NadesBlock from '../../components/NadesBlock'
+import NadeImage from '../../components/NadeImage'
 
 const team1: Team = {
   name: 'NOVA',
@@ -166,9 +171,13 @@ export default function MathScreen() {
     function RoundAction() {
       const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
       const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
+      const player1NadeUsage = NadeUsage(team1PlayerExecute)
+      const player2NadeUsage = NadeUsage(team2PlayerExecute)
       const [player1Health, player2Health] = Duel(
         team1PlayerExecute,
-        team2PlayerExecute
+        team2PlayerExecute,
+        player1NadeUsage,
+        player2NadeUsage
       )
       const newTeam1Players = team1Players.map((player: InRoundPlayer) => {
         if (player === team1PlayerExecute) {
@@ -200,6 +209,11 @@ export default function MathScreen() {
                 ? rules.defaultGunCT
                 : rules.defaultGunT
               : player.gun,
+            nades: !player1Health
+              ? []
+              : player1NadeUsage
+              ? player.nades.filter((nade: string) => nade !== player1NadeUsage)
+              : player.nades,
           }
         } else {
           return player
@@ -236,6 +250,11 @@ export default function MathScreen() {
                 ? rules.defaultGunCT
                 : rules.defaultGunT
               : player.gun,
+            nades: !player1Health
+              ? []
+              : player2NadeUsage
+              ? player.nades.filter((nade: string) => nade !== player2NadeUsage)
+              : player.nades,
           }
         } else {
           return player
@@ -292,23 +311,12 @@ export default function MathScreen() {
 
   function PlayerResults(props: any) {
     const player: InRoundPlayer = props.player
-    const ADR = +(player.totalDamage / (team1Score + team2Score)).toFixed(2)
-    const DPR = player.death / (team1Score + team2Score)
-    const KPR = player.kills / (team1Score + team2Score)
-    const APR = player.assist / (team1Score + team2Score)
 
-    const KAST = +(
-      (player.roundsWithKAST.filter(onlyUniqueRounds).length * 100) /
-      (team1Score + team2Score)
-    ).toFixed(1)
-    const rating = +(
-      (0.0073 * KAST) / 100 +
-      (-0.5329 * DPR) / 3 +
-      0.86 * KPR +
-      APR +
-      0.0032 * ADR +
-      0.1584
-    ).toFixed(2)
+    const { ADR, DPR, KPR, APR, KAST, rating } = CalculateRating(
+      player,
+      team1Score + team2Score
+    )
+
     return (
       <View
         style={[
@@ -324,6 +332,22 @@ export default function MathScreen() {
         <Text style={styles.playerName}>{player.name}</Text>
         <Text style={styles.playerStat}>
           {player.kills}-{player.death}
+        </Text>
+        <Text
+          style={[
+            styles.playerStat,
+            {
+              color:
+                player.kills > player.death
+                  ? '#0f0'
+                  : player.kills < player.death
+                  ? '#F00'
+                  : '#000',
+            },
+          ]}
+        >
+          {player.kills > player.death ? '+' : ''}
+          {player.kills - player.death}
         </Text>
         <Text style={styles.playerStat}>{ADR}</Text>
         <Text style={styles.playerStat}>{KAST}</Text>
@@ -365,8 +389,9 @@ export default function MathScreen() {
         <View style={{ width: '10%' }}>
           {player.alive ? <GunImage name={player.gun} /> : <></>}
         </View>
-        {/* <Text style={styles.playerStat}>{player.gun}</Text> */}
-
+        <View style={{ height: '100%', aspectRatio: 1 }}>
+          <NadesBlock nades={player.nades} />
+        </View>
         <Text style={styles.playerStat}>{player.cash}</Text>
         <Text style={styles.playerStat}>{player.armor ? '+' : '-'}</Text>
         <Text style={styles.playerStat}>{player.kills}</Text>
@@ -402,6 +427,7 @@ export default function MathScreen() {
         >
           <Text style={styles.playerName}>{props.teamName}</Text>
           <Text style={styles.playerStat}>K-D</Text>
+          <Text style={styles.playerStat}>+/-</Text>
           <Text style={styles.playerStat}>ADR</Text>
           <Text style={styles.playerStat}>KAST</Text>
           <Text style={styles.playerStat}>rating</Text>
@@ -421,8 +447,9 @@ export default function MathScreen() {
         <Text style={styles.playerName}>{props.teamName}</Text>
         <Text style={styles.playerStat}>+</Text>
         <Text style={styles.playerStat}>gun</Text>
-        <Text style={styles.playerStat}>armor</Text>
+        <Text style={styles.playerStat}>nades</Text>
         <Text style={styles.playerStat}>$</Text>
+        <Text style={styles.playerStat}>armor</Text>
         <Text style={styles.playerStat}>K</Text>
         <Text style={styles.playerStat}>A</Text>
         <Text style={styles.playerStat}>D</Text>
@@ -441,18 +468,35 @@ export default function MathScreen() {
         <View style={styles.teamColumn}>
           <TeamHeader teamName={team1.name} />
           <FlatList
-            data={team1Players as InRoundPlayer[]}
+            data={
+              isGameActive
+                ? (team1Players as InRoundPlayer[])
+                : (team1Players.sort(
+                    (a: InRoundPlayer, b: InRoundPlayer) =>
+                      CalculateRating(b, team1Score + team2Score).rating -
+                      CalculateRating(a, team1Score + team2Score).rating
+                  ) as InRoundPlayer[])
+            }
             renderItem={RenderPlayer}
           />
         </View>
         <View style={styles.teamColumn}>
           <TeamHeader teamName={team2.name} />
           <FlatList
-            data={team2Players as InRoundPlayer[]}
+            data={
+              isGameActive
+                ? (team2Players as InRoundPlayer[])
+                : (team2Players.sort(
+                    (a: InRoundPlayer, b: InRoundPlayer) =>
+                      CalculateRating(b, team1Score + team2Score).rating -
+                      CalculateRating(a, team1Score + team2Score).rating
+                  ) as InRoundPlayer[])
+            }
             renderItem={RenderPlayer}
           />
         </View>
       </View>
+
       <Button title={'start'} onPress={() => setIsGameActive(true)} />
       {/* {[
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -497,6 +541,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     height: width * 0.07,
     paddingHorizontal: '2%',
+    overflow: 'hidden',
   },
   playerName: { width: '20%' },
   healthBlock: {
