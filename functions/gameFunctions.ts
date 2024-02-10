@@ -129,6 +129,7 @@ export function PrepareTeam(team: Team, side: string) {
       armor: false,
       cash: 1000,
       gun: side === 'CT' ? rules.defaultGunCT : rules.defaultGunT,
+      nades: [],
       health: 100,
       name: player.name,
       team: team.name,
@@ -175,7 +176,9 @@ export function SetAlive(
           ((player.stat.role === 'sniper' && gun.type === 'Sniper Rifle') ||
             (player.stat.role === 'rifler' && gun.type === 'Rifle') ||
             (player.stat.role === 'capitan' && gun.type === 'Rifle') ||
-            (player.stat.role === 'support' && gun.type === 'Rifle'))
+            (player.stat.role === 'support' &&
+              gun.damagePerSecond > guns[playerGun].damagePerSecond &&
+              gun.type === 'Rifle'))
       )
       .sort(
         (a: Gun, b: Gun) =>

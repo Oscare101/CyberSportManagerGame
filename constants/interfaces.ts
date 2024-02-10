@@ -1,6 +1,6 @@
 export interface Gun {
   name: string
-  type: string
+  type: 'Rifle' | 'Sniper Rifle' | 'Pistol'
   price: number
   killAward: number
   inaccuracy: number
@@ -23,6 +23,15 @@ export interface Gun {
   }
 }
 
+export interface Nade {
+  name: string
+  type: 'damage' | 'delay'
+  price: number
+  killAward: number
+  damage: { withArmor: number; withoutArmor: number }
+  delay: number
+}
+
 export interface PlayerStatistic {
   role: 'sniper' | 'rifler' | 'support' | 'capitan'
   reaction: number // 0 - inf
@@ -40,6 +49,7 @@ export interface InRoundPlayer {
   armor: boolean
   cash: number
   gun: string
+  nades: Nade[]
   health: number
   name: string
   team: string
