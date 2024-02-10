@@ -20,6 +20,7 @@ import {
   IsSideChangeRound,
   CalculateRating,
   NadeUsage,
+  CalculatePlayersAfterDuel,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -179,88 +180,32 @@ export default function MathScreen() {
         player1NadeUsage,
         player2NadeUsage
       )
-      const newTeam1Players = team1Players.map((player: InRoundPlayer) => {
-        if (player === team1PlayerExecute) {
-          return {
-            ...player,
-            kills:
-              player1Health && !player2Health ? player.kills + 1 : player.kills,
-            assist:
-              player2Health &&
-              team2PlayerExecute.health - player2Health >= rules.assistDamageMin
-                ? player.assist + 1
-                : player.assist,
-            death: !player1Health ? player.death + 1 : player.death,
-            roundsWithKAST:
-              team2PlayerExecute.health - player2Health >
-                rules.assistDamageMin || !player2Health
-                ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-                : [...player.roundsWithKAST],
-            totalDamage:
-              player.totalDamage + (team2PlayerExecute.health - player2Health),
-            alive: player1Health ? true : false,
-            cash:
-              player1Health && !player2Health
-                ? player.cash + guns[player.gun].killAward
-                : player.cash,
-            health: Math.floor(player1Health),
-            gun: !player1Health
-              ? team1Side === 'CT'
-                ? rules.defaultGunCT
-                : rules.defaultGunT
-              : player.gun,
-            nades: !player1Health
-              ? []
-              : player1NadeUsage
-              ? player.nades.filter((nade: string) => nade !== player1NadeUsage)
-              : player.nades,
-          }
-        } else {
-          return player
-        }
-      })
-      setTeam1Players(newTeam1Players)
-      const newTeam2Players = team2Players.map((player: InRoundPlayer) => {
-        if (player === team2PlayerExecute) {
-          return {
-            ...player,
-            kills:
-              player2Health && !player1Health ? player.kills + 1 : player.kills,
-            assist:
-              player1Health &&
-              team1PlayerExecute.health - player1Health >= rules.assistDamageMin
-                ? player.assist + 1
-                : player.assist,
-            death: !player2Health ? player.death + 1 : player.death,
-            roundsWithKAST:
-              team1PlayerExecute.health - player1Health >
-                rules.assistDamageMin || !player1Health
-                ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-                : [...player.roundsWithKAST],
-            totalDamage:
-              player.totalDamage + (team1PlayerExecute.health - player1Health),
-            alive: player2Health ? true : false,
-            cash:
-              player2Health && !player1Health
-                ? player.cash + guns[player.gun].killAward
-                : player.cash,
-            health: Math.floor(player2Health),
-            gun: !player2Health
-              ? team2Side === 'CT'
-                ? rules.defaultGunCT
-                : rules.defaultGunT
-              : player.gun,
-            nades: !player1Health
-              ? []
-              : player2NadeUsage
-              ? player.nades.filter((nade: string) => nade !== player2NadeUsage)
-              : player.nades,
-          }
-        } else {
-          return player
-        }
-      })
-      setTeam2Players(newTeam2Players)
+
+      setTeam1Players(
+        CalculatePlayersAfterDuel(
+          team1Players,
+          team1PlayerExecute,
+          team2PlayerExecute,
+          player1Health,
+          player2Health,
+          player1NadeUsage,
+          team1Score + team1Score + 1,
+          team1Side
+        )
+      )
+
+      setTeam2Players(
+        CalculatePlayersAfterDuel(
+          team2Players,
+          team2PlayerExecute,
+          team1PlayerExecute,
+          player2Health,
+          player1Health,
+          player2NadeUsage,
+          team1Score + team1Score + 1,
+          team2Side
+        )
+      )
     }
 
     function Round() {

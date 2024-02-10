@@ -148,7 +148,7 @@ export function PrepareTeam(team: Team, side: string) {
 
 export function NadeUsage(player: InRoundPlayer) {
   const usedNade =
-    Math.random() > 0.5
+    Math.random() > 0.3
       ? player.nades[Math.floor(Math.random() * player.nades.length)] || ''
       : ''
   return usedNade as string
@@ -324,7 +324,7 @@ export function SprayDuel(
     const player2DamageTaken = sprayTime * player1DPS
     return [0, player2.health - damage - player2DamageTaken] as [number, number]
   } else {
-    return [player1.health, player1.health - damage]
+    return [player1.health, player2.health - damage]
   }
 }
 
@@ -622,4 +622,57 @@ export function CalculateRating(player: InRoundPlayer, rounds: number) {
     KAST: number
     rating: number
   }
+}
+
+export function CalculatePlayersAfterDuel(
+  team: InRoundPlayer[],
+  team1PlayerExecute: InRoundPlayer,
+  team2PlayerExecute: InRoundPlayer,
+  player1Health: number,
+  player2Health: number,
+  playerNadeUsage: string,
+  roundsAmount: number,
+  teamSide: string
+) {
+  const newTeamPlayers = team.map((player: InRoundPlayer) => {
+    if (player === team1PlayerExecute) {
+      return {
+        ...player,
+        kills:
+          player1Health && !player2Health ? player.kills + 1 : player.kills,
+        assist:
+          player2Health &&
+          team2PlayerExecute.health - player2Health >= rules.assistDamageMin
+            ? player.assist + 1
+            : player.assist,
+        death: !player1Health ? player.death + 1 : player.death,
+        roundsWithKAST:
+          team2PlayerExecute.health - player2Health > rules.assistDamageMin ||
+          !player2Health
+            ? [...player.roundsWithKAST, roundsAmount]
+            : [...player.roundsWithKAST],
+        totalDamage:
+          player.totalDamage + (team2PlayerExecute.health - player2Health),
+        alive: player1Health ? true : false,
+        cash:
+          player1Health && !player2Health
+            ? player.cash + guns[player.gun].killAward
+            : player.cash,
+        health: Math.floor(player1Health),
+        gun: !player1Health
+          ? teamSide === 'CT'
+            ? rules.defaultGunCT
+            : rules.defaultGunT
+          : player.gun,
+        nades: !player1Health
+          ? []
+          : playerNadeUsage
+          ? player.nades.filter((nade: string) => nade !== playerNadeUsage)
+          : player.nades,
+      }
+    } else {
+      return player
+    }
+  })
+  return newTeamPlayers as InRoundPlayer[]
 }
