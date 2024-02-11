@@ -659,6 +659,9 @@ export function CalculatePlayersAfterDuel(
 ) {
   const newTeamPlayers = team.map((player: InRoundPlayer) => {
     if (player === team1PlayerExecute) {
+      const suitableGun: 'Rifle' | 'Sniper Rifle' =
+        team1PlayerExecute.stat.role === 'sniper' ? 'Sniper Rifle' : 'Rifle'
+
       return {
         ...player,
         kills:
@@ -688,6 +691,12 @@ export function CalculatePlayersAfterDuel(
           ? teamSide === 'CT'
             ? rules.defaultGunCT
             : rules.defaultGunT
+          : !player2Health &&
+            guns[team2PlayerExecute.gun].type === suitableGun &&
+            guns[team2PlayerExecute.gun].damage.withoutArmor.head >
+              guns[team1PlayerExecute.gun].damage.withoutArmor.head &&
+            Math.random() > 0.5
+          ? team2PlayerExecute.gun
           : player.gun,
         nades: !player1Health
           ? []
