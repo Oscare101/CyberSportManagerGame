@@ -29,6 +29,8 @@ import GunImage from '../../components/GunImage'
 import HealthBlock from '../../components/HealthBlock'
 import NadesBlock from '../../components/NadesBlock'
 import NadeImage from '../../components/NadeImage'
+import colors from '../../constants/colors'
+import RenderRoundWiner from '../../components/RenderRoundWinner'
 
 const team1: Team = {
   name: 'NOVA',
@@ -167,6 +169,7 @@ export default function MathScreen() {
   const [lastUpdate, setLastUpdate] = useState<number>(0)
   const [team1Side, setTeam1Side] = useState<string>(CalculateSide(1)[0])
   const [team2Side, setTeam2Side] = useState<string>(CalculateSide(1)[1])
+  const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
 
   function Match() {
     function RoundAction() {
@@ -217,8 +220,10 @@ export default function MathScreen() {
 
         if (TeamAlive(team1Players)) {
           setTeam1Score(team1Score + 1)
+          setRoundWinLogs([...roundWinLogs, team1.name])
         } else {
           setTeam2Score(team2Score + 1)
+          setRoundWinLogs([...roundWinLogs, team2.name])
         }
 
         const newTeam1Players = SetAlive(
@@ -319,11 +324,11 @@ export default function MathScreen() {
             backgroundColor:
               team1.name === player.team
                 ? team1Side === 'CT'
-                  ? '#396782'
-                  : '#897432'
+                  ? colors.CTColor
+                  : colors.TColor
                 : team2Side === 'CT'
-                ? '#396782'
-                : '#897432',
+                ? colors.CTColor
+                : colors.TColor,
           },
         ]}
       >
@@ -440,6 +445,29 @@ export default function MathScreen() {
                   ) as InRoundPlayer[])
             }
             renderItem={RenderPlayer}
+          />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+          }}
+        >
+          <FlatList
+            style={{ width: '100%', height: width / 12 }}
+            horizontal
+            data={roundWinLogs}
+            renderItem={({ item, index }) =>
+              RenderRoundWiner(
+                item,
+                index,
+                roundWinLogs,
+                team1.name,
+                team2.name
+              )
+            }
           />
         </View>
         <View style={styles.teamColumn}>
