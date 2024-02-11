@@ -16,8 +16,9 @@ export default function RenderRoundWiner(
     return (
       <View
         style={{
+          width: '80%',
           height: '40%',
-          aspectRatio: 1,
+          // aspectRatio: 1,
           backgroundColor:
             item === props.teamName
               ? CalculateSide(index + 1)[props.sideIndex] === 'CT'
