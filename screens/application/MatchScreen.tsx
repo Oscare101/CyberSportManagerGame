@@ -21,6 +21,7 @@ import {
   CalculateRating,
   NadeUsage,
   CalculatePlayersAfterDuel,
+  BuyBeforeRound,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -233,7 +234,11 @@ export default function MatchScreen() {
           IsSideChangeRound(team1Score + team2Score + 1),
           CalculateSide(team1Score + team2Score + 2)[0]
         )
-        setTeam1Players(newTeam1Players)
+        const newTeam1PlayersAfterBuy = BuyBeforeRound(
+          newTeam1Players,
+          CalculateSide(team1Score + team2Score + 2)[0]
+        )
+        setTeam1Players(newTeam1PlayersAfterBuy)
         const newTeam2Players = SetAlive(
           team2Players,
           team1Score + team2Score,
@@ -241,9 +246,14 @@ export default function MatchScreen() {
           IsSideChangeRound(team1Score + team2Score + 1),
           CalculateSide(team1Score + team2Score + 2)[1]
         )
-        setTeam2Players(newTeam2Players)
+        const newTeam2PlayersAfterBuy = BuyBeforeRound(
+          newTeam2Players,
+          CalculateSide(team1Score + team2Score + 2)[1]
+        )
+        setTeam2Players(newTeam2PlayersAfterBuy)
       }
     }
+
     if (
       team1Score < rules.MRsystem + overtimeRounds + 1 &&
       team2Score < rules.MRsystem + overtimeRounds + 1 &&
@@ -487,16 +497,19 @@ export default function MatchScreen() {
         </View>
       </View>
 
-      <Button title={'start'} onPress={() => setIsGameActive(true)} />
-      {/* {[
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-        39, 40,
-      ].map((num: number) => (
-        <Text>
-          {num} - {IsSideChangeRound(num) ? 'change' : '-'}
-        </Text>
-      ))} */}
+      <Button
+        title={'start'}
+        onPress={() => {
+          setTeam1Players(
+            BuyBeforeRound(PrepareTeam(team1, CalculateSide(1)[0]), team1Side)
+          )
+          setTeam2Players(
+            BuyBeforeRound(PrepareTeam(team2, CalculateSide(1)[1]), team2Side)
+          )
+
+          setIsGameActive(true)
+        }}
+      />
     </View>
   )
 }

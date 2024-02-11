@@ -11,7 +11,6 @@ import {
 import guns from './constants/guns'
 import { Team } from './constants/interfaces'
 import RenderGunItem from './components/RenderGunItem'
-import { Match } from './functions/gameFunctions'
 import MatchScreen from './screens/application/MatchScreen'
 
 export default function App() {

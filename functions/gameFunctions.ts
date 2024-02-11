@@ -167,13 +167,14 @@ function GetNewNades(player: InRoundPlayer, cash: number) {
   const avalableNades = Object.values(nades).filter(
     (nade: Nade) => !player.nades.includes(nade.name)
   )
-  const nadesToBuy = shuffle(avalableNades)
+  const randomAmount = Math.floor(Math.random() * (4 + 1))
+  const nadesToBuy = shuffle(avalableNades).slice(0, randomAmount + 1)
   let nadesPrice: number = 0
   let newNades: string[] = []
 
   if (cash >= rules.cashNadesPurchaseSkip) {
     nadesToBuy.forEach((nade: Nade) => {
-      if (cash >= nade.price * 2) {
+      if (cash - nadesPrice >= nade.price * 2) {
         newNades.push(nade.name)
         nadesPrice += nade.price
       }
@@ -182,25 +183,16 @@ function GetNewNades(player: InRoundPlayer, cash: number) {
 
   return {
     newNades: [...player.nades, ...newNades],
-    nadesPrice: 0,
+    nadesPrice: nadesPrice,
   } as newNadesInterface
 }
 
-function GetNewGun(
-  player: InRoundPlayer,
-  side: string,
-  isResetRound: boolean,
-  cash: number
-) {
+function GetNewGun(player: InRoundPlayer, side: string, cash: number) {
   interface newGunInterface {
     newGun: string
     gunPrice: number
   }
-  let playerGun: string = isResetRound
-    ? side === 'CT'
-      ? rules.defaultGunCT
-      : rules.defaultGunT
-    : player.gun
+  let playerGun: string = player.gun
 
   const availableGuns = Object.values(guns)
     .filter(
@@ -219,6 +211,8 @@ function GetNewGun(
         b.damage.withoutArmor.head - a.damage.withoutArmor.head
     )
   const topGun = availableGuns[0] || false
+  const chanceOfSkipBuy =
+    cash < rules.cashToChanceOfSkipBuyGun && Math.random() > 0.5
 
   if (
     availableGuns.length &&
@@ -226,7 +220,8 @@ function GetNewGun(
     cash >= topGun.price &&
     playerGun !== topGun.name &&
     (topGun.damage.withArmor.head > guns[playerGun].damage.withArmor.head ||
-      (guns[player.gun].type === 'Pistol' && topGun.type !== 'Pistol'))
+      (guns[player.gun].type === 'Pistol' && topGun.type !== 'Pistol')) &&
+    !chanceOfSkipBuy
   ) {
     return { newGun: topGun.name, gunPrice: topGun.price } as newGunInterface
   } else {
@@ -239,11 +234,39 @@ function GetNewArmor(player: InRoundPlayer, cash: number) {
     newArmor: boolean
     armorPrice: number
   }
-  if (cash >= rules.armorCost * 2 && !player.armor) {
+
+  const chanceOfBuyArmor =
+    cash >= rules.armorCost * 3
+      ? true
+      : cash >= rules.armorCost * 2 && Math.random() > 0.5
+
+  if (chanceOfBuyArmor && !player.armor) {
     return { newArmor: true, armorPrice: rules.armorCost } as newArmorInterface
   } else {
     return { newArmor: player.armor, armorPrice: 0 } as newArmorInterface
   }
+}
+
+export function BuyBeforeRound(team: InRoundPlayer[], side: string) {
+  const alivePLayers = team.map((player: InRoundPlayer) => {
+    let playerCash = player.cash
+
+    const { newArmor, armorPrice } = GetNewArmor(player, playerCash)
+    playerCash -= armorPrice
+    const { newGun, gunPrice } = GetNewGun(player, side, playerCash)
+    playerCash -= gunPrice
+    const { newNades, nadesPrice } = GetNewNades(player, playerCash)
+    playerCash -= nadesPrice
+
+    return {
+      ...player,
+      cash: playerCash,
+      gun: newGun,
+      armor: newArmor,
+      nades: newNades,
+    }
+  })
+  return alivePLayers
 }
 
 export function SetAlive(
@@ -255,7 +278,9 @@ export function SetAlive(
 ) {
   const alivePLayers = team.map((player: InRoundPlayer) => {
     let playerCash = isResetRound
-      ? rules.defaultCash
+      ? recentRoundNumber >= rules.MRsystem
+        ? rules.overtimeDefaultCash
+        : rules.defaultCash
       : win
       ? player.cash + rules.winnBonus
       : player.cash + rules.lossBonus
@@ -263,18 +288,6 @@ export function SetAlive(
     if (playerCash > rules.maxCash) {
       playerCash = rules.maxCash
     }
-
-    const { newArmor, armorPrice } = GetNewArmor(player, playerCash)
-    playerCash -= armorPrice
-    const { newGun, gunPrice } = GetNewGun(
-      player,
-      side,
-      isResetRound,
-      playerCash
-    )
-    playerCash -= gunPrice
-    const { newNades, nadesPrice } = GetNewNades(player, playerCash)
-    playerCash -= nadesPrice
 
     return {
       ...player,
@@ -284,9 +297,13 @@ export function SetAlive(
         : [...player.roundsWithKAST],
       health: rules.maxPlayerHealth,
       cash: playerCash,
-      gun: newGun,
-      armor: newArmor,
-      nades: newNades,
+      gun: isResetRound
+        ? side === 'CT'
+          ? rules.defaultGunCT
+          : rules.defaultGunT
+        : player.gun,
+      armor: isResetRound || !player.alive ? false : player.armor,
+      nades: isResetRound ? [] : player.nades,
     }
   })
   return alivePLayers
@@ -413,187 +430,187 @@ export function Duel(
   }
 }
 
-export function Match(team1: Team, team2: Team) {
-  let team1Players = PrepareTeam(team1, 'CT') // TODO
-  let team2Players = PrepareTeam(team2, 'CT')
+// export function Match(team1: Team, team2: Team) {
+//   let team1Players = PrepareTeam(team1, 'CT') // TODO
+//   let team2Players = PrepareTeam(team2, 'CT')
 
-  let team1Score = 0
-  let team2Score = 0
+//   let team1Score = 0
+//   let team2Score = 0
 
-  function RoundAction() {
-    const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
-    const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
-    const [player1Health, player2Health] = Duel(
-      team1PlayerExecute,
-      team2PlayerExecute,
-      '',
-      ''
-    ) // TODO
-    team1Players = team1Players.map((player: InRoundPlayer) => {
-      if (player === team1PlayerExecute) {
-        return {
-          ...player,
-          kills:
-            player1Health && !player2Health ? player.kills + 1 : player.kills,
-          assist:
-            player2Health &&
-            team2PlayerExecute.health - player2Health >= rules.assistDamageMin
-              ? player.assist + 1
-              : player.assist,
-          death: !player1Health ? player.death + 1 : player.death,
-          roundsWithKAST:
-            team2PlayerExecute.health - player2Health > rules.assistDamageMin ||
-            !player2Health
-              ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-              : [...player.roundsWithKAST],
-          totalDamage:
-            player.totalDamage + (team2PlayerExecute.health - player2Health),
-          alive: player1Health ? true : false,
-          cash:
-            player1Health && !player2Health
-              ? player.cash + guns[player.gun].killAward
-              : player.cash,
-          health: player1Health,
-        }
-      } else {
-        return player
-      }
-    })
+//   function RoundAction() {
+//     const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
+//     const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
+//     const [player1Health, player2Health] = Duel(
+//       team1PlayerExecute,
+//       team2PlayerExecute,
+//       '',
+//       ''
+//     ) // TODO
+//     team1Players = team1Players.map((player: InRoundPlayer) => {
+//       if (player === team1PlayerExecute) {
+//         return {
+//           ...player,
+//           kills:
+//             player1Health && !player2Health ? player.kills + 1 : player.kills,
+//           assist:
+//             player2Health &&
+//             team2PlayerExecute.health - player2Health >= rules.assistDamageMin
+//               ? player.assist + 1
+//               : player.assist,
+//           death: !player1Health ? player.death + 1 : player.death,
+//           roundsWithKAST:
+//             team2PlayerExecute.health - player2Health > rules.assistDamageMin ||
+//             !player2Health
+//               ? [...player.roundsWithKAST, team1Score + team1Score + 1]
+//               : [...player.roundsWithKAST],
+//           totalDamage:
+//             player.totalDamage + (team2PlayerExecute.health - player2Health),
+//           alive: player1Health ? true : false,
+//           cash:
+//             player1Health && !player2Health
+//               ? player.cash + guns[player.gun].killAward
+//               : player.cash,
+//           health: player1Health,
+//         }
+//       } else {
+//         return player
+//       }
+//     })
 
-    team2Players = team2Players.map((player: InRoundPlayer) => {
-      if (player === team2PlayerExecute) {
-        return {
-          ...player,
-          kills:
-            player2Health && !player1Health ? player.kills + 1 : player.kills,
-          assist:
-            player1Health &&
-            team1PlayerExecute.health - player1Health >= rules.assistDamageMin
-              ? player.assist + 1
-              : player.assist,
-          death: !player2Health ? player.death + 1 : player.death,
-          roundsWithKAST:
-            team1PlayerExecute.health - player1Health > rules.assistDamageMin ||
-            !player1Health
-              ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-              : [...player.roundsWithKAST],
-          totalDamage:
-            player.totalDamage + (team1PlayerExecute.health - player1Health),
-          alive: player2Health ? true : false,
-          cash:
-            player2Health && !player1Health
-              ? player.cash + guns[player.gun].killAward
-              : player.cash,
-          health: player2Health,
-        }
-      } else {
-        return player
-      }
-    })
-  }
+//     team2Players = team2Players.map((player: InRoundPlayer) => {
+//       if (player === team2PlayerExecute) {
+//         return {
+//           ...player,
+//           kills:
+//             player2Health && !player1Health ? player.kills + 1 : player.kills,
+//           assist:
+//             player1Health &&
+//             team1PlayerExecute.health - player1Health >= rules.assistDamageMin
+//               ? player.assist + 1
+//               : player.assist,
+//           death: !player2Health ? player.death + 1 : player.death,
+//           roundsWithKAST:
+//             team1PlayerExecute.health - player1Health > rules.assistDamageMin ||
+//             !player1Health
+//               ? [...player.roundsWithKAST, team1Score + team1Score + 1]
+//               : [...player.roundsWithKAST],
+//           totalDamage:
+//             player.totalDamage + (team1PlayerExecute.health - player1Health),
+//           alive: player2Health ? true : false,
+//           cash:
+//             player2Health && !player1Health
+//               ? player.cash + guns[player.gun].killAward
+//               : player.cash,
+//           health: player2Health,
+//         }
+//       } else {
+//         return player
+//       }
+//     })
+//   }
 
-  function Round() {
-    while (TeamsAlive(team1Players, team2Players)) {
-      console.log('')
-      team1Players.forEach((p: InRoundPlayer) => {
-        console.log(p.name, p.totalDamage)
-      })
-      console.log('===')
-      team2Players.forEach((p: InRoundPlayer) => {
-        console.log(p.name, p.totalDamage)
-      })
-      console.log('')
+//   function Round() {
+//     while (TeamsAlive(team1Players, team2Players)) {
+//       console.log('')
+//       team1Players.forEach((p: InRoundPlayer) => {
+//         console.log(p.name, p.totalDamage)
+//       })
+//       console.log('===')
+//       team2Players.forEach((p: InRoundPlayer) => {
+//         console.log(p.name, p.totalDamage)
+//       })
+//       console.log('')
 
-      RoundAction()
-    }
-    if (TeamAlive(team1Players)) {
-      team1Score++
-    } else {
-      team2Score++
-    }
-    console.log(team1Score, team2Score) // REMOVE
-  }
+//       RoundAction()
+//     }
+//     if (TeamAlive(team1Players)) {
+//       team1Score++
+//     } else {
+//       team2Score++
+//     }
+//     console.log(team1Score, team2Score) // REMOVE
+//   }
 
-  while (team1Score + team2Score < rules.MRsystem * 2) {
-    Round()
-    team1Players = SetAlive(
-      team1Players,
-      team1Score + team2Score,
-      false,
-      false,
-      ''
-    ) // TODO
-    team2Players = SetAlive(
-      team2Players,
-      team1Score + team2Score,
-      false,
-      false,
-      ''
-    ) // TODO
-    if (
-      team1Score === rules.MRsystem + 1 ||
-      team2Score === rules.MRsystem + 1
-    ) {
-      break
-    }
-  }
+//   while (team1Score + team2Score < rules.MRsystem * 2) {
+//     Round()
+//     team1Players = SetAlive(
+//       team1Players,
+//       team1Score + team2Score,
+//       false,
+//       false,
+//       ''
+//     ) // TODO
+//     team2Players = SetAlive(
+//       team2Players,
+//       team1Score + team2Score,
+//       false,
+//       false,
+//       ''
+//     ) // TODO
+//     if (
+//       team1Score === rules.MRsystem + 1 ||
+//       team2Score === rules.MRsystem + 1
+//     ) {
+//       break
+//     }
+//   }
 
-  console.log(''.padEnd(8, ' '), 'K', 'A', 'D', 'ADR'.padStart(20, ' '))
+//   console.log(''.padEnd(8, ' '), 'K', 'A', 'D', 'ADR'.padStart(20, ' '))
 
-  team1Players.forEach((p: InRoundPlayer) => {
-    const ADR = p.totalDamage / (team1Score + team2Score)
-    const DPR = p.death / (team1Score + team2Score)
-    const KPR = p.kills / (team1Score + team2Score)
-    const APR = p.assist / (team1Score + team2Score)
+//   team1Players.forEach((p: InRoundPlayer) => {
+//     const ADR = p.totalDamage / (team1Score + team2Score)
+//     const DPR = p.death / (team1Score + team2Score)
+//     const KPR = p.kills / (team1Score + team2Score)
+//     const APR = p.assist / (team1Score + team2Score)
 
-    const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
-    const rating =
-      0.0073 * KAST +
-      0.3591 * KPR +
-      (-0.5329 * DPR) / 2 +
-      0.2372 * (2.13 * KPR + 0.42 * APR) +
-      0.0032 * ADR +
-      0.1584
-    console.log(
-      p.name.padEnd(8, ' '),
-      p.kills,
-      p.assist,
-      p.death,
-      // ADR,
-      // KAST,
-      // p.roundsWithKAST,
-      rating.toFixed(2),
-      (p.kills / p.death).toFixed(2)
-    )
-  })
-  console.log('---')
-  team2Players.forEach((p: InRoundPlayer) => {
-    const ADR = p.totalDamage / (team1Score + team2Score)
-    const DPR = p.death / (team1Score + team2Score)
-    const KPR = p.kills / (team1Score + team2Score)
-    const APR = p.assist / (team1Score + team2Score)
-    const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
-    const rating =
-      0.0073 * KAST +
-      0.3591 * KPR +
-      (-0.5329 * DPR) / 2 +
-      0.2372 * (2.13 * KPR + 0.42 * APR) +
-      0.0032 * ADR +
-      0.1584
+//     const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
+//     const rating =
+//       0.0073 * KAST +
+//       0.3591 * KPR +
+//       (-0.5329 * DPR) / 2 +
+//       0.2372 * (2.13 * KPR + 0.42 * APR) +
+//       0.0032 * ADR +
+//       0.1584
+//     console.log(
+//       p.name.padEnd(8, ' '),
+//       p.kills,
+//       p.assist,
+//       p.death,
+//       // ADR,
+//       // KAST,
+//       // p.roundsWithKAST,
+//       rating.toFixed(2),
+//       (p.kills / p.death).toFixed(2)
+//     )
+//   })
+//   console.log('---')
+//   team2Players.forEach((p: InRoundPlayer) => {
+//     const ADR = p.totalDamage / (team1Score + team2Score)
+//     const DPR = p.death / (team1Score + team2Score)
+//     const KPR = p.kills / (team1Score + team2Score)
+//     const APR = p.assist / (team1Score + team2Score)
+//     const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
+//     const rating =
+//       0.0073 * KAST +
+//       0.3591 * KPR +
+//       (-0.5329 * DPR) / 2 +
+//       0.2372 * (2.13 * KPR + 0.42 * APR) +
+//       0.0032 * ADR +
+//       0.1584
 
-    console.log(
-      p.name.padEnd(8, ' '),
-      p.kills,
-      p.assist,
-      p.death,
-      // ADR,
-      // KAST,
-      // p.roundsWithKAST,
-      rating.toFixed(2),
-      (p.kills / p.death).toFixed(2)
-    )
-  })
-}
+//     console.log(
+//       p.name.padEnd(8, ' '),
+//       p.kills,
+//       p.assist,
+//       p.death,
+//       // ADR,
+//       // KAST,
+//       // p.roundsWithKAST,
+//       rating.toFixed(2),
+//       (p.kills / p.death).toFixed(2)
+//     )
+//   })
+// }
 
 export function CalculateRating(player: InRoundPlayer, rounds: number) {
   const ADR = +(player.totalDamage / rounds).toFixed(2)
