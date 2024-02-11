@@ -10,5 +10,7 @@ export default {
   defaultGunT: 'Glock-18',
   defaultGunCT: 'USP-S',
   defaultCash: 1000,
+  maxCash: 16000,
   armorCost: 1000,
+  cashNadesPurchaseSkip: 1000,
 }

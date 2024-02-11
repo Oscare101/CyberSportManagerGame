@@ -304,7 +304,7 @@ export default function MathScreen() {
   function RenderPlayer(item: any) {
     const player: InRoundPlayer = item.item
 
-    if (!isGameActive) {
+    if (!isGameActive && team1Score + team2Score > 0) {
       return <PlayerResults player={player} />
     }
 
@@ -338,7 +338,24 @@ export default function MathScreen() {
           <NadesBlock nades={player.nades} />
         </View>
         <Text style={styles.playerStat}>{player.cash}</Text>
-        <Text style={styles.playerStat}>{player.armor ? '+' : '-'}</Text>
+        <View
+          style={{
+            width: '10%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View
+            style={{
+              height: '50%',
+              aspectRatio: 0.7,
+              borderBottomRightRadius: 100,
+              borderBottomLeftRadius: 100,
+              backgroundColor: '#fff',
+              opacity: player.armor && player.alive ? 0.9 : 0,
+            }}
+          />
+        </View>
         <Text style={styles.playerStat}>{player.kills}</Text>
         <Text style={styles.playerStat}>{player.assist}</Text>
         <Text style={styles.playerStat}>{player.death}</Text>
@@ -352,14 +369,14 @@ export default function MathScreen() {
         Match()
         setLastUpdate(new Date().getTime())
       }
-    }, 100)
+    }, 1) // TODO change to 100
     return () => {
       clearTimeout(timer)
     }
   }, [lastUpdate, isGameActive])
 
   function TeamHeader(props: any) {
-    if (!isGameActive) {
+    if (!isGameActive && team1Score + team2Score > 0) {
       return (
         <View
           style={[

@@ -128,7 +128,7 @@ export function PrepareTeam(team: Team, side: string) {
       roundsWithKAST: [],
       alive: true,
       armor: false,
-      cash: 1000,
+      cash: rules.defaultCash,
       gun: side === 'CT' ? rules.defaultGunCT : rules.defaultGunT,
       nades: [],
       health: 100,
@@ -171,12 +171,14 @@ function GetNewNades(player: InRoundPlayer, cash: number) {
   let nadesPrice: number = 0
   let newNades: string[] = []
 
-  nadesToBuy.forEach((nade: Nade) => {
-    if (cash >= nade.price * 2) {
-      newNades.push(nade.name)
-      nadesPrice += nade.price
-    }
-  })
+  if (cash >= rules.cashNadesPurchaseSkip) {
+    nadesToBuy.forEach((nade: Nade) => {
+      if (cash >= nade.price * 2) {
+        newNades.push(nade.name)
+        nadesPrice += nade.price
+      }
+    })
+  }
 
   return {
     newNades: [...player.nades, ...newNades],
@@ -257,6 +259,10 @@ export function SetAlive(
       : win
       ? player.cash + rules.winnBonus
       : player.cash + rules.lossBonus
+
+    if (playerCash > rules.maxCash) {
+      playerCash = rules.maxCash
+    }
 
     const { newArmor, armorPrice } = GetNewArmor(player, playerCash)
     playerCash -= armorPrice
@@ -656,7 +662,9 @@ export function CalculatePlayersAfterDuel(
         alive: player1Health ? true : false,
         cash:
           player1Health && !player2Health
-            ? player.cash + guns[player.gun].killAward
+            ? player.cash + guns[player.gun].killAward > rules.maxCash
+              ? rules.maxCash
+              : player.cash + guns[player.gun].killAward
             : player.cash,
         health: Math.floor(player1Health),
         gun: !player1Health
