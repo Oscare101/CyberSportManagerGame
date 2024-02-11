@@ -692,7 +692,7 @@ export function CalculatePlayersAfterDuel(
             ? rules.defaultGunCT
             : rules.defaultGunT
           : !player2Health &&
-            guns[team2PlayerExecute.gun].type === suitableGun &&
+            suitableGun.includes(guns[team2PlayerExecute.gun].type) &&
             guns[team2PlayerExecute.gun].damage.withoutArmor.head >
               guns[team1PlayerExecute.gun].damage.withoutArmor.head &&
             Math.random() > 0.5
