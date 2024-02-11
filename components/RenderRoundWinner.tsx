@@ -6,9 +6,9 @@ import rules from '../constants/rules'
 const width = Dimensions.get('screen').width
 
 export default function RenderRoundWiner(
-  item: any,
+  item: string,
   index: number,
-  roundWinLogs: any,
+  roundWinLogs: string[],
   team1Name: string,
   team2Name: string
 ) {
@@ -18,7 +18,6 @@ export default function RenderRoundWiner(
         style={{
           width: '80%',
           height: '40%',
-          // aspectRatio: 1,
           backgroundColor:
             item === props.teamName
               ? CalculateSide(index + 1)[props.sideIndex] === 'CT'

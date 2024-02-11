@@ -155,7 +155,7 @@ const team2: Team = {
 
 const width = Dimensions.get('screen').width
 
-export default function MathScreen() {
+export default function MatchScreen() {
   const [team1Players, setTeam1Players] = useState<InRoundPlayer[]>(
     PrepareTeam(team1, CalculateSide(1)[0])
   )
@@ -374,7 +374,7 @@ export default function MathScreen() {
         Match()
         setLastUpdate(new Date().getTime())
       }
-    }, 1) // TODO change to 100
+    }, 100)
     return () => {
       clearTimeout(timer)
     }

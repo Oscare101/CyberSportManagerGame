@@ -283,7 +283,7 @@ export function SetAlive(
         ? [...player.roundsWithKAST, recentRoundNumber]
         : [...player.roundsWithKAST],
       health: rules.maxPlayerHealth,
-      cash: playerCash + 10000, // TODO remove
+      cash: playerCash,
       gun: newGun,
       armor: newArmor,
       nades: newNades,

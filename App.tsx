@@ -12,7 +12,7 @@ import guns from './constants/guns'
 import { Team } from './constants/interfaces'
 import RenderGunItem from './components/RenderGunItem'
 import { Match } from './functions/gameFunctions'
-import MathScreen from './screens/application/MatchScreen'
+import MatchScreen from './screens/application/MatchScreen'
 
 export default function App() {
   return (
@@ -22,7 +22,7 @@ export default function App() {
         renderItem={RenderGunItem}
         showsVerticalScrollIndicator={false}
       /> */}
-      <MathScreen />
+      <MatchScreen />
     </View>
   )
 }
