@@ -11,7 +11,7 @@ const width = Dimensions.get('screen').width
 
 export default function MatchStatPerMapBlock(props: MatchStatProps) {
   const dataTorender: string[] = [
-    'Average',
+    'All maps',
     ...props.mapsResults.map(
       (map: MapResult) => `${map.team1Score}-${map.team2Score}`
     ),

@@ -28,40 +28,61 @@ interface teamBlockProps {
 const width = Dimensions.get('screen').width
 
 export default function TeamBlock(props: teamBlockProps) {
-  let teamResults: InRoundPlayer[] = []
-  let numberOfRounds: number = 0
+  let teamResults: InRoundPlayer[] = props.team
 
-  // if (!props.isGameActive && props.mapResults.length) {
-  //   const { players, rounds } = CalculatePlayerStatsPerAllMaps(
-  //     props.mapResults || [],
-  //     props.teamNumber
-  //   )
-  //   teamResults = players
-  //   numberOfRounds = rounds
-  // }
+  if (!props.isGameActive && props.mapResults.length) {
+    teamResults =
+      props.mapResults[0][
+        props.teamNumber === 1 ? 'team1Players' : 'team2Players'
+      ]
+
+    teamResults = teamResults.map((player: InRoundPlayer) => {
+      return {
+        ...player,
+        rating:
+          props.mapResults
+            .map((map: MapResult) => {
+              const mapPlayer: any = map[
+                props.teamNumber === 1 ? 'team1Players' : 'team2Players'
+              ].find(
+                (playerData: InRoundPlayer) => playerData.name === player.name
+              )
+
+              return (
+                (mapPlayer.rating || 0) +
+                CalculateRating(mapPlayer, map.team1Score + map.team2Score)
+                  .rating
+              )
+            })
+            .reduce((sum: number, a: number) => sum + a, 0) /
+          props.mapResults.length,
+      }
+    })
+  }
 
   return (
     <>
       <TeamHeader
         teamName={props.team[0].team}
         teamSide={props.teamSide}
-        result={!props.isGameActive}
+        result={!props.isGameActive && props.mapResults.length}
       />
 
       <FlatList
         data={
           !props.isGameActive && props.mapResults.length && teamResults.length
-            ? (teamResults.sort(
-                (a: InRoundPlayer, b: InRoundPlayer) =>
-                  CalculateRating(b, numberOfRounds).rating -
-                  CalculateRating(a, numberOfRounds).rating
-              ) as InRoundPlayer[])
+            ? teamResults.sort((a: any, b: any) => b.rating - a.rating)
             : (props.team as InRoundPlayer[])
         }
         renderItem={({ item }) =>
-          props.isGameActive
-            ? RenderPlayer(item, props.teamSide)
-            : RenderPlayerResults(item, props.rounds)
+          !props.isGameActive && props.mapResults.length
+            ? RenderPlayerResults(
+                item,
+                props.rounds,
+                props.mapResults,
+                props.teamNumber
+              )
+            : RenderPlayer(item, props.teamSide)
         }
       />
     </>

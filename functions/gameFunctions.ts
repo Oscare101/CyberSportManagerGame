@@ -722,7 +722,15 @@ export function IsMatchWinner(newMapResults: MapResult[], bestOfMaps: number) {
 }
 
 export function NumberOfMap(map: number) {
-  return map ? (map === 2 ? '2nd' : '3rd') : '1st'
+  return map === 5
+    ? '5th'
+    : map === 4
+    ? '4th'
+    : map === 3
+    ? '3rd'
+    : map === 2
+    ? '2nd'
+    : '1st'
 }
 
 export function CalculatePlayerStatsPerAllMaps(
@@ -731,15 +739,10 @@ export function CalculatePlayerStatsPerAllMaps(
 ) {
   let players: InRoundPlayer[] =
     mapResults[0][teamNumber === 1 ? 'team1Players' : 'team2Players']
-  //   .map((player: InRoundPlayer) => {
-  //   return player
-  // })
-  console.log(players)
   for (let i = 1; i < mapResults.length; i++) {
     const playerStat: InRoundPlayer[] =
       mapResults[i][teamNumber === 1 ? 'team1Players' : 'team2Players']
     playerStat.forEach((playerStat: InRoundPlayer) => {
-      console.log(playerStat.name)
       players = players.map((player: InRoundPlayer) => {
         return {
           ...player,
@@ -755,13 +758,10 @@ export function CalculatePlayerStatsPerAllMaps(
       })
     })
   }
-  console.log(players)
-
   const rounds: number = mapResults.reduce(
     (a: number, map: MapResult) => a + map.team1Score + map.team2Score,
     0
   )
-
   return { players: players, rounds: rounds } as {
     players: InRoundPlayer[]
     rounds: number

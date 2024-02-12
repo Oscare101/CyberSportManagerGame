@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
   healthBlock: {
     width: '100%',
     height: '60%',
-    // backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: width * 0.005,

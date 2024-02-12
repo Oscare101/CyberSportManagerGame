@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
   },
   mapPoints: {
     fontSize: width * 0.04,
-    // flex: 1,
     opacity: 0.5,
   },
 })

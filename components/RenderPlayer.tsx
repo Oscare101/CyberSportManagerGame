@@ -11,11 +11,6 @@ export default function RenderPlayer(
   player: InRoundPlayer,
   teamSide: 'CT' | 'T'
 ) {
-  // const player: InRoundPlayer = item
-  // if (!isGameActive && team1Score + team2Score > 0) {
-  //   return <PlayerResults player={player} />
-  // }
-
   return (
     <View
       style={[

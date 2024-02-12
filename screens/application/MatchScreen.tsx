@@ -187,6 +187,7 @@ export default function MatchScreen() {
     setTeam1Side(CalculateSide(1)[0])
     setTeam2Side(CalculateSide(1)[1])
     setRoundWinLogs([])
+    setMapsResultsToShow(0)
   }
 
   function Match() {
@@ -366,12 +367,18 @@ export default function MatchScreen() {
             style={{ width: '100%', height: width / 12 }}
             horizontal
             initialNumToRender={roundWinLogs.length}
-            data={roundWinLogs}
+            data={
+              !isGameActive && mapsResults.length
+                ? mapsResults[mapsResultsToShow - 1]?.roundWinLogs || []
+                : roundWinLogs
+            }
             renderItem={({ item, index }) =>
               RenderRoundWiner(
                 item,
                 index,
-                roundWinLogs,
+                !isGameActive && mapsResults.length
+                  ? mapsResults[mapsResultsToShow - 1]?.roundWinLogs || []
+                  : roundWinLogs,
                 team1.name,
                 team2.name
               )
@@ -442,6 +449,8 @@ export default function MatchScreen() {
           <Button
             title={'Get instant result'}
             onPress={() => {
+              setMapsResults([])
+              PrepareForMap()
               const {
                 resultTeam1Players,
                 resultTeam2Players,
