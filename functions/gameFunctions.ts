@@ -434,15 +434,24 @@ export function Duel(
   }
 }
 
-export function InstantMatchResults(team1: Team, team2: Team) {
-  let team1Players: InRoundPlayer[] = PrepareTeam(team1, CalculateSide(1)[0])
-  let team2Players: InRoundPlayer[] = PrepareTeam(team2, CalculateSide(1)[1])
-  let team1Score: number = 0
-  let team2Score: number = 0
-  let overtimeRounds: number = 0
-  let team1Side: 'CT' | 'T' = CalculateSide(1)[0]
-  let team2Side: 'CT' | 'T' = CalculateSide(1)[1]
-  let roundWinLogs: string[] = []
+export function InstantMatchResults(
+  team1: InRoundPlayer[],
+  team2: InRoundPlayer[],
+  score1: number,
+  score2: number,
+  overtimes: number,
+  team1Sideplay: 'CT' | 'T',
+  team2Sideplay: 'CT' | 'T',
+  winLogs: string[]
+) {
+  let team1Players: InRoundPlayer[] = team1
+  let team2Players: InRoundPlayer[] = team2
+  let team1Score: number = score1
+  let team2Score: number = score2
+  let overtimeRounds: number = overtimes
+  let team1Side: 'CT' | 'T' = team1Sideplay
+  let team2Side: 'CT' | 'T' = team2Sideplay
+  let roundWinLogs: string[] = winLogs
 
   while (true) {
     function ActionBetweenTwoPlayers() {
@@ -489,10 +498,10 @@ export function InstantMatchResults(team1: Team, team2: Team) {
 
         if (TeamAlive(team1Players)) {
           team1Score = team1Score + 1
-          roundWinLogs = [...roundWinLogs, team1.name]
+          roundWinLogs = [...roundWinLogs, team1Players[0].team]
         } else {
           team2Score = team2Score + 1
-          roundWinLogs = [...roundWinLogs, team2.name]
+          roundWinLogs = [...roundWinLogs, team2Players[0].team]
         }
 
         const newTeam1Players = SetAlive(

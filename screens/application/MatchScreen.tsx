@@ -169,8 +169,8 @@ export default function MatchScreen() {
   const [isGameActive, setIsGameActive] = useState<boolean>(false)
   const [overtimeRounds, setOvertimeRounds] = useState<number>(0)
   const [lastUpdate, setLastUpdate] = useState<number>(0)
-  const [team1Side, setTeam1Side] = useState<string>(CalculateSide(1)[0])
-  const [team2Side, setTeam2Side] = useState<string>(CalculateSide(1)[1])
+  const [team1Side, setTeam1Side] = useState<'CT' | 'T'>(CalculateSide(1)[0])
+  const [team2Side, setTeam2Side] = useState<'CT' | 'T'>(CalculateSide(1)[1])
   const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
 
   function Match() {
@@ -499,37 +499,84 @@ export default function MatchScreen() {
         </View>
       </View>
 
-      <Button
-        title={'start'}
-        onPress={() => {
-          setTeam1Players(
-            BuyBeforeRound(PrepareTeam(team1, CalculateSide(1)[0]), team1Side)
-          )
-          setTeam2Players(
-            BuyBeforeRound(PrepareTeam(team2, CalculateSide(1)[1]), team2Side)
-          )
+      {isGameActive ? (
+        <>
+          <Button
+            title={'skip to result >>>'}
+            onPress={() => {
+              const {
+                resultTeam1Players,
+                resultTeam2Players,
+                resultTeam1Score,
+                resultTeam2Score,
+                resultRoundWinLogs,
+              } = InstantMatchResults(
+                team1Players,
+                team2Players,
+                team1Score,
+                team2Score,
+                overtimeRounds,
+                team1Side,
+                team2Side,
+                roundWinLogs
+              )
+              setTeam1Players(resultTeam1Players)
+              setTeam2Players(resultTeam2Players)
+              setTeam1Score(resultTeam1Score)
+              setTeam2Score(resultTeam2Score)
+              setRoundWinLogs(resultRoundWinLogs)
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <Button
+            title={'Start match'}
+            onPress={() => {
+              setTeam1Players(
+                BuyBeforeRound(
+                  PrepareTeam(team1, CalculateSide(1)[0]),
+                  team1Side
+                )
+              )
+              setTeam2Players(
+                BuyBeforeRound(
+                  PrepareTeam(team2, CalculateSide(1)[1]),
+                  team2Side
+                )
+              )
 
-          setIsGameActive(true)
-        }}
-      />
-
-      <Button
-        title={'results'}
-        onPress={() => {
-          const {
-            resultTeam1Players,
-            resultTeam2Players,
-            resultTeam1Score,
-            resultTeam2Score,
-            resultRoundWinLogs,
-          } = InstantMatchResults(team1, team2)
-          setTeam1Players(resultTeam1Players)
-          setTeam2Players(resultTeam2Players)
-          setTeam1Score(resultTeam1Score)
-          setTeam2Score(resultTeam2Score)
-          setRoundWinLogs(resultRoundWinLogs)
-        }}
-      />
+              setIsGameActive(true)
+            }}
+          />
+          <Button
+            title={'Get instant result'}
+            onPress={() => {
+              const {
+                resultTeam1Players,
+                resultTeam2Players,
+                resultTeam1Score,
+                resultTeam2Score,
+                resultRoundWinLogs,
+              } = InstantMatchResults(
+                PrepareTeam(team1, CalculateSide(1)[0]),
+                PrepareTeam(team2, CalculateSide(1)[1]),
+                0,
+                0,
+                0,
+                CalculateSide(1)[0],
+                CalculateSide(1)[1],
+                []
+              )
+              setTeam1Players(resultTeam1Players)
+              setTeam2Players(resultTeam2Players)
+              setTeam1Score(resultTeam1Score)
+              setTeam2Score(resultTeam2Score)
+              setRoundWinLogs(resultRoundWinLogs)
+            }}
+          />
+        </>
+      )}
     </View>
   )
 }
