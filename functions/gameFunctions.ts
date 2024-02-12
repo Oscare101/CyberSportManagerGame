@@ -710,16 +710,13 @@ export function IsMatchWinner(newMapResults: MapResult[], bestOfMaps: number) {
   const mapWinners = GetMapsWinners(newMapResults)
 
   if (
-    CalculateMapWonByTeam(mapWinners, newMapResults[0].team1Players[0].team) ===
-    Math.ceil(bestOfMaps / 2)
+    CalculateMapWonByTeam(mapWinners, newMapResults[0].team1Players[0].team) <
+      Math.ceil(bestOfMaps / 2) &&
+    CalculateMapWonByTeam(mapWinners, newMapResults[0].team2Players[1].team) <
+      Math.ceil(bestOfMaps / 2)
   ) {
-    return true
-  } else if (
-    CalculateMapWonByTeam(mapWinners, newMapResults[0].team2Players[1].team) ===
-    Math.ceil(bestOfMaps / 2)
-  ) {
-    return true
-  } else {
     return false
+  } else {
+    return true
   }
 }
