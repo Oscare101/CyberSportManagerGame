@@ -2,6 +2,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import {
   CalculateMapWonByTeam,
   GetMapsWinners,
+  NumberOfMap,
 } from '../functions/gameFunctions'
 import { InRoundPlayer, MapResult } from '../constants/interfaces'
 import colors from '../constants/colors'
@@ -23,26 +24,27 @@ interface MatchHeaderProps {
 const width = Dimensions.get('screen').width
 
 export default function MatchHeader(props: MatchHeaderProps) {
-  const map = props.mapsResults.length
-    ? props.mapsResults.length + (props.isGameActive ? 1 : 0) === 2
-      ? '2nd'
-      : '3rd'
-    : '1st'
-
   return (
     <View style={styles.scoreHeader}>
-      <Text style={styles.comment}>
-        best of {rules.MRsystem * 2 + props.overtimes * 2}
-        {props.overtimes ? `(+${props.overtimes * 2})` : ''}
-      </Text>
-      <Text style={styles.mapPoints}>
-        (
-        {CalculateMapWonByTeam(
-          GetMapsWinners(props.mapsResults),
-          props.team1[0].team
-        )}
-        )
-      </Text>
+      {props.isGameActive ? (
+        <>
+          <Text style={styles.comment}>
+            best of {rules.MRsystem * 2 + props.overtimes * 2}
+            {props.overtimes ? `(+${props.overtimes * 2})` : ''}
+          </Text>
+          <Text style={styles.mapPoints}>
+            (
+            {CalculateMapWonByTeam(
+              GetMapsWinners(props.mapsResults),
+              props.team1[0].team
+            )}
+            )
+          </Text>
+        </>
+      ) : (
+        <></>
+      )}
+
       <Text style={styles.scoreTitle}>
         <Text
           style={{
@@ -53,7 +55,12 @@ export default function MatchHeader(props: MatchHeaderProps) {
               : '#000',
           }}
         >
-          {props.team1Score}
+          {props.isGameActive
+            ? props.team1Score
+            : CalculateMapWonByTeam(
+                GetMapsWinners(props.mapsResults),
+                props.team1[0].team
+              )}
         </Text>{' '}
         -{' '}
         <Text
@@ -65,18 +72,34 @@ export default function MatchHeader(props: MatchHeaderProps) {
               : '#000',
           }}
         >
-          {props.team2Score}
+          {props.isGameActive
+            ? props.team2Score
+            : CalculateMapWonByTeam(
+                GetMapsWinners(props.mapsResults),
+                props.team2[0].team
+              )}
         </Text>
       </Text>
-      <Text style={styles.mapPoints}>
-        (
-        {CalculateMapWonByTeam(
-          GetMapsWinners(props.mapsResults),
-          props.team2[0].team
-        )}
-        )
-      </Text>
-      <Text style={[styles.comment, { textAlign: 'right' }]}>{map} map</Text>
+      {props.isGameActive ? (
+        <>
+          <Text style={styles.mapPoints}>
+            (
+            {CalculateMapWonByTeam(
+              GetMapsWinners(props.mapsResults),
+              props.team2[0].team
+            )}
+            )
+          </Text>
+          <Text style={[styles.comment, { textAlign: 'right' }]}>
+            {NumberOfMap(
+              props.mapsResults.length + (props.isGameActive ? 1 : 0)
+            )}{' '}
+            map
+          </Text>
+        </>
+      ) : (
+        <></>
+      )}
     </View>
   )
 }
@@ -86,7 +109,7 @@ const styles = StyleSheet.create({
     width: '95%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   scoreTitle: {
     fontSize: width * 0.06,

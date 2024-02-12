@@ -1,7 +1,17 @@
-import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native'
-import { InRoundPlayer } from '../constants/interfaces'
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { InRoundPlayer, MapResult } from '../constants/interfaces'
 import RenderPlayer from './RenderPlayer'
-import { CalculateRating } from '../functions/gameFunctions'
+import {
+  CalculatePlayerStatsPerAllMaps,
+  CalculateRating,
+} from '../functions/gameFunctions'
 import colors from '../constants/colors'
 import RenderPlayerResults from './RenderPlayerResult'
 import TeamHeader from './TeamHeader'
@@ -11,11 +21,25 @@ interface teamBlockProps {
   rounds: number
   isGameActive: boolean
   teamSide: 'CT' | 'T'
+  mapResults: MapResult[]
+  teamNumber: number
 }
 
 const width = Dimensions.get('screen').width
 
 export default function TeamBlock(props: teamBlockProps) {
+  let teamResults: InRoundPlayer[] = []
+  let numberOfRounds: number = 0
+
+  // if (!props.isGameActive && props.mapResults.length) {
+  //   const { players, rounds } = CalculatePlayerStatsPerAllMaps(
+  //     props.mapResults || [],
+  //     props.teamNumber
+  //   )
+  //   teamResults = players
+  //   numberOfRounds = rounds
+  // }
+
   return (
     <>
       <TeamHeader
@@ -23,15 +47,16 @@ export default function TeamBlock(props: teamBlockProps) {
         teamSide={props.teamSide}
         result={!props.isGameActive}
       />
+
       <FlatList
         data={
-          props.isGameActive
-            ? (props.team as InRoundPlayer[])
-            : (props.team.sort(
+          !props.isGameActive && props.mapResults.length && teamResults.length
+            ? (teamResults.sort(
                 (a: InRoundPlayer, b: InRoundPlayer) =>
-                  CalculateRating(b, props.rounds).rating -
-                  CalculateRating(a, props.rounds).rating
+                  CalculateRating(b, numberOfRounds).rating -
+                  CalculateRating(a, numberOfRounds).rating
               ) as InRoundPlayer[])
+            : (props.team as InRoundPlayer[])
         }
         renderItem={({ item }) =>
           props.isGameActive

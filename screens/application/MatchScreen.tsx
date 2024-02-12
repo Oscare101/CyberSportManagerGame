@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import { InRoundPlayer, MapResult, Team } from '../../constants/interfaces'
@@ -37,6 +38,7 @@ import RenderRoundWiner from '../../components/RenderRoundWinner'
 import MatchHeader from '../../components/MatchHeader'
 import RenderPlayer from '../../components/RenderPlayer'
 import TeamBlock from '../../components/TeamBlock'
+import MatchStatPerMapBlock from '../../components/MatchStatPerMapBlock'
 
 const team1: Team = {
   name: 'NOVA',
@@ -170,6 +172,7 @@ export default function MatchScreen() {
   const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
 
   const [mapsResults, setMapsResults] = useState<MapResult[]>([])
+  const [mapsResultsToShow, setMapsResultsToShow] = useState<number>(0)
 
   function PrepareForMap() {
     setTeam1Players(
@@ -324,6 +327,16 @@ export default function MatchScreen() {
         isGameActive={isGameActive}
         overtimes={overtimeRounds}
       />
+      {!isGameActive && mapsResults.length ? (
+        <MatchStatPerMapBlock
+          mapsResults={mapsResults}
+          mapsResultsToShow={mapsResultsToShow}
+          setMapsResultsToShow={(value: number) => setMapsResultsToShow(value)}
+        />
+      ) : (
+        <></>
+      )}
+
       <View style={styles.teamColumnsBlock}>
         <View style={styles.teamColumn}>
           <TeamBlock
@@ -331,6 +344,14 @@ export default function MatchScreen() {
             rounds={team1Score + team2Score}
             isGameActive={isGameActive}
             teamSide={team1Side}
+            mapResults={
+              !isGameActive && mapsResults.length
+                ? mapsResultsToShow
+                  ? [mapsResults[mapsResultsToShow - 1]]
+                  : mapsResults
+                : []
+            }
+            teamNumber={1}
           />
         </View>
         <View
@@ -363,6 +384,12 @@ export default function MatchScreen() {
             rounds={team1Score + team2Score}
             isGameActive={isGameActive}
             teamSide={team2Side}
+            mapResults={
+              !isGameActive && mapsResults.length && mapsResultsToShow
+                ? [mapsResults[mapsResultsToShow - 1]]
+                : mapsResults
+            }
+            teamNumber={2}
           />
         </View>
       </View>
@@ -397,6 +424,7 @@ export default function MatchScreen() {
               setTeam2Score(resultTeam2Score)
               setRoundWinLogs(resultRoundWinLogs)
               setMapsResults(mapsResultsLog)
+              setIsGameActive(false)
             }}
           />
         </>

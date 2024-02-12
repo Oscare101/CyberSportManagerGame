@@ -40,8 +40,8 @@ export default function RenderPlayerResults(
         {player.kills > player.death ? '+' : ''}
         {player.kills - player.death}
       </Text>
-      <Text style={styles.playerStat}>{ADR}</Text>
-      <Text style={styles.playerStat}>{KAST}</Text>
+      <Text style={styles.playerStat}>{ADR.toFixed(1)}</Text>
+      <Text style={styles.playerStat}>{KAST.toFixed(1)}</Text>
       <Text style={styles.playerStat}>{rating}</Text>
     </View>
   )
