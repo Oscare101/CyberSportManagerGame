@@ -38,7 +38,6 @@ export interface PlayerStatistic {
   accuracy: number // 0 - 1
   sprayControl: number // 0 - 1
   flicksControl: number // 0 - 1
-  agression: number // 0 - 1
 }
 
 export interface InRoundPlayer {

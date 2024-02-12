@@ -144,7 +144,6 @@ export function PrepareTeam(team: Team, side: string) {
         accuracy: player.stat.accuracy,
         sprayControl: player.stat.sprayControl,
         flicksControl: player.stat.flicksControl,
-        agression: player.stat.agression,
       },
     } as InRoundPlayer
   })
@@ -411,7 +410,7 @@ export function Duel(
     player2NadeDamage
   if (player1ReactionTime < player2ReactionTime) {
     if (player1Damage >= player2.health) {
-      return [player1.health, 0]
+      return [player1.health - (player2NadeDamage * Math.random()) / 2, 0]
     } else {
       if (Math.random() > 0.5) {
         return SprayDuel(player1, player2, player1Damage)
@@ -421,7 +420,7 @@ export function Duel(
     }
   } else if (player2ReactionTime < player1ReactionTime) {
     if (player2Damage >= player1.health) {
-      return [0, player2.health]
+      return [0, player2.health - (player1NadeDamage * Math.random()) / 2]
     } else {
       if (Math.random() > 0.5) {
         return SprayDuel(player2, player1, player2Damage).reverse()
