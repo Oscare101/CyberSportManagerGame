@@ -67,3 +67,11 @@ export interface Team {
   name: string
   players: Player[]
 }
+
+export interface MapResult {
+  team1Players: InRoundPlayer[]
+  team2Players: InRoundPlayer[]
+  team1Score: number
+  team2Score: number
+  roundWinLogs: string[]
+}

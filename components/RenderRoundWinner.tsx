@@ -25,6 +25,7 @@ export default function RenderRoundWiner(
                 : colors.TColor
               : '#0000000',
           borderRadius: width * 0.01,
+          opacity: 0.8,
         }}
       />
     )
@@ -34,21 +35,21 @@ export default function RenderRoundWiner(
     <View
       style={{
         width:
-          roundWinLogs.length > rules.MRsystem * 2
+          (roundWinLogs.length > rules.MRsystem * 2
             ? width / roundWinLogs.length
-            : width / (rules.MRsystem * 2),
+            : width / (rules.MRsystem * 2)) * 0.95,
         height: width / 12,
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-around',
         borderLeftWidth:
           CalculateSide(index)[0] !== CalculateSide(index + 1)[0] ? 1 : 0,
-        borderColor: '#ffffff40',
+        borderColor: '#00000040',
       }}
     >
       <WinIndicator teamName={team1Name} sideIndex={0} />
       <View
-        style={{ width: '100%', height: 1, backgroundColor: '#ffffff40' }}
+        style={{ width: '100%', height: 1, backgroundColor: '#00000040' }}
       />
       <WinIndicator teamName={team2Name} sideIndex={1} />
     </View>

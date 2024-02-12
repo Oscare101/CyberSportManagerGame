@@ -1,5 +1,12 @@
 import guns from '../constants/guns'
-import { Gun, InRoundPlayer, Nade, Player, Team } from '../constants/interfaces'
+import {
+  Gun,
+  InRoundPlayer,
+  MapResult,
+  Nade,
+  Player,
+  Team,
+} from '../constants/interfaces'
 import nades from '../constants/nades'
 import rules from '../constants/rules'
 
@@ -441,7 +448,9 @@ export function InstantMatchResults(
   overtimes: number,
   team1Sideplay: 'CT' | 'T',
   team2Sideplay: 'CT' | 'T',
-  winLogs: string[]
+  winLogs: string[],
+  mapsResultsLog: MapResult[],
+  bestOfMaps: number
 ) {
   let team1Players: InRoundPlayer[] = team1
   let team2Players: InRoundPlayer[] = team2
@@ -451,6 +460,7 @@ export function InstantMatchResults(
   let team1Side: 'CT' | 'T' = team1Sideplay
   let team2Side: 'CT' | 'T' = team2Sideplay
   let roundWinLogs: string[] = winLogs
+  let mapsResults: MapResult[] = mapsResultsLog
 
   while (true) {
     function ActionBetweenTwoPlayers() {
@@ -540,7 +550,27 @@ export function InstantMatchResults(
       if (team1Score === team2Score) {
         overtimeRounds = overtimeRounds + rules.MRovertime
       } else {
-        break
+        const newMapResult: MapResult = {
+          team1Players: team1Players,
+          team2Players: team2Players,
+          team1Score: team1Score,
+          team2Score: team2Score,
+          roundWinLogs: roundWinLogs,
+        }
+        mapsResults.push(newMapResult)
+        // mapsResultsLog = newMapResults
+        if (IsMatchWinner(mapsResults, bestOfMaps)) {
+          break
+        } else {
+          team1Players = team1
+          team2Players = team2
+          team1Score = score1
+          team2Score = score2
+          overtimeRounds = overtimes
+          team1Side = team1Sideplay
+          team2Side = team2Sideplay
+          roundWinLogs = winLogs
+        }
       }
     }
   }
@@ -551,12 +581,14 @@ export function InstantMatchResults(
     resultTeam1Score: team1Score,
     resultTeam2Score: team2Score,
     resultRoundWinLogs: roundWinLogs,
+    mapsResultsLog: mapsResults,
   } as {
     resultTeam1Players: InRoundPlayer[]
     resultTeam2Players: InRoundPlayer[]
     resultTeam1Score: number
     resultTeam2Score: number
     resultRoundWinLogs: string[]
+    mapsResultsLog: MapResult[]
   }
 }
 
@@ -657,4 +689,37 @@ export function CalculatePlayersAfterDuel(
     }
   })
   return newTeamPlayers as InRoundPlayer[]
+}
+
+export function GetMapsWinners(mapsResults: MapResult[]) {
+  const mapWinners = mapsResults.map((map: MapResult) => {
+    return map.team1Score > map.team2Score
+      ? map.team1Players[0].team
+      : map.team2Players[0].team
+  })
+  return mapWinners
+}
+
+export function CalculateMapWonByTeam(mapsResults: string[], team: string) {
+  const winAmount = mapsResults.filter((map: string) => map === team).length
+
+  return winAmount
+}
+
+export function IsMatchWinner(newMapResults: MapResult[], bestOfMaps: number) {
+  const mapWinners = GetMapsWinners(newMapResults)
+
+  if (
+    CalculateMapWonByTeam(mapWinners, newMapResults[0].team1Players[0].team) ===
+    Math.ceil(bestOfMaps / 2)
+  ) {
+    return true
+  } else if (
+    CalculateMapWonByTeam(mapWinners, newMapResults[0].team2Players[1].team) ===
+    Math.ceil(bestOfMaps / 2)
+  ) {
+    return true
+  } else {
+    return false
+  }
 }

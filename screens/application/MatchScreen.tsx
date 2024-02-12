@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import { InRoundPlayer, Team } from '../../constants/interfaces'
+import { InRoundPlayer, MapResult, Team } from '../../constants/interfaces'
 import {
   Duel,
   GetRandomPlayersToExecute,
@@ -23,6 +23,7 @@ import {
   CalculatePlayersAfterDuel,
   BuyBeforeRound,
   InstantMatchResults,
+  IsMatchWinner,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -33,6 +34,9 @@ import NadesBlock from '../../components/NadesBlock'
 import NadeImage from '../../components/NadeImage'
 import colors from '../../constants/colors'
 import RenderRoundWiner from '../../components/RenderRoundWinner'
+import MatchHeader from '../../components/MatchHeader'
+import RenderPlayer from '../../components/RenderPlayer'
+import TeamBlock from '../../components/TeamBlock'
 
 const team1: Team = {
   name: 'NOVA',
@@ -145,6 +149,8 @@ const team2: Team = {
   ],
 }
 
+const bestOfMaps = 3
+
 const width = Dimensions.get('screen').width
 
 export default function MatchScreen() {
@@ -162,6 +168,23 @@ export default function MatchScreen() {
   const [team1Side, setTeam1Side] = useState<'CT' | 'T'>(CalculateSide(1)[0])
   const [team2Side, setTeam2Side] = useState<'CT' | 'T'>(CalculateSide(1)[1])
   const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
+
+  const [mapsResults, setMapsResults] = useState<MapResult[]>([])
+
+  function PrepareForMap() {
+    setTeam1Players(
+      BuyBeforeRound(PrepareTeam(team1, CalculateSide(1)[0]), team1Side)
+    )
+    setTeam2Players(
+      BuyBeforeRound(PrepareTeam(team2, CalculateSide(1)[1]), team2Side)
+    )
+    setTeam1Score(0)
+    setTeam2Score(0)
+    setOvertimeRounds(0)
+    setTeam1Side(CalculateSide(1)[0])
+    setTeam2Side(CalculateSide(1)[1])
+    setRoundWinLogs([])
+  }
 
   function Match() {
     function ActionBetweenTwoPlayers() {
@@ -255,117 +278,24 @@ export default function MatchScreen() {
       if (team1Score === team2Score) {
         setOvertimeRounds(overtimeRounds + rules.MRovertime)
       } else {
-        setIsGameActive(false)
+        const newMapResults: MapResult[] = [
+          ...mapsResults,
+          {
+            team1Players: team1Players,
+            team2Players: team2Players,
+            team1Score: team1Score,
+            team2Score: team2Score,
+            roundWinLogs: roundWinLogs,
+          },
+        ]
+        setMapsResults(newMapResults)
+        if (IsMatchWinner(newMapResults, bestOfMaps)) {
+          setIsGameActive(false)
+        } else {
+          PrepareForMap()
+        }
       }
     }
-  }
-
-  function PlayerResults(props: any) {
-    const player: InRoundPlayer = props.player
-
-    const { ADR, DPR, KPR, APR, KAST, rating } = CalculateRating(
-      player,
-      team1Score + team2Score
-    )
-
-    return (
-      <View
-        style={[
-          styles.playerBlock,
-          {
-            borderRadius: 2,
-            margin: 1,
-            backgroundColor: '#ffffff30',
-          },
-        ]}
-      >
-        <Text style={styles.playerName}>{player.name}</Text>
-        <Text style={styles.playerStat}>
-          {player.kills}-{player.death}
-        </Text>
-        <Text
-          style={[
-            styles.playerStat,
-            {
-              color:
-                player.kills > player.death
-                  ? '#0f0'
-                  : player.kills < player.death
-                  ? '#F00'
-                  : '#000',
-            },
-          ]}
-        >
-          {player.kills > player.death ? '+' : ''}
-          {player.kills - player.death}
-        </Text>
-        <Text style={styles.playerStat}>{ADR}</Text>
-        <Text style={styles.playerStat}>{KAST}</Text>
-        <Text style={styles.playerStat}>{rating}</Text>
-      </View>
-    )
-  }
-
-  function RenderPlayer(item: any) {
-    const player: InRoundPlayer = item.item
-
-    if (!isGameActive && team1Score + team2Score > 0) {
-      return <PlayerResults player={player} />
-    }
-
-    return (
-      <View
-        style={[
-          styles.playerBlock,
-          {
-            borderRadius: 2,
-            margin: 1,
-            opacity: player.alive ? 0.8 : 0.4,
-            backgroundColor:
-              team1.name === player.team
-                ? team1Side === 'CT'
-                  ? colors.CTColor
-                  : colors.TColor
-                : team2Side === 'CT'
-                ? colors.CTColor
-                : colors.TColor,
-          },
-        ]}
-      >
-        <Text style={styles.playerName}>{player.name}</Text>
-        <View style={[styles.healthBlock]}>
-          <HealthBlock health={player.health} />
-        </View>
-        <View style={{ width: '10%' }}>
-          {player.alive ? <GunImage name={player.gun} /> : <></>}
-        </View>
-        <View style={{ height: '100%', aspectRatio: 1 }}>
-          <NadesBlock nades={player.nades} />
-        </View>
-        <Text style={styles.playerStat}>{player.cash}</Text>
-        <View
-          style={{
-            width: '10%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <View
-            style={{
-              height: '50%',
-              aspectRatio: 0.7,
-              borderBottomRightRadius: 100,
-              borderBottomLeftRadius: 100,
-              backgroundColor: '#fff',
-              opacity: player.armor && player.alive ? 0.9 : 0,
-            }}
-          />
-        </View>
-        <Text style={styles.playerStat}>{player.kills}</Text>
-        <Text style={styles.playerStat}>{player.assist}</Text>
-        <Text style={styles.playerStat}>{player.death}</Text>
-      </View>
-    )
   }
 
   useEffect(() => {
@@ -380,77 +310,33 @@ export default function MatchScreen() {
     }
   }, [lastUpdate, isGameActive])
 
-  function TeamHeader(props: any) {
-    if (!isGameActive && team1Score + team2Score > 0) {
-      return (
-        <View
-          style={[
-            styles.playerBlock,
-            {
-              borderRadius: 2,
-              margin: 1,
-            },
-          ]}
-        >
-          <Text style={styles.playerName}>{props.teamName}</Text>
-          <Text style={styles.playerStat}>K-D</Text>
-          <Text style={styles.playerStat}>+/-</Text>
-          <Text style={styles.playerStat}>ADR</Text>
-          <Text style={styles.playerStat}>KAST</Text>
-          <Text style={styles.playerStat}>rating</Text>
-        </View>
-      )
-    }
-    return (
-      <View
-        style={[
-          styles.playerBlock,
-          {
-            borderRadius: 2,
-            margin: 1,
-          },
-        ]}
-      >
-        <Text style={styles.playerName}>{props.teamName}</Text>
-        <Text style={styles.playerStat}>+</Text>
-        <Text style={styles.playerStat}>gun</Text>
-        <Text style={styles.playerStat}>nades</Text>
-        <Text style={styles.playerStat}>$</Text>
-        <Text style={styles.playerStat}>armor</Text>
-        <Text style={styles.playerStat}>K</Text>
-        <Text style={styles.playerStat}>A</Text>
-        <Text style={styles.playerStat}>D</Text>
-      </View>
-    )
-  }
-
   return (
     <View style={styles.container}>
-      <View style={styles.scoreHeader}>
-        <Text>
-          {team1Score} - {team2Score} ({overtimeRounds})
-        </Text>
-      </View>
+      <MatchHeader
+        team1={team1Players}
+        team2={team2Players}
+        team1Score={team1Score}
+        team2Score={team2Score}
+        bestOfMaps={bestOfMaps}
+        mapsResults={mapsResults}
+        team1Side={team1Side}
+        team2Side={team2Side}
+        isGameActive={isGameActive}
+        overtimes={overtimeRounds}
+      />
       <View style={styles.teamColumnsBlock}>
         <View style={styles.teamColumn}>
-          <TeamHeader teamName={team1.name} />
-          <FlatList
-            data={
-              isGameActive
-                ? (team1Players as InRoundPlayer[])
-                : (team1Players.sort(
-                    (a: InRoundPlayer, b: InRoundPlayer) =>
-                      CalculateRating(b, team1Score + team2Score).rating -
-                      CalculateRating(a, team1Score + team2Score).rating
-                  ) as InRoundPlayer[])
-            }
-            renderItem={RenderPlayer}
+          <TeamBlock
+            team={team1Players}
+            rounds={team1Score + team2Score}
+            isGameActive={isGameActive}
+            teamSide={team1Side}
           />
         </View>
         <View
           style={{
             flexDirection: 'row',
-            width: '100%',
+            width: '95%',
             alignItems: 'center',
             justifyContent: 'flex-start',
           }}
@@ -472,18 +358,11 @@ export default function MatchScreen() {
           />
         </View>
         <View style={styles.teamColumn}>
-          <TeamHeader teamName={team2.name} />
-          <FlatList
-            data={
-              isGameActive
-                ? (team2Players as InRoundPlayer[])
-                : (team2Players.sort(
-                    (a: InRoundPlayer, b: InRoundPlayer) =>
-                      CalculateRating(b, team1Score + team2Score).rating -
-                      CalculateRating(a, team1Score + team2Score).rating
-                  ) as InRoundPlayer[])
-            }
-            renderItem={RenderPlayer}
+          <TeamBlock
+            team={team2Players}
+            rounds={team1Score + team2Score}
+            isGameActive={isGameActive}
+            teamSide={team2Side}
           />
         </View>
       </View>
@@ -499,6 +378,7 @@ export default function MatchScreen() {
                 resultTeam1Score,
                 resultTeam2Score,
                 resultRoundWinLogs,
+                mapsResultsLog,
               } = InstantMatchResults(
                 team1Players,
                 team2Players,
@@ -507,13 +387,16 @@ export default function MatchScreen() {
                 overtimeRounds,
                 team1Side,
                 team2Side,
-                roundWinLogs
+                roundWinLogs,
+                mapsResults,
+                bestOfMaps
               )
               setTeam1Players(resultTeam1Players)
               setTeam2Players(resultTeam2Players)
               setTeam1Score(resultTeam1Score)
               setTeam2Score(resultTeam2Score)
               setRoundWinLogs(resultRoundWinLogs)
+              setMapsResults(mapsResultsLog)
             }}
           />
         </>
@@ -522,18 +405,8 @@ export default function MatchScreen() {
           <Button
             title={'Start match'}
             onPress={() => {
-              setTeam1Players(
-                BuyBeforeRound(
-                  PrepareTeam(team1, CalculateSide(1)[0]),
-                  team1Side
-                )
-              )
-              setTeam2Players(
-                BuyBeforeRound(
-                  PrepareTeam(team2, CalculateSide(1)[1]),
-                  team2Side
-                )
-              )
+              setMapsResults([])
+              PrepareForMap()
 
               setIsGameActive(true)
             }}
@@ -547,6 +420,7 @@ export default function MatchScreen() {
                 resultTeam1Score,
                 resultTeam2Score,
                 resultRoundWinLogs,
+                mapsResultsLog,
               } = InstantMatchResults(
                 PrepareTeam(team1, CalculateSide(1)[0]),
                 PrepareTeam(team2, CalculateSide(1)[1]),
@@ -555,13 +429,16 @@ export default function MatchScreen() {
                 0,
                 CalculateSide(1)[0],
                 CalculateSide(1)[1],
-                []
+                [],
+                [],
+                bestOfMaps
               )
               setTeam1Players(resultTeam1Players)
               setTeam2Players(resultTeam2Players)
               setTeam1Score(resultTeam1Score)
               setTeam2Score(resultTeam2Score)
               setRoundWinLogs(resultRoundWinLogs)
+              setMapsResults(mapsResultsLog)
             }}
           />
         </>
@@ -576,6 +453,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    backgroundColor: '#E5E5E5',
+    width: '100%',
   },
   scoreHeader: {
     width: '100%',
@@ -591,25 +470,9 @@ const styles = StyleSheet.create({
   },
   teamColumn: {
     flexDirection: 'column',
-    width: '100%',
+    width: '95%',
   },
-  playerBlock: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: width * 0.07,
-    paddingHorizontal: '2%',
-    overflow: 'hidden',
-  },
-  playerName: { width: '20%' },
-  healthBlock: {
-    width: '10%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  playerStat: { width: '10%', fontSize: width * 0.03, textAlign: 'center' },
+
   playerEconomic: {},
   playerHealth: {},
 })
