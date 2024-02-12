@@ -22,6 +22,7 @@ import {
   NadeUsage,
   CalculatePlayersAfterDuel,
   BuyBeforeRound,
+  InstantMatchResults,
 } from '../../functions/gameFunctions'
 import rules from '../../constants/rules'
 import guns from '../../constants/guns'
@@ -173,7 +174,7 @@ export default function MatchScreen() {
   const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
 
   function Match() {
-    function RoundAction() {
+    function ActionBetweenTwoPlayers() {
       const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
       const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
       const player1NadeUsage = NadeUsage(team1PlayerExecute)
@@ -212,9 +213,9 @@ export default function MatchScreen() {
       )
     }
 
-    function Round() {
+    function RoundAction() {
       if (TeamsAlive(team1Players, team2Players)) {
-        RoundAction()
+        ActionBetweenTwoPlayers()
       } else {
         setTeam1Side(CalculateSide(team1Score + team2Score + 2)[0])
         setTeam2Side(CalculateSide(team1Score + team2Score + 2)[1])
@@ -259,7 +260,7 @@ export default function MatchScreen() {
       team2Score < rules.MRsystem + overtimeRounds + 1 &&
       team1Score + team2Score < (rules.MRsystem + overtimeRounds) * 2
     ) {
-      Round()
+      RoundAction()
     } else {
       if (team1Score === team2Score) {
         setOvertimeRounds(overtimeRounds + rules.MRovertime)
@@ -468,6 +469,7 @@ export default function MatchScreen() {
           <FlatList
             style={{ width: '100%', height: width / 12 }}
             horizontal
+            initialNumToRender={roundWinLogs.length}
             data={roundWinLogs}
             renderItem={({ item, index }) =>
               RenderRoundWiner(
@@ -508,6 +510,24 @@ export default function MatchScreen() {
           )
 
           setIsGameActive(true)
+        }}
+      />
+
+      <Button
+        title={'results'}
+        onPress={() => {
+          const {
+            resultTeam1Players,
+            resultTeam2Players,
+            resultTeam1Score,
+            resultTeam2Score,
+            resultRoundWinLogs,
+          } = InstantMatchResults(team1, team2)
+          setTeam1Players(resultTeam1Players)
+          setTeam2Players(resultTeam2Players)
+          setTeam1Score(resultTeam1Score)
+          setTeam2Score(resultTeam2Score)
+          setRoundWinLogs(resultRoundWinLogs)
         }}
       />
     </View>

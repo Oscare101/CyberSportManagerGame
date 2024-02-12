@@ -54,11 +54,15 @@ export function CalculateSide(roundNumber: number) {
   const isMainRound = roundNumber <= mainRounds
 
   if (isMainRound) {
-    return roundNumber <= mainRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+    return (roundNumber <= mainRounds / 2 ? ['CT', 'T'] : ['T', 'CT']) as
+      | ['CT', 'T']
+      | ['T', 'CT']
   } else {
     const extraRoundOffset =
       (roundNumber - mainRounds) % overtimeRounds || overtimeRounds
-    return extraRoundOffset <= overtimeRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+    return (
+      extraRoundOffset <= overtimeRounds / 2 ? ['CT', 'T'] : ['T', 'CT']
+    ) as ['CT', 'T'] | ['T', 'CT']
   }
 }
 
@@ -430,187 +434,123 @@ export function Duel(
   }
 }
 
-// export function Match(team1: Team, team2: Team) {
-//   let team1Players = PrepareTeam(team1, 'CT') // TODO
-//   let team2Players = PrepareTeam(team2, 'CT')
+export function InstantMatchResults(team1: Team, team2: Team) {
+  let team1Players: InRoundPlayer[] = PrepareTeam(team1, CalculateSide(1)[0])
+  let team2Players: InRoundPlayer[] = PrepareTeam(team2, CalculateSide(1)[1])
+  let team1Score: number = 0
+  let team2Score: number = 0
+  let overtimeRounds: number = 0
+  let team1Side: 'CT' | 'T' = CalculateSide(1)[0]
+  let team2Side: 'CT' | 'T' = CalculateSide(1)[1]
+  let roundWinLogs: string[] = []
 
-//   let team1Score = 0
-//   let team2Score = 0
+  while (true) {
+    function ActionBetweenTwoPlayers() {
+      const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
+      const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
+      const player1NadeUsage = NadeUsage(team1PlayerExecute)
+      const player2NadeUsage = NadeUsage(team2PlayerExecute)
+      const [player1Health, player2Health] = Duel(
+        team1PlayerExecute,
+        team2PlayerExecute,
+        player1NadeUsage,
+        player2NadeUsage
+      )
 
-//   function RoundAction() {
-//     const team1PlayerExecute = GetRandomPlayersToExecute(team1Players)
-//     const team2PlayerExecute = GetRandomPlayersToExecute(team2Players)
-//     const [player1Health, player2Health] = Duel(
-//       team1PlayerExecute,
-//       team2PlayerExecute,
-//       '',
-//       ''
-//     ) // TODO
-//     team1Players = team1Players.map((player: InRoundPlayer) => {
-//       if (player === team1PlayerExecute) {
-//         return {
-//           ...player,
-//           kills:
-//             player1Health && !player2Health ? player.kills + 1 : player.kills,
-//           assist:
-//             player2Health &&
-//             team2PlayerExecute.health - player2Health >= rules.assistDamageMin
-//               ? player.assist + 1
-//               : player.assist,
-//           death: !player1Health ? player.death + 1 : player.death,
-//           roundsWithKAST:
-//             team2PlayerExecute.health - player2Health > rules.assistDamageMin ||
-//             !player2Health
-//               ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-//               : [...player.roundsWithKAST],
-//           totalDamage:
-//             player.totalDamage + (team2PlayerExecute.health - player2Health),
-//           alive: player1Health ? true : false,
-//           cash:
-//             player1Health && !player2Health
-//               ? player.cash + guns[player.gun].killAward
-//               : player.cash,
-//           health: player1Health,
-//         }
-//       } else {
-//         return player
-//       }
-//     })
+      team1Players = CalculatePlayersAfterDuel(
+        team1Players,
+        team1PlayerExecute,
+        team2PlayerExecute,
+        player1Health,
+        player2Health,
+        player1NadeUsage,
+        team1Score + team1Score + 1,
+        team1Side
+      )
 
-//     team2Players = team2Players.map((player: InRoundPlayer) => {
-//       if (player === team2PlayerExecute) {
-//         return {
-//           ...player,
-//           kills:
-//             player2Health && !player1Health ? player.kills + 1 : player.kills,
-//           assist:
-//             player1Health &&
-//             team1PlayerExecute.health - player1Health >= rules.assistDamageMin
-//               ? player.assist + 1
-//               : player.assist,
-//           death: !player2Health ? player.death + 1 : player.death,
-//           roundsWithKAST:
-//             team1PlayerExecute.health - player1Health > rules.assistDamageMin ||
-//             !player1Health
-//               ? [...player.roundsWithKAST, team1Score + team1Score + 1]
-//               : [...player.roundsWithKAST],
-//           totalDamage:
-//             player.totalDamage + (team1PlayerExecute.health - player1Health),
-//           alive: player2Health ? true : false,
-//           cash:
-//             player2Health && !player1Health
-//               ? player.cash + guns[player.gun].killAward
-//               : player.cash,
-//           health: player2Health,
-//         }
-//       } else {
-//         return player
-//       }
-//     })
-//   }
+      team2Players = CalculatePlayersAfterDuel(
+        team2Players,
+        team2PlayerExecute,
+        team1PlayerExecute,
+        player2Health,
+        player1Health,
+        player2NadeUsage,
+        team1Score + team1Score + 1,
+        team2Side
+      )
+    }
 
-//   function Round() {
-//     while (TeamsAlive(team1Players, team2Players)) {
-//       console.log('')
-//       team1Players.forEach((p: InRoundPlayer) => {
-//         console.log(p.name, p.totalDamage)
-//       })
-//       console.log('===')
-//       team2Players.forEach((p: InRoundPlayer) => {
-//         console.log(p.name, p.totalDamage)
-//       })
-//       console.log('')
+    function RoundAction() {
+      if (TeamsAlive(team1Players, team2Players)) {
+        ActionBetweenTwoPlayers()
+      } else {
+        team1Side = CalculateSide(team1Score + team2Score + 2)[0]
+        team2Side = CalculateSide(team1Score + team2Score + 2)[1]
 
-//       RoundAction()
-//     }
-//     if (TeamAlive(team1Players)) {
-//       team1Score++
-//     } else {
-//       team2Score++
-//     }
-//     console.log(team1Score, team2Score) // REMOVE
-//   }
+        if (TeamAlive(team1Players)) {
+          team1Score = team1Score + 1
+          roundWinLogs = [...roundWinLogs, team1.name]
+        } else {
+          team2Score = team2Score + 1
+          roundWinLogs = [...roundWinLogs, team2.name]
+        }
 
-//   while (team1Score + team2Score < rules.MRsystem * 2) {
-//     Round()
-//     team1Players = SetAlive(
-//       team1Players,
-//       team1Score + team2Score,
-//       false,
-//       false,
-//       ''
-//     ) // TODO
-//     team2Players = SetAlive(
-//       team2Players,
-//       team1Score + team2Score,
-//       false,
-//       false,
-//       ''
-//     ) // TODO
-//     if (
-//       team1Score === rules.MRsystem + 1 ||
-//       team2Score === rules.MRsystem + 1
-//     ) {
-//       break
-//     }
-//   }
+        const newTeam1Players = SetAlive(
+          team1Players,
+          team1Score + team2Score,
+          !!TeamAlive(team1Players),
+          IsSideChangeRound(team1Score + team2Score + 1),
+          CalculateSide(team1Score + team2Score + 2)[0]
+        )
+        const newTeam1PlayersAfterBuy = BuyBeforeRound(
+          newTeam1Players,
+          CalculateSide(team1Score + team2Score + 2)[0]
+        )
+        team1Players = newTeam1PlayersAfterBuy
+        const newTeam2Players = SetAlive(
+          team2Players,
+          team1Score + team2Score,
+          !!TeamAlive(team2Players),
+          IsSideChangeRound(team1Score + team2Score + 1),
+          CalculateSide(team1Score + team2Score + 2)[1]
+        )
+        const newTeam2PlayersAfterBuy = BuyBeforeRound(
+          newTeam2Players,
+          CalculateSide(team1Score + team2Score + 2)[1]
+        )
+        team2Players = newTeam2PlayersAfterBuy
+      }
+    }
 
-//   console.log(''.padEnd(8, ' '), 'K', 'A', 'D', 'ADR'.padStart(20, ' '))
+    if (
+      team1Score < rules.MRsystem + overtimeRounds + 1 &&
+      team2Score < rules.MRsystem + overtimeRounds + 1 &&
+      team1Score + team2Score < (rules.MRsystem + overtimeRounds) * 2
+    ) {
+      RoundAction()
+    } else {
+      if (team1Score === team2Score) {
+        overtimeRounds = overtimeRounds + rules.MRovertime
+      } else {
+        break
+      }
+    }
+  }
 
-//   team1Players.forEach((p: InRoundPlayer) => {
-//     const ADR = p.totalDamage / (team1Score + team2Score)
-//     const DPR = p.death / (team1Score + team2Score)
-//     const KPR = p.kills / (team1Score + team2Score)
-//     const APR = p.assist / (team1Score + team2Score)
-
-//     const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
-//     const rating =
-//       0.0073 * KAST +
-//       0.3591 * KPR +
-//       (-0.5329 * DPR) / 2 +
-//       0.2372 * (2.13 * KPR + 0.42 * APR) +
-//       0.0032 * ADR +
-//       0.1584
-//     console.log(
-//       p.name.padEnd(8, ' '),
-//       p.kills,
-//       p.assist,
-//       p.death,
-//       // ADR,
-//       // KAST,
-//       // p.roundsWithKAST,
-//       rating.toFixed(2),
-//       (p.kills / p.death).toFixed(2)
-//     )
-//   })
-//   console.log('---')
-//   team2Players.forEach((p: InRoundPlayer) => {
-//     const ADR = p.totalDamage / (team1Score + team2Score)
-//     const DPR = p.death / (team1Score + team2Score)
-//     const KPR = p.kills / (team1Score + team2Score)
-//     const APR = p.assist / (team1Score + team2Score)
-//     const KAST = p.roundsWithKAST.filter(onlyUniqueRounds).length
-//     const rating =
-//       0.0073 * KAST +
-//       0.3591 * KPR +
-//       (-0.5329 * DPR) / 2 +
-//       0.2372 * (2.13 * KPR + 0.42 * APR) +
-//       0.0032 * ADR +
-//       0.1584
-
-//     console.log(
-//       p.name.padEnd(8, ' '),
-//       p.kills,
-//       p.assist,
-//       p.death,
-//       // ADR,
-//       // KAST,
-//       // p.roundsWithKAST,
-//       rating.toFixed(2),
-//       (p.kills / p.death).toFixed(2)
-//     )
-//   })
-// }
+  return {
+    resultTeam1Players: team1Players,
+    resultTeam2Players: team2Players,
+    resultTeam1Score: team1Score,
+    resultTeam2Score: team2Score,
+    resultRoundWinLogs: roundWinLogs,
+  } as {
+    resultTeam1Players: InRoundPlayer[]
+    resultTeam2Players: InRoundPlayer[]
+    resultTeam1Score: number
+    resultTeam2Score: number
+    resultRoundWinLogs: string[]
+  }
+}
 
 export function CalculateRating(player: InRoundPlayer, rounds: number) {
   const ADR = +(player.totalDamage / rounds).toFixed(2)

@@ -36,7 +36,7 @@ export default function RenderRoundWiner(
         width:
           roundWinLogs.length > rules.MRsystem * 2
             ? width / roundWinLogs.length
-            : width / 24,
+            : width / (rules.MRsystem * 2),
         height: width / 12,
         flexDirection: 'column',
         alignItems: 'center',
