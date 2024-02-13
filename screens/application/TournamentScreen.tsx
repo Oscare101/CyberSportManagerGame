@@ -477,7 +477,6 @@ const team8: Team = {
 
 const bestOfMaps = 3
 export default function TournamentScreen() {
-  const [modal, setModal] = useState<boolean>(false)
   const tournaments = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
@@ -489,17 +488,6 @@ export default function TournamentScreen() {
 
   return (
     <View style={styles.container}>
-      <Modal style={{ flex: 1 }} transparent visible={modal}>
-        <MatchScreen
-          onMatchResults={(value: MapResult[]) => {
-            // MatchResults(value)
-            setModal(false)
-          }}
-          team1={team1}
-          team2={team2}
-          bestOfMaps={bestOfMaps}
-        />
-      </Modal>
       {tournaments.length ? (
         <TournamentGridBlock tournament={tournaments[0]} />
       ) : (

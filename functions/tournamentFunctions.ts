@@ -1,4 +1,5 @@
-import { Team } from '../constants/interfaces'
+import { MapResult, Team, Tournament } from '../constants/interfaces'
+import { GetMatchWinner } from './gameFunctions'
 
 export function ShuffleTeams(teamsArr: Team[]) {
   const shuffledArray = [...teamsArr]
@@ -38,4 +39,57 @@ export function MakeTournamentGrid(teams: Team[]) {
 export function GetStageName(pairs: number) {
   const stage: any = ['Final', 'Semi-Final', 'Quarter-Final', 'Qualification']
   return stage[Math.log2(pairs)]
+}
+
+export function UpdateGridAfterMatch(
+  tournaments: Tournament[],
+  tournament: Tournament,
+  indexIprop: number,
+  indexJprop: number,
+  mapsResultsLog: MapResult[],
+  team1: Team,
+  team2: Team
+) {
+  const newTournamentData = tournaments.map((t: Tournament) => {
+    if (JSON.stringify(t) === JSON.stringify(tournament)) {
+      let newGrid = t.grid
+      newGrid = newGrid.map((gridI: any[], indexI: number) => {
+        return gridI.map((gridJ: any[], indexJ: number) => {
+          if (indexI === indexIprop && indexJ === indexJprop) {
+            return {
+              ...gridJ,
+              mapResults: mapsResultsLog,
+            }
+          } else if (
+            indexI === indexIprop + 1 &&
+            indexJ === Math.floor(indexJprop / 2)
+          ) {
+            if (indexJprop % 2 === 0) {
+              return {
+                ...gridJ,
+                team1:
+                  GetMatchWinner(mapsResultsLog) === team1.name ? team1 : team2,
+              }
+            } else {
+              return {
+                ...gridJ,
+                team2:
+                  GetMatchWinner(mapsResultsLog) === team1.name ? team1 : team2,
+              }
+            }
+          } else {
+            return gridJ
+          }
+        })
+      })
+
+      return {
+        ...t,
+        grid: newGrid,
+      }
+    } else {
+      return t
+    }
+  })
+  return newTournamentData
 }

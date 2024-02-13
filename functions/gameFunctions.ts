@@ -440,28 +440,29 @@ export function Duel(
     return SprayDuel(player1, player2, 0)
   }
 }
-
-export function InstantMatchResults(
-  team1: InRoundPlayer[],
-  team2: InRoundPlayer[],
-  score1: number,
-  score2: number,
-  overtimes: number,
-  team1Sideplay: 'CT' | 'T',
-  team2Sideplay: 'CT' | 'T',
-  winLogs: string[],
-  mapsResultsLog: MapResult[],
+export interface InstantMatchResultProps {
+  team1: InRoundPlayer[]
+  team2: InRoundPlayer[]
+  score1: number
+  score2: number
+  overtimes: number
+  team1Sideplay: 'CT' | 'T'
+  team2Sideplay: 'CT' | 'T'
+  winLogs: string[]
+  mapsResultsLog: MapResult[]
   bestOfMaps: number
-) {
-  let team1Players: InRoundPlayer[] = team1
-  let team2Players: InRoundPlayer[] = team2
-  let team1Score: number = score1
-  let team2Score: number = score2
-  let overtimeRounds: number = overtimes
-  let team1Side: 'CT' | 'T' = team1Sideplay
-  let team2Side: 'CT' | 'T' = team2Sideplay
-  let roundWinLogs: string[] = winLogs
-  let mapsResults: MapResult[] = mapsResultsLog
+}
+
+export function InstantMatchResults(props: InstantMatchResultProps) {
+  let team1Players: InRoundPlayer[] = props.team1
+  let team2Players: InRoundPlayer[] = props.team2
+  let team1Score: number = props.score1
+  let team2Score: number = props.score2
+  let overtimeRounds: number = props.overtimes
+  let team1Side: 'CT' | 'T' = props.team1Sideplay
+  let team2Side: 'CT' | 'T' = props.team2Sideplay
+  let roundWinLogs: string[] = props.winLogs
+  let mapsResults: MapResult[] = props.mapsResultsLog
 
   while (true) {
     function ActionBetweenTwoPlayers() {
@@ -561,16 +562,16 @@ export function InstantMatchResults(
         }
 
         mapsResults.push(newMapResult)
-        if (IsMatchWinner(mapsResults, bestOfMaps)) {
+        if (IsMatchWinner(mapsResults, props.bestOfMaps)) {
           break
         } else {
-          team1Players = team1
-          team2Players = team2
-          team1Score = score1
-          team2Score = score2
-          overtimeRounds = overtimes
-          team1Side = team1Sideplay
-          team2Side = team2Sideplay
+          team1Players = props.team1
+          team2Players = props.team2
+          team1Score = props.score1
+          team2Score = props.score2
+          overtimeRounds = props.overtimes
+          team1Side = props.team1Sideplay
+          team2Side = props.team2Sideplay
           roundWinLogs = []
         }
       }
@@ -594,6 +595,19 @@ export function PrepareForMapResults(
     PrepareTeam(team2, CalculateSide(1)[1]),
     CalculateSide(1)[1]
   )
+
+  return {
+    team1: team1Players,
+    team2: team2Players,
+    score1: 0,
+    score2: 0,
+    overtimes: 0,
+    team1Sideplay: CalculateSide(1)[0],
+    team2Sideplay: CalculateSide(1)[1],
+    winLogs: [],
+    mapsResultsLog: [],
+    bestOfMaps: bestOfMaps,
+  } as InstantMatchResultProps
 
   return {
     preparedTeam1Players: team1Players,

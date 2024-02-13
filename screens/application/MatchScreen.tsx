@@ -304,7 +304,6 @@ export default function MatchScreen(props: MatchProps) {
         setMapsResults(newMapResults)
         if (IsMatchWinner(newMapResults, props.bestOfMaps)) {
           setIsGameActive(false)
-          props.onMatchResults(newMapResults)
         } else {
           PrepareForMap()
         }
@@ -415,18 +414,18 @@ export default function MatchScreen(props: MatchProps) {
         <>
           <TouchableOpacity
             onPress={() => {
-              const mapsResultsLog = InstantMatchResults(
-                team1Players,
-                team2Players,
-                team1Score,
-                team2Score,
-                overtimeRounds,
-                team1Side,
-                team2Side,
-                roundWinLogs,
-                mapsResults,
-                props.bestOfMaps
-              )
+              const mapsResultsLog = InstantMatchResults({
+                team1: team1Players,
+                team2: team2Players,
+                score1: team1Score,
+                score2: team2Score,
+                overtimes: overtimeRounds,
+                team1Sideplay: team1Side,
+                team2Sideplay: team2Side,
+                winLogs: roundWinLogs,
+                mapsResultsLog: mapsResults,
+                bestOfMaps: props.bestOfMaps,
+              })
 
               setMapsResults(mapsResultsLog)
               setIsGameActive(false)

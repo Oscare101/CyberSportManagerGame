@@ -1,8 +1,9 @@
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Modal, Text, TouchableOpacity, View } from 'react-native'
 import { MapResult, Team, Tournament } from '../../constants/interfaces'
 import {
   GetMatchScoreByTeams,
   GetMatchWinner,
+  InstantMatchResultProps,
   InstantMatchResults,
   PrepareForMapResults,
 } from '../../functions/gameFunctions'
@@ -12,6 +13,8 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { updateTournaments } from '../../redux/tournaments'
+import { UpdateGridAfterMatch } from '../../functions/tournamentFunctions'
+import MatchScreen from '../../screens/application/MatchScreen'
 
 interface MatchPairProps {
   team1: Team
@@ -34,83 +37,51 @@ export default function MatchPairBlock(props: MatchPairProps) {
 
   return (
     <>
+      <Modal style={{ flex: 1 }} transparent visible={modal}>
+        <MatchScreen
+          onMatchResults={(value: MapResult[]) => {
+            // MatchResults(value)
+            setModal(false)
+            let newTournamentData = UpdateGridAfterMatch(
+              tournaments,
+              props.tournament,
+              props.indexI,
+              props.indexJ,
+              value,
+              props.team1,
+              props.team2
+            )
+
+            dispatch(updateTournaments(newTournamentData))
+          }}
+          team1={props.team1}
+          team2={props.team2}
+          bestOfMaps={props.bestOfMaps}
+        />
+      </Modal>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
-          const {
-            preparedTeam1Players,
-            preparedTeam2Players,
-            preparedScore1,
-            preparedScore2,
-            preparedOvertimes,
-            preparedTeam1Sideplay,
-            preparedTeam2Sideplay,
-            preparedWinLogs,
-            preparedMapsResultsLog,
-            preparedBestOfMaps,
-          } = PrepareForMapResults(props.team1, props.team2, props.bestOfMaps)
+          setModal(true)
+          // const mapsResultsLog = InstantMatchResults(
+          //   PrepareForMapResults(
+          //     props.team1,
+          //     props.team2,
+          //     props.bestOfMaps
+          //   ) as InstantMatchResultProps
+          // )
 
-          const mapsResultsLog = InstantMatchResults(
-            preparedTeam1Players,
-            preparedTeam2Players,
-            preparedScore1,
-            preparedScore2,
-            preparedOvertimes,
-            preparedTeam1Sideplay,
-            preparedTeam2Sideplay,
-            preparedWinLogs,
-            preparedMapsResultsLog,
-            preparedBestOfMaps
-          )
+          // let newTournamentData = UpdateGridAfterMatch(
+          //   tournaments,
+          //   props.tournament,
+          //   props.indexI,
+          //   props.indexJ,
+          //   mapsResultsLog,
+          //   props.team1,
+          //   props.team2
+          // )
 
-          let newTournamentData = [...tournaments]
-          newTournamentData = newTournamentData.map((t: Tournament) => {
-            if (JSON.stringify(t) === JSON.stringify(props.tournament)) {
-              let newGrid = t.grid
-              newGrid = newGrid.map((gridI: any[], indexI: number) => {
-                return gridI.map((gridJ: any[], indexJ: number) => {
-                  if (indexI === props.indexI && indexJ === props.indexJ) {
-                    return {
-                      ...gridJ,
-                      mapResults: mapsResultsLog,
-                    }
-                  } else if (
-                    indexI === props.indexI + 1 &&
-                    indexJ === Math.floor(props.indexJ / 2)
-                  ) {
-                    if (props.indexJ % 2 === 0) {
-                      return {
-                        ...gridJ,
-                        team1:
-                          GetMatchWinner(mapsResultsLog) === props.team1.name
-                            ? props.team1
-                            : props.team2,
-                      }
-                    } else {
-                      return {
-                        ...gridJ,
-                        team2:
-                          GetMatchWinner(mapsResultsLog) === props.team1.name
-                            ? props.team1
-                            : props.team2,
-                      }
-                    }
-                  } else {
-                    return gridJ
-                  }
-                })
-              })
-
-              return {
-                ...t,
-                grid: newGrid,
-              }
-            } else {
-              return t
-            }
-          })
-
-          dispatch(updateTournaments(newTournamentData))
+          // dispatch(updateTournaments(newTournamentData))
         }}
         disabled={!!props.mapResults.length}
         style={{
