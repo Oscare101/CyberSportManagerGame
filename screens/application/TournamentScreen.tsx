@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { MapResult, Team } from '../../constants/interfaces'
+import { MapResult, Team, Tournament } from '../../constants/interfaces'
 import MatchScreen from './MatchScreen'
 import {
   GetMatchScoreByTeams,
@@ -15,11 +15,15 @@ import {
   InstantMatchResults,
   PrepareForMapResults,
 } from '../../functions/gameFunctions'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import colors from '../../constants/colors'
 import MatchPairBlock from '../../components/tournamentComponents/MatchPairBlock'
 import { MakeTournamentGrid } from '../../functions/tournamentFunctions'
+import TournamentGridBlock from '../../components/tournamentComponents/TournamentGridBlock'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '../../redux'
+import { updateTournaments } from '../../redux/tournaments'
 
 const width = Dimensions.get('screen').width
 
@@ -135,8 +139,8 @@ const team2: Team = {
   ],
 }
 
-const team4: Team = {
-  name: 'NOVA',
+const team3: Team = {
+  name: 'NOVA 2',
   players: [
     {
       name: 'Oscare',
@@ -191,8 +195,8 @@ const team4: Team = {
   ],
 }
 
-const team3: Team = {
-  name: 'Quazars',
+const team4: Team = {
+  name: 'Quazars 2',
   players: [
     {
       name: 'Header',
@@ -246,23 +250,25 @@ const team3: Team = {
     },
   ],
 }
+
 const bestOfMaps = 3
 export default function TournamentScreen() {
   const [modal, setModal] = useState<boolean>(false)
-  const [mapResults, setMapResults] = useState<MapResult[]>([])
+  const tournaments = useSelector((state: RootState) => state.tournaments)
+  const dispatch = useDispatch()
 
-  function MatchResults(mapsResultsLog: MapResult[]) {
-    setMapResults(mapsResultsLog)
-    console.log(GetMatchWinner(mapsResultsLog))
-    console.log(GetMatchScoreByTeams(mapsResultsLog))
-  }
+  // function MatchResults(mapsResultsLog: MapResult[]) {
+  //   setMapResults(mapsResultsLog)
+  //   console.log(GetMatchWinner(mapsResultsLog))
+  //   console.log(GetMatchScoreByTeams(mapsResultsLog))
+  // }
 
   return (
     <View style={styles.container}>
       <Modal style={{ flex: 1 }} transparent visible={modal}>
         <MatchScreen
           onMatchResults={(value: MapResult[]) => {
-            MatchResults(value)
+            // MatchResults(value)
             setModal(false)
           }}
           team1={team1}
@@ -270,15 +276,30 @@ export default function TournamentScreen() {
           bestOfMaps={bestOfMaps}
         />
       </Modal>
-      <MatchPairBlock
-        team1={team1}
-        team2={team2}
-        bestOfMaps={bestOfMaps}
-        onSetModal={(value: boolean) => setModal(value)}
-        onMatchResults={(value: MapResult[]) => setMapResults(value)}
-        mapResults={mapResults}
+      {tournaments.length ? (
+        <TournamentGridBlock tournament={tournaments[0]} />
+      ) : (
+        <></>
+      )}
+
+      <Button
+        title="make"
+        onPress={() => {
+          //  setTournamentGrid(value)
+          const newTournamentsData: Tournament[] = [
+            {
+              season: 1,
+              name: 'first',
+              prizes: [],
+              cup: 0,
+              description: 'desription',
+              grid: MakeTournamentGrid([team1, team2, team3, team4]),
+              points: [],
+            },
+          ]
+          dispatch(updateTournaments(newTournamentsData))
+        }}
       />
-      <Button title="make" onPress={() => MakeTournamentGrid([team1, team2])} />
     </View>
   )
 }

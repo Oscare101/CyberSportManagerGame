@@ -34,3 +34,8 @@ export function MakeTournamentGrid(teams: Team[]) {
 
   return gridArr
 }
+
+export function GetStageName(pairs: number) {
+  const stage: any = ['Final', 'Semi-Final', 'Quarter-Final', 'Qualification']
+  return stage[Math.log2(pairs)]
+}

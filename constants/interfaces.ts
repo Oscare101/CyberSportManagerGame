@@ -81,3 +81,14 @@ export interface MatchResult {
   resultTeam2Players: InRoundPlayer[]
   mapsResultsLog: MapResult[]
 }
+
+export interface Tournament {
+  season: number
+  name: string
+  prizes?: any[]
+  // winner?: Team | string
+  cup: number
+  description: string
+  grid?: any
+  points?: any[]
+}
