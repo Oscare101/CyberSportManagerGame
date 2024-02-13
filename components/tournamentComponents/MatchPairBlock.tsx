@@ -62,35 +62,44 @@ export default function MatchPairBlock(props: MatchPairProps) {
             preparedMapsResultsLog,
             preparedBestOfMaps
           )
-          console.log('mapsResultsLog', mapsResultsLog.length)
 
           let newTournamentData = [...tournaments]
           newTournamentData = newTournamentData.map((t: Tournament) => {
             if (JSON.stringify(t) === JSON.stringify(props.tournament)) {
               let newGrid = t.grid
-              console.log('1', newGrid[props.indexI][props.indexJ])
-
-              newGrid[props.indexI][props.indexJ].mapResults = mapsResultsLog
-
               newGrid = newGrid.map((gridI: any[], indexI: number) => {
-                // біжу по масиву
                 return gridI.map((gridJ: any[], indexJ: number) => {
-                  // біжу по масиву в масиву
                   if (indexI === props.indexI && indexJ === props.indexJ) {
-                    // знаходжу потрібний елемент за положення в масивах
                     return {
-                      // виводжу оновлену значення
                       ...gridJ,
-                      mapResults: mapsResultsLog, // оновлене значення
+                      mapResults: mapsResultsLog,
+                    }
+                  } else if (
+                    indexI === props.indexI + 1 &&
+                    indexJ === Math.floor(props.indexJ / 2)
+                  ) {
+                    if (props.indexJ % 2 === 0) {
+                      return {
+                        ...gridJ,
+                        team1:
+                          GetMatchWinner(mapsResultsLog) === props.team1.name
+                            ? props.team1
+                            : props.team2,
+                      }
+                    } else {
+                      return {
+                        ...gridJ,
+                        team2:
+                          GetMatchWinner(mapsResultsLog) === props.team1.name
+                            ? props.team1
+                            : props.team2,
+                      }
                     }
                   } else {
-                    // не знаходжу -> виводжу старе значення
                     return gridJ
                   }
                 })
               })
-
-              console.log('2', newGrid[props.indexI][props.indexJ])
 
               return {
                 ...t,
@@ -100,11 +109,10 @@ export default function MatchPairBlock(props: MatchPairProps) {
               return t
             }
           })
-          console.log(newTournamentData[0].grid[0][0].mapResults)
 
           dispatch(updateTournaments(newTournamentData))
         }}
-        // disabled={!!props.mapResults.length}
+        disabled={!!props.mapResults.length}
         style={{
           width: width * 0.3,
           height: width * 0.15,
@@ -114,13 +122,14 @@ export default function MatchPairBlock(props: MatchPairProps) {
           borderRadius: width * 0.01,
           overflow: 'hidden',
           backgroundColor: '#fff',
+          margin: width * 0.02,
         }}
       >
         <View
           style={{
             width: '100%',
             flexDirection: 'row',
-            borderLeftWidth: 2,
+            borderLeftWidth: width * 0.01,
             borderLeftColor:
               GetMatchWinner(props.mapResults) === props.team1.name
                 ? colors.succesColor
@@ -138,13 +147,25 @@ export default function MatchPairBlock(props: MatchPairProps) {
               ? GetMatchScoreByTeams(props.mapResults)[props.team1.name]
               : 0}{' '}
           </Text>
-          <Text>{props.team1.name}</Text>
+          <Text
+            style={[
+              {
+                opacity:
+                  props.mapResults.length &&
+                  GetMatchWinner(props.mapResults) !== props.team1.name
+                    ? 0.3
+                    : 1,
+              },
+            ]}
+          >
+            {props.team1.name}
+          </Text>
         </View>
         <View
           style={{
             width: '100%',
             flexDirection: 'row',
-            borderLeftWidth: 2,
+            borderLeftWidth: width * 0.01,
             borderLeftColor:
               GetMatchWinner(props.mapResults) === props.team2.name
                 ? colors.succesColor
@@ -162,7 +183,19 @@ export default function MatchPairBlock(props: MatchPairProps) {
               ? GetMatchScoreByTeams(props.mapResults)[props.team2.name]
               : 0}{' '}
           </Text>
-          <Text>{props.team2.name}</Text>
+          <Text
+            style={[
+              {
+                opacity:
+                  props.mapResults.length &&
+                  GetMatchWinner(props.mapResults) !== props.team2.name
+                    ? 0.3
+                    : 1,
+              },
+            ]}
+          >
+            {props.team2.name}
+          </Text>
         </View>
         {/* <View style={{ width: '100%', flexDirection: 'row' }}>
         <TouchableOpacity

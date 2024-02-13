@@ -26,7 +26,11 @@ export default function TournamentGridBlock(props: TournamentGridProps) {
     }
   }
   return (
-    <ScrollView horizontal style={{ flex: 1 }}>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      horizontal
+      style={{ flex: 1 }}
+    >
       <View
         style={{
           flexDirection: 'row',
