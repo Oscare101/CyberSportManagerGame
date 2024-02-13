@@ -482,7 +482,7 @@ export function InstantMatchResults(
         player1Health,
         player2Health,
         player1NadeUsage,
-        team1Score + team1Score + 1,
+        team1Score + team2Score + 1,
         team1Side
       )
 
@@ -493,7 +493,7 @@ export function InstantMatchResults(
         player2Health,
         player1Health,
         player2NadeUsage,
-        team1Score + team1Score + 1,
+        team1Score + team2Score + 1,
         team2Side
       )
     }
@@ -520,6 +520,7 @@ export function InstantMatchResults(
           IsSideChangeRound(team1Score + team2Score + 1),
           CalculateSide(team1Score + team2Score + 2)[0]
         )
+
         const newTeam1PlayersAfterBuy = BuyBeforeRound(
           newTeam1Players,
           CalculateSide(team1Score + team2Score + 2)[0]
@@ -597,7 +598,6 @@ export function CalculateRating(player: InRoundPlayer, rounds: number) {
   const DPR = player.death / rounds
   const KPR = player.kills / rounds
   const APR = player.assist / rounds
-
   const KAST = +(
     (player.roundsWithKAST.filter(onlyUniqueRounds).length * 100) /
     rounds
@@ -731,39 +731,4 @@ export function NumberOfMap(map: number) {
     : map === 2
     ? '2nd'
     : '1st'
-}
-
-export function CalculatePlayerStatsPerAllMaps(
-  mapResults: MapResult[],
-  teamNumber: number
-) {
-  let players: InRoundPlayer[] =
-    mapResults[0][teamNumber === 1 ? 'team1Players' : 'team2Players']
-  for (let i = 1; i < mapResults.length; i++) {
-    const playerStat: InRoundPlayer[] =
-      mapResults[i][teamNumber === 1 ? 'team1Players' : 'team2Players']
-    playerStat.forEach((playerStat: InRoundPlayer) => {
-      players = players.map((player: InRoundPlayer) => {
-        return {
-          ...player,
-          kill: player.kills + playerStat.kills,
-          death: player.death + playerStat.death,
-          assist: player.assist + playerStat.assist,
-          roundsWithKAST: [
-            ...player.roundsWithKAST,
-            ...playerStat.roundsWithKAST,
-          ],
-          totalDamage: player.totalDamage + playerStat.totalDamage,
-        }
-      })
-    })
-  }
-  const rounds: number = mapResults.reduce(
-    (a: number, map: MapResult) => a + map.team1Score + map.team2Score,
-    0
-  )
-  return { players: players, rounds: rounds } as {
-    players: InRoundPlayer[]
-    rounds: number
-  }
 }

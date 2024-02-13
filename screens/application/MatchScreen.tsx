@@ -95,6 +95,7 @@ const team1: Team = {
     },
   ],
 }
+
 const team2: Team = {
   name: 'Quazars',
   players: [
@@ -211,7 +212,7 @@ export default function MatchScreen() {
           player1Health,
           player2Health,
           player1NadeUsage,
-          team1Score + team1Score + 1,
+          team1Score + team2Score + 1,
           team1Side
         )
       )
@@ -224,7 +225,7 @@ export default function MatchScreen() {
           player2Health,
           player1Health,
           player2NadeUsage,
-          team1Score + team1Score + 1,
+          team1Score + team2Score + 1,
           team2Side
         )
       )
@@ -400,11 +401,10 @@ export default function MatchScreen() {
           />
         </View>
       </View>
-
+      <View style={{ flex: 1 }} />
       {isGameActive ? (
         <>
-          <Button
-            title={'skip to result >>>'}
+          <TouchableOpacity
             onPress={() => {
               const {
                 resultTeam1Players,
@@ -433,53 +433,57 @@ export default function MatchScreen() {
               setMapsResults(mapsResultsLog)
               setIsGameActive(false)
             }}
-          />
+            activeOpacity={0.8}
+            style={styles.skipButton}
+          >
+            <Text style={styles.skipTitle}>Skip to results</Text>
+          </TouchableOpacity>
         </>
       ) : (
-        <>
-          <Button
-            title={'Start match'}
-            onPress={() => {
-              setMapsResults([])
-              PrepareForMap()
-
-              setIsGameActive(true)
-            }}
-          />
-          <Button
-            title={'Get instant result'}
-            onPress={() => {
-              setMapsResults([])
-              PrepareForMap()
-              const {
-                resultTeam1Players,
-                resultTeam2Players,
-                resultTeam1Score,
-                resultTeam2Score,
-                resultRoundWinLogs,
-                mapsResultsLog,
-              } = InstantMatchResults(
-                PrepareTeam(team1, CalculateSide(1)[0]),
-                PrepareTeam(team2, CalculateSide(1)[1]),
-                0,
-                0,
-                0,
-                CalculateSide(1)[0],
-                CalculateSide(1)[1],
-                [],
-                [],
-                bestOfMaps
-              )
-              setTeam1Players(resultTeam1Players)
-              setTeam2Players(resultTeam2Players)
-              setTeam1Score(resultTeam1Score)
-              setTeam2Score(resultTeam2Score)
-              setRoundWinLogs(resultRoundWinLogs)
-              setMapsResults(mapsResultsLog)
-            }}
-          />
-        </>
+        <></>
       )}
+
+      <Button
+        title={'Start match'}
+        onPress={() => {
+          setMapsResults([])
+          PrepareForMap()
+
+          setIsGameActive(true)
+        }}
+      />
+      <Button
+        title={'Get instant result'}
+        onPress={() => {
+          setMapsResults([])
+          PrepareForMap()
+          const {
+            resultTeam1Players,
+            resultTeam2Players,
+            resultTeam1Score,
+            resultTeam2Score,
+            resultRoundWinLogs,
+            mapsResultsLog,
+          } = InstantMatchResults(
+            PrepareTeam(team1, CalculateSide(1)[0]),
+            PrepareTeam(team2, CalculateSide(1)[1]),
+            0,
+            0,
+            0,
+            CalculateSide(1)[0],
+            CalculateSide(1)[1],
+            [],
+            [],
+            bestOfMaps
+          )
+          setTeam1Players(resultTeam1Players)
+          setTeam2Players(resultTeam2Players)
+          setTeam1Score(resultTeam1Score)
+          setTeam2Score(resultTeam2Score)
+          setRoundWinLogs(resultRoundWinLogs)
+          setMapsResults(mapsResultsLog)
+        }}
+      />
     </View>
   )
 }
@@ -510,6 +514,19 @@ const styles = StyleSheet.create({
     width: '95%',
   },
 
-  playerEconomic: {},
-  playerHealth: {},
+  skipButton: {
+    width: '95%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '4%',
+    borderRadius: width * 0.02,
+    backgroundColor: '#fff',
+    marginBottom: width * 0.05,
+    borderWidth: 2,
+    borderColor: colors.CTColor,
+  },
+  skipTitle: {
+    fontSize: width * 0.05,
+    color: colors.CTColor,
+  },
 })

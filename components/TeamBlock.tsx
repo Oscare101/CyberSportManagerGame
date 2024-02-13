@@ -8,10 +8,7 @@ import {
 } from 'react-native'
 import { InRoundPlayer, MapResult } from '../constants/interfaces'
 import RenderPlayer from './RenderPlayer'
-import {
-  CalculatePlayerStatsPerAllMaps,
-  CalculateRating,
-} from '../functions/gameFunctions'
+import { CalculateRating } from '../functions/gameFunctions'
 import colors from '../constants/colors'
 import RenderPlayerResults from './RenderPlayerResult'
 import TeamHeader from './TeamHeader'
@@ -28,9 +25,14 @@ interface teamBlockProps {
 const width = Dimensions.get('screen').width
 
 export default function TeamBlock(props: teamBlockProps) {
-  let teamResults: InRoundPlayer[] = props.team
+  let teamResults: InRoundPlayer[] = props.team.map((player: InRoundPlayer) => {
+    return {
+      ...player,
+      rating: CalculateRating(player, props.rounds),
+    }
+  })
 
-  if (!props.isGameActive && props.mapResults.length) {
+  if (!props.isGameActive && props.mapResults.length > 1) {
     teamResults =
       props.mapResults[0][
         props.teamNumber === 1 ? 'team1Players' : 'team2Players'

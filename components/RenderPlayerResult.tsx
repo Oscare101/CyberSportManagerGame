@@ -86,7 +86,7 @@ export default function RenderPlayerResults(
         {kills - death}
       </Text>
       <Text style={styles.playerStat}>{ADR}</Text>
-      <Text style={styles.playerStat}>{KAST}</Text>
+      <Text style={styles.playerStat}>{KAST} %</Text>
       <Text style={styles.playerStat}>{rating}</Text>
     </View>
   )
