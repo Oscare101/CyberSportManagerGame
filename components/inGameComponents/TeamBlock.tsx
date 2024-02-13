@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { InRoundPlayer, MapResult } from '../constants/interfaces'
+import { InRoundPlayer, MapResult } from '../../constants/interfaces'
 import RenderPlayer from './RenderPlayer'
-import { CalculateRating } from '../functions/gameFunctions'
-import colors from '../constants/colors'
+import { CalculateRating } from '../../functions/gameFunctions'
+import colors from '../../constants/colors'
 import RenderPlayerResults from './RenderPlayerResult'
 import TeamHeader from './TeamHeader'
 

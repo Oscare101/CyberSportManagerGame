@@ -1,9 +1,9 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import HealthBlock from './HealthBlock'
-import GunImage from './GunImage'
+import GunImage from '../GunImage'
 import NadesBlock from './NadesBlock'
-import { InRoundPlayer } from '../constants/interfaces'
-import colors from '../constants/colors'
+import { InRoundPlayer } from '../../constants/interfaces'
+import colors from '../../constants/colors'
 
 const width = Dimensions.get('screen').width
 

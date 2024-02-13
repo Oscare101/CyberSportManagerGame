@@ -3,6 +3,7 @@ import {
   Gun,
   InRoundPlayer,
   MapResult,
+  MatchResult,
   Nade,
   Player,
   Team,
@@ -570,26 +571,52 @@ export function InstantMatchResults(
           overtimeRounds = overtimes
           team1Side = team1Sideplay
           team2Side = team2Sideplay
-          roundWinLogs = winLogs
+          roundWinLogs = []
         }
       }
     }
   }
 
+  return mapsResults
+}
+
+export function PrepareForMapResults(
+  team1: Team,
+  team2: Team,
+  bestOfMaps: number
+) {
+  const team1Players: InRoundPlayer[] = BuyBeforeRound(
+    PrepareTeam(team1, CalculateSide(1)[0]),
+    CalculateSide(1)[0]
+  )
+
+  const team2Players: InRoundPlayer[] = BuyBeforeRound(
+    PrepareTeam(team2, CalculateSide(1)[1]),
+    CalculateSide(1)[1]
+  )
+
   return {
-    resultTeam1Players: team1Players,
-    resultTeam2Players: team2Players,
-    resultTeam1Score: team1Score,
-    resultTeam2Score: team2Score,
-    resultRoundWinLogs: roundWinLogs,
-    mapsResultsLog: mapsResults,
+    preparedTeam1Players: team1Players,
+    preparedTeam2Players: team2Players,
+    preparedScore1: 0,
+    preparedScore2: 0,
+    preparedOvertimes: 0,
+    preparedTeam1Sideplay: CalculateSide(1)[0],
+    preparedTeam2Sideplay: CalculateSide(1)[1],
+    preparedWinLogs: [],
+    preparedMapsResultsLog: [],
+    preparedBestOfMaps: bestOfMaps,
   } as {
-    resultTeam1Players: InRoundPlayer[]
-    resultTeam2Players: InRoundPlayer[]
-    resultTeam1Score: number
-    resultTeam2Score: number
-    resultRoundWinLogs: string[]
-    mapsResultsLog: MapResult[]
+    preparedTeam1Players: InRoundPlayer[]
+    preparedTeam2Players: InRoundPlayer[]
+    preparedScore1: number
+    preparedScore2: number
+    preparedOvertimes: number
+    preparedTeam1Sideplay: 'CT' | 'T'
+    preparedTeam2Sideplay: 'CT' | 'T'
+    preparedWinLogs: string[]
+    preparedMapsResultsLog: MapResult[]
+    preparedBestOfMaps: number
   }
 }
 
@@ -700,8 +727,8 @@ export function GetMapsWinners(mapsResults: MapResult[]) {
   return mapWinners
 }
 
-export function CalculateMapWonByTeam(mapsResults: string[], team: string) {
-  const winAmount = mapsResults.filter((map: string) => map === team).length
+export function CalculateMapWonByTeam(mapWinners: string[], team: string) {
+  const winAmount = mapWinners.filter((map: string) => map === team).length
 
   return winAmount
 }
@@ -719,6 +746,39 @@ export function IsMatchWinner(newMapResults: MapResult[], bestOfMaps: number) {
   } else {
     return true
   }
+}
+export function GetMatchWinner(newMapResults: MapResult[]) {
+  if (newMapResults.length === 0) {
+    return false
+  }
+  if (
+    CalculateMapWonByTeam(
+      GetMapsWinners(newMapResults),
+      newMapResults[0].team1Players[0].team
+    ) >
+    CalculateMapWonByTeam(
+      GetMapsWinners(newMapResults),
+      newMapResults[0].team2Players[0].team
+    )
+  ) {
+    return newMapResults[0].team1Players[0].team
+  } else {
+    return newMapResults[0].team2Players[0].team
+  }
+}
+
+export function GetMatchScoreByTeams(newMapResults: MapResult[]) {
+  const result: any = {}
+  result[`${newMapResults[0].team1Players[0].team}`] = CalculateMapWonByTeam(
+    GetMapsWinners(newMapResults),
+    newMapResults[0].team1Players[0].team
+  )
+
+  result[`${newMapResults[0].team2Players[0].team}`] = CalculateMapWonByTeam(
+    GetMapsWinners(newMapResults),
+    newMapResults[0].team2Players[0].team
+  )
+  return result
 }
 
 export function NumberOfMap(map: number) {

@@ -75,3 +75,9 @@ export interface MapResult {
   team2Score: number
   roundWinLogs: string[]
 }
+
+export interface MatchResult {
+  resultTeam1Players: InRoundPlayer[]
+  resultTeam2Players: InRoundPlayer[]
+  mapsResultsLog: MapResult[]
+}

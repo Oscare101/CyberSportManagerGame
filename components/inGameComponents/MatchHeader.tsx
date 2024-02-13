@@ -3,10 +3,10 @@ import {
   CalculateMapWonByTeam,
   GetMapsWinners,
   NumberOfMap,
-} from '../functions/gameFunctions'
-import { InRoundPlayer, MapResult } from '../constants/interfaces'
-import colors from '../constants/colors'
-import rules from '../constants/rules'
+} from '../../functions/gameFunctions'
+import { InRoundPlayer, MapResult } from '../../constants/interfaces'
+import colors from '../../constants/colors'
+import rules from '../../constants/rules'
 
 interface MatchHeaderProps {
   team1: InRoundPlayer[]

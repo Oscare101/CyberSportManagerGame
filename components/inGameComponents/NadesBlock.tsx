@@ -1,6 +1,6 @@
 import { Dimensions, FlatList, Text, View } from 'react-native'
-import nades from '../constants/nades'
-import NadeImage from './NadeImage'
+import nades from '../../constants/nades'
+import NadeImage from '../NadeImage'
 
 const width = Dimensions.get('screen').width
 

@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import { InRoundPlayer, MapResult } from '../constants/interfaces'
-import { CalculateRating } from '../functions/gameFunctions'
-import colors from '../constants/colors'
+import { InRoundPlayer, MapResult } from '../../constants/interfaces'
+import { CalculateRating } from '../../functions/gameFunctions'
+import colors from '../../constants/colors'
 
 const width = Dimensions.get('screen').width
 

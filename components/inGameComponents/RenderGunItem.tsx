@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import GunImage from './GunImage'
-import { Gun } from '../constants/interfaces'
+import GunImage from '../GunImage'
+import { Gun } from '../../constants/interfaces'
 import { Ionicons } from '@expo/vector-icons'
 
 const width = Dimensions.get('screen').width

@@ -1,7 +1,7 @@
 import { Dimensions, View } from 'react-native'
-import { CalculateSide } from '../functions/gameFunctions'
-import colors from '../constants/colors'
-import rules from '../constants/rules'
+import { CalculateSide } from '../../functions/gameFunctions'
+import colors from '../../constants/colors'
+import rules from '../../constants/rules'
 
 const width = Dimensions.get('screen').width
 

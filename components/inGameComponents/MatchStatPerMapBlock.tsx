@@ -1,5 +1,5 @@
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
-import { MapResult } from '../constants/interfaces'
+import { MapResult } from '../../constants/interfaces'
 
 interface MatchStatProps {
   mapsResults: MapResult[]
