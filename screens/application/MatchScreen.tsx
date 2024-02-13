@@ -332,7 +332,7 @@ export default function MatchScreen(props: MatchProps) {
         team1Score={team1Score}
         team2Score={team2Score}
         bestOfMaps={props.bestOfMaps}
-        mapsResults={mapsResults}
+        mapResults={mapsResults}
         team1Side={team1Side}
         team2Side={team2Side}
         isGameActive={isGameActive}

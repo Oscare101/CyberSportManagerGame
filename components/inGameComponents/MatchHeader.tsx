@@ -14,7 +14,7 @@ interface MatchHeaderProps {
   team1Score: number
   team2Score: number
   bestOfMaps: number
-  mapsResults: MapResult[]
+  mapResults: MapResult[]
   team1Side: 'CT' | 'T'
   team2Side: 'CT' | 'T'
   isGameActive: boolean
@@ -35,7 +35,7 @@ export default function MatchHeader(props: MatchHeaderProps) {
           <Text style={styles.mapPoints}>
             (
             {CalculateMapWonByTeam(
-              GetMapsWinners(props.mapsResults),
+              GetMapsWinners(props.mapResults),
               props.team1[0].team
             )}
             )
@@ -58,7 +58,7 @@ export default function MatchHeader(props: MatchHeaderProps) {
           {props.isGameActive
             ? props.team1Score
             : CalculateMapWonByTeam(
-                GetMapsWinners(props.mapsResults),
+                GetMapsWinners(props.mapResults),
                 props.team1[0].team
               )}
         </Text>{' '}
@@ -75,7 +75,7 @@ export default function MatchHeader(props: MatchHeaderProps) {
           {props.isGameActive
             ? props.team2Score
             : CalculateMapWonByTeam(
-                GetMapsWinners(props.mapsResults),
+                GetMapsWinners(props.mapResults),
                 props.team2[0].team
               )}
         </Text>
@@ -85,14 +85,14 @@ export default function MatchHeader(props: MatchHeaderProps) {
           <Text style={styles.mapPoints}>
             (
             {CalculateMapWonByTeam(
-              GetMapsWinners(props.mapsResults),
+              GetMapsWinners(props.mapResults),
               props.team2[0].team
             )}
             )
           </Text>
           <Text style={[styles.comment, { textAlign: 'right' }]}>
             {NumberOfMap(
-              props.mapsResults.length + (props.isGameActive ? 1 : 0)
+              props.mapResults.length + (props.isGameActive ? 1 : 0)
             )}{' '}
             map
           </Text>
