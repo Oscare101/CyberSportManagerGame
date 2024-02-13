@@ -35,6 +35,57 @@ export default function MatchPairBlock(props: MatchPairProps) {
   const tournaments = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
+  function PairTeam(pair: any) {
+    return (
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          borderLeftWidth: width * 0.01,
+          borderLeftColor:
+            GetMatchWinner(props.mapResults) === pair.team.name
+              ? colors.succesColor
+              : GetMatchWinner(props.mapResults) === pair.opponent.name
+              ? colors.errorColor
+              : '#00000000',
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingLeft: '2%',
+        }}
+      >
+        <Text
+          style={[
+            {
+              opacity:
+                props.mapResults.length &&
+                GetMatchWinner(props.mapResults) !== pair.team.name
+                  ? 0.3
+                  : 1,
+            },
+          ]}
+        >
+          {props.mapResults.length
+            ? GetMatchScoreByTeams(props.mapResults)[pair.team.name]
+            : 0}{' '}
+        </Text>
+        <Text
+          style={[
+            {
+              opacity:
+                props.mapResults.length &&
+                GetMatchWinner(props.mapResults) !== pair.team.name
+                  ? 0.3
+                  : 1,
+            },
+          ]}
+        >
+          {pair.team.name}
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <>
       <Modal style={{ flex: 1 }} transparent visible={modal}>
@@ -57,33 +108,16 @@ export default function MatchPairBlock(props: MatchPairProps) {
           team1={props.team1}
           team2={props.team2}
           bestOfMaps={props.bestOfMaps}
+          onBack={() => setModal(false)}
+          mapResults={props.mapResults}
         />
       </Modal>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
           setModal(true)
-          // const mapsResultsLog = InstantMatchResults(
-          //   PrepareForMapResults(
-          //     props.team1,
-          //     props.team2,
-          //     props.bestOfMaps
-          //   ) as InstantMatchResultProps
-          // )
-
-          // let newTournamentData = UpdateGridAfterMatch(
-          //   tournaments,
-          //   props.tournament,
-          //   props.indexI,
-          //   props.indexJ,
-          //   mapsResultsLog,
-          //   props.team1,
-          //   props.team2
-          // )
-
-          // dispatch(updateTournaments(newTournamentData))
         }}
-        disabled={!!props.mapResults.length}
+        disabled={!props.team1 || !props.team2}
         style={{
           width: width * 0.3,
           height: width * 0.15,
@@ -96,121 +130,8 @@ export default function MatchPairBlock(props: MatchPairProps) {
           margin: width * 0.02,
         }}
       >
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            borderLeftWidth: width * 0.01,
-            borderLeftColor:
-              GetMatchWinner(props.mapResults) === props.team1.name
-                ? colors.succesColor
-                : GetMatchWinner(props.mapResults) === props.team2.name
-                ? colors.errorColor
-                : '#00000000',
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            paddingLeft: '2%',
-          }}
-        >
-          <Text>
-            {props.mapResults.length
-              ? GetMatchScoreByTeams(props.mapResults)[props.team1.name]
-              : 0}{' '}
-          </Text>
-          <Text
-            style={[
-              {
-                opacity:
-                  props.mapResults.length &&
-                  GetMatchWinner(props.mapResults) !== props.team1.name
-                    ? 0.3
-                    : 1,
-              },
-            ]}
-          >
-            {props.team1.name}
-          </Text>
-        </View>
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            borderLeftWidth: width * 0.01,
-            borderLeftColor:
-              GetMatchWinner(props.mapResults) === props.team2.name
-                ? colors.succesColor
-                : GetMatchWinner(props.mapResults) === props.team1.name
-                ? colors.errorColor
-                : '#00000000',
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            paddingLeft: '2%',
-          }}
-        >
-          <Text>
-            {props.mapResults.length
-              ? GetMatchScoreByTeams(props.mapResults)[props.team2.name]
-              : 0}{' '}
-          </Text>
-          <Text
-            style={[
-              {
-                opacity:
-                  props.mapResults.length &&
-                  GetMatchWinner(props.mapResults) !== props.team2.name
-                    ? 0.3
-                    : 1,
-              },
-            ]}
-          >
-            {props.team2.name}
-          </Text>
-        </View>
-        {/* <View style={{ width: '100%', flexDirection: 'row' }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => props.onSetModal(true)}
-          disabled={!!props.mapResults.length}
-        >
-          <Ionicons name="play" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            const {
-              preparedTeam1Players,
-              preparedTeam2Players,
-              preparedScore1,
-              preparedScore2,
-              preparedOvertimes,
-              preparedTeam1Sideplay,
-              preparedTeam2Sideplay,
-              preparedWinLogs,
-              preparedMapsResultsLog,
-              preparedBestOfMaps,
-            } = PrepareForMapResults(props.team1, props.team2, props.bestOfMaps)
-
-            const mapsResultsLog = InstantMatchResults(
-              preparedTeam1Players,
-              preparedTeam2Players,
-              preparedScore1,
-              preparedScore2,
-              preparedOvertimes,
-              preparedTeam1Sideplay,
-              preparedTeam2Sideplay,
-              preparedWinLogs,
-              preparedMapsResultsLog,
-              preparedBestOfMaps
-            )
-            props.onMatchResults(mapsResultsLog)
-          }}
-          disabled={!!props.mapResults.length}
-        >
-          <Ionicons name="play-skip-forward" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
+        <PairTeam team={props.team1} opponent={props.team2} />
+        <PairTeam team={props.team2} opponent={props.team1} />
       </TouchableOpacity>
     </>
   )

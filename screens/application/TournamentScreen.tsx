@@ -486,41 +486,50 @@ export default function TournamentScreen() {
   //   console.log(GetMatchScoreByTeams(mapsResultsLog))
   // }
 
+  function StartTournament() {
+    const newTournamentsData: Tournament[] = [
+      {
+        season: 1,
+        name: 'first',
+        prizes: [],
+        cup: 0,
+        description: 'desription',
+        grid: MakeTournamentGrid([
+          team1,
+          team2,
+          team3,
+          team4,
+          team5,
+          team6,
+          team7,
+          team8,
+        ]),
+        points: [],
+      },
+    ]
+    dispatch(updateTournaments(newTournamentsData))
+  }
+
   return (
     <View style={styles.container}>
       {tournaments.length ? (
         <TournamentGridBlock tournament={tournaments[0]} />
       ) : (
-        <></>
+        <>
+          <TouchableOpacity
+            style={styles.startTournamentButton}
+            activeOpacity={0.8}
+            onPress={StartTournament}
+          >
+            <Text style={styles.startTournamentButtonTitle}>
+              Start the tournament
+            </Text>
+            <Text style={styles.startTournamentButtonComment}>
+              Prepare and shuffle teams
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
-
-      <Button
-        title="make"
-        onPress={() => {
-          //  setTournamentGrid(value)
-          const newTournamentsData: Tournament[] = [
-            {
-              season: 1,
-              name: 'first',
-              prizes: [],
-              cup: 0,
-              description: 'desription',
-              grid: MakeTournamentGrid([
-                team1,
-                team2,
-                team3,
-                team4,
-                team5,
-                team6,
-                team7,
-                team8,
-              ]),
-              points: [],
-            },
-          ]
-          dispatch(updateTournaments(newTournamentsData))
-        }}
-      />
     </View>
   )
 }
@@ -531,5 +540,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#e5e5e5',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
   },
+  startTournamentButton: {
+    width: '95%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '3%',
+    borderRadius: width * 0.02,
+    backgroundColor: '#fff',
+    marginBottom: width * 0.05,
+    borderWidth: 2,
+    borderColor: colors.CTColor,
+  },
+  startTournamentButtonTitle: { fontSize: width * 0.05 },
+  startTournamentButtonComment: { fontSize: width * 0.03 },
 })

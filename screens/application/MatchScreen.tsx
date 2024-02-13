@@ -40,6 +40,7 @@ import MatchHeader from '../../components/inGameComponents/MatchHeader'
 import RenderPlayer from '../../components/inGameComponents/RenderPlayer'
 import TeamBlock from '../../components/inGameComponents/TeamBlock'
 import MatchStatPerMapBlock from '../../components/inGameComponents/MatchStatPerMapBlock'
+import BackHeader from '../../components/inGameComponents/BackHeader'
 
 // const team1: Team = {
 //   name: 'NOVA',
@@ -162,6 +163,8 @@ interface MatchProps {
   team2: Team
   bestOfMaps: number
   onMatchResults: any
+  onBack: any
+  mapResults: MapResult[]
 }
 
 export default function MatchScreen(props: MatchProps) {
@@ -180,7 +183,7 @@ export default function MatchScreen(props: MatchProps) {
   const [team2Side, setTeam2Side] = useState<'CT' | 'T'>(CalculateSide(1)[1])
   const [roundWinLogs, setRoundWinLogs] = useState<string[]>([])
 
-  const [mapsResults, setMapsResults] = useState<MapResult[]>([])
+  const [mapsResults, setMapsResults] = useState<MapResult[]>(props.mapResults)
   const [mapsResultsToShow, setMapsResultsToShow] = useState<number>(0)
 
   function PrepareForMap() {
@@ -325,18 +328,23 @@ export default function MatchScreen(props: MatchProps) {
 
   return (
     <View style={styles.container}>
-      <MatchHeader
-        team1={team1Players}
-        team2={team2Players}
-        team1Score={team1Score}
-        team2Score={team2Score}
-        bestOfMaps={props.bestOfMaps}
-        mapResults={mapsResults}
-        team1Side={team1Side}
-        team2Side={team2Side}
-        isGameActive={isGameActive}
-        overtimes={overtimeRounds}
-      />
+      {!isGameActive && !mapsResults.length ? (
+        <BackHeader onBack={() => props.onBack()} />
+      ) : (
+        <MatchHeader
+          team1={team1Players}
+          team2={team2Players}
+          team1Score={team1Score}
+          team2Score={team2Score}
+          bestOfMaps={props.bestOfMaps}
+          mapResults={mapsResults}
+          team1Side={team1Side}
+          team2Side={team2Side}
+          isGameActive={isGameActive}
+          overtimes={overtimeRounds}
+        />
+      )}
+
       {!isGameActive && mapsResults.length ? (
         <MatchStatPerMapBlock
           mapsResults={mapsResults}
@@ -348,22 +356,20 @@ export default function MatchScreen(props: MatchProps) {
       )}
 
       <View style={styles.teamColumnsBlock}>
-        <View style={styles.teamColumn}>
-          <TeamBlock
-            team={team1Players}
-            rounds={team1Score + team2Score}
-            isGameActive={isGameActive}
-            teamSide={team1Side}
-            mapResults={
-              !isGameActive && mapsResults.length
-                ? mapsResultsToShow
-                  ? [mapsResults[mapsResultsToShow - 1]]
-                  : mapsResults
-                : []
-            }
-            teamNumber={1}
-          />
-        </View>
+        <TeamBlock
+          team={team1Players}
+          rounds={team1Score + team2Score}
+          isGameActive={isGameActive}
+          teamSide={team1Side}
+          mapResults={
+            !isGameActive && mapsResults.length
+              ? mapsResultsToShow
+                ? [mapsResults[mapsResultsToShow - 1]]
+                : mapsResults
+              : []
+          }
+          teamNumber={1}
+        />
         <View
           style={{
             flexDirection: 'row',
@@ -373,9 +379,16 @@ export default function MatchScreen(props: MatchProps) {
           }}
         >
           <FlatList
-            style={{ width: '100%', height: width / 12 }}
+            style={{
+              width: '100%',
+              height: width / 12,
+            }}
             horizontal
-            initialNumToRender={roundWinLogs.length}
+            initialNumToRender={
+              !isGameActive && mapsResults.length
+                ? mapsResults[mapsResultsToShow - 1]?.roundWinLogs.length || 0
+                : roundWinLogs.length
+            }
             data={
               !isGameActive && mapsResults.length
                 ? mapsResults[mapsResultsToShow - 1]?.roundWinLogs || []
@@ -394,20 +407,18 @@ export default function MatchScreen(props: MatchProps) {
             }
           />
         </View>
-        <View style={styles.teamColumn}>
-          <TeamBlock
-            team={team2Players}
-            rounds={team1Score + team2Score}
-            isGameActive={isGameActive}
-            teamSide={team2Side}
-            mapResults={
-              !isGameActive && mapsResults.length && mapsResultsToShow
-                ? [mapsResults[mapsResultsToShow - 1]]
-                : mapsResults
-            }
-            teamNumber={2}
-          />
-        </View>
+        <TeamBlock
+          team={team2Players}
+          rounds={team1Score + team2Score}
+          isGameActive={isGameActive}
+          teamSide={team2Side}
+          mapResults={
+            !isGameActive && mapsResults.length && mapsResultsToShow
+              ? [mapsResults[mapsResultsToShow - 1]]
+              : mapsResults
+          }
+          teamNumber={2}
+        />
       </View>
       <View style={{ flex: 1 }} />
       {isGameActive ? (
@@ -492,10 +503,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-  },
-  teamColumn: {
-    flexDirection: 'column',
-    width: '95%',
   },
 
   skipButton: {

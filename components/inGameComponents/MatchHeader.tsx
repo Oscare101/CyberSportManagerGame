@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    height: width * 0.08,
   },
   scoreTitle: {
     fontSize: width * 0.06,

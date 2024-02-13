@@ -63,7 +63,7 @@ export default function TeamBlock(props: teamBlockProps) {
   }
 
   return (
-    <>
+    <View style={styles.teamColumn}>
       <TeamHeader
         teamName={props.team[0].team}
         teamSide={props.teamSide}
@@ -87,11 +87,15 @@ export default function TeamBlock(props: teamBlockProps) {
             : RenderPlayer(item, props.teamSide)
         }
       />
-    </>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  teamColumn: {
+    flexDirection: 'column',
+    width: '95%',
+  },
   playerBlock: {
     width: '100%',
     flexDirection: 'row',
@@ -103,6 +107,7 @@ const styles = StyleSheet.create({
     margin: width * 0.002,
     borderRadius: width * 0.01,
   },
+
   teamName: { width: '20%', color: '#fff', fontSize: width * 0.035 },
   teamStat: {
     width: '10%',
