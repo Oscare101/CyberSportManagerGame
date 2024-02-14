@@ -1,21 +1,17 @@
+import 'react-native-gesture-handler'
 import { StyleSheet, View } from 'react-native'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
-import TournamentScreen from './screens/application/TournamentScreen'
 import TournamentsScreen from './screens/application/TournamentsScreen'
+import { NavigationContainer } from '@react-navigation/native'
+import MainNavigation from './navigation/MainNavigation'
 
 export default function App() {
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        {/* <FlatList
-        data={Object.values(guns) as Gun[]}
-        renderItem={RenderGunItem}
-        showsVerticalScrollIndicator={false}
-      /> */}
-        {/* <TournamentScreen /> */}
-        <TournamentsScreen />
-      </View>
+      <NavigationContainer>
+        <MainNavigation />
+      </NavigationContainer>
     </Provider>
   )
 }

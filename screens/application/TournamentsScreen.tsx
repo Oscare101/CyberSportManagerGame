@@ -18,8 +18,7 @@ import { GetTournamentsBySeason } from '../../functions/tournamentFunctions'
 const width = Dimensions.get('screen').width
 
 export default function TournamentsScreen({ navigation }: any) {
-  // const tournaments: any = useSelector((state: RootState) => state.tournaments)
-  const tournaments = tournamentsDefault
+  const tournaments: any = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
   const [newSeasonModal, setNewSeasonModal] = useState<boolean>(false)
@@ -79,7 +78,7 @@ export default function TournamentsScreen({ navigation }: any) {
           style={[styles.tournamentBlock]}
           activeOpacity={0.8}
           onPress={() =>
-            navigation.navigate('TournamentInfoScreen', { tournament: item })
+            navigation.navigate('TournamentScreen', { tournament: item })
           }
         >
           <View style={styles.tournamentsTopInfo}>
