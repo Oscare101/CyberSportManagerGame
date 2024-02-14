@@ -10,9 +10,13 @@ export const storage = new MMKV()
 export default function LaunchScreen({ navigation }: any) {
   const dispatch = useDispatch()
 
-  async function SetData() {
-    const tournamentsData = await storage.getString('tournaments')
-    if (tournamentsData?.length) {
+  function SetData() {
+    const tournamentsData = storage.getString('tournaments')
+    console.log(tournamentsData)
+
+    if (tournamentsData !== undefined && JSON.parse(tournamentsData).length) {
+      console.log(JSON.parse(tournamentsData))
+
       dispatch(updateTournaments(JSON.parse(tournamentsData)))
     } else {
       dispatch(updateTournaments(tournamentsDefault))

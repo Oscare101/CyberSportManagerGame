@@ -476,8 +476,10 @@ const team8: Team = {
 }
 
 const bestOfMaps = 3
-export default function TournamentScreen() {
-  const tournaments = useSelector((state: RootState) => state.tournaments)
+export default function TournamentScreen({ navigation, route }: any) {
+  const tournaments: Tournament[] = useSelector(
+    (state: RootState) => state.tournaments
+  )
   const dispatch = useDispatch()
 
   // function MatchResults(mapsResultsLog: MapResult[]) {
@@ -487,34 +489,52 @@ export default function TournamentScreen() {
   // }
 
   function StartTournament() {
-    const newTournamentsData: Tournament[] = [
-      {
-        season: 1,
-        name: 'first',
-        prizes: [],
-        cup: '',
-        description: 'desription',
-        grid: MakeTournamentGrid([
-          team1,
-          team2,
-          team3,
-          team4,
-          team5,
-          team6,
-          team7,
-          team8,
-        ]),
-        points: [],
-        period: 0,
-      },
-    ]
+    const newTournamentsData: Tournament[] = tournaments.map(
+      (t: Tournament) => {
+        if (
+          t.season === route.params.tournament.season &&
+          t.period === route.params.tournament.period &&
+          t.name === route.params.tournament.name
+        ) {
+          return {
+            ...t,
+            grid: MakeTournamentGrid([
+              team1,
+              team2,
+              team3,
+              team4,
+              team5,
+              team6,
+              team7,
+              team8,
+            ]),
+          }
+        } else {
+          return t
+        }
+      }
+    )
+
     dispatch(updateTournaments(newTournamentsData))
+  }
+
+  function GetCurrentTournament() {
+    return tournaments.find(
+      (t: Tournament) =>
+        t.season === route.params.tournament.season &&
+        t.period === route.params.tournament.period &&
+        t.name === route.params.tournament.name
+    )
   }
 
   return (
     <View style={styles.container}>
-      {tournaments.length ? (
-        <TournamentGridBlock tournament={tournaments[0]} />
+      {GetCurrentTournament() &&
+      GetCurrentTournament()?.grid &&
+      GetCurrentTournament()?.grid.length ? (
+        <TournamentGridBlock
+          tournament={GetCurrentTournament() as Tournament}
+        />
       ) : (
         <>
           <TouchableOpacity

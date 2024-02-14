@@ -1,7 +1,6 @@
 import {
   Dimensions,
   FlatList,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -129,8 +128,6 @@ export default function TournamentsScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={'dark-content'} backgroundColor={'#f5f5f5'} />
-
       {tournaments.find((t: any) => !t.winner) ? (
         <></>
       ) : (
@@ -172,7 +169,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fefefe',
     width: '100%',
   },
   tournamentBlock: {
