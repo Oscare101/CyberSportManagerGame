@@ -1,0 +1,70 @@
+import { Tournament } from './interfaces'
+
+const tournamentsDefault: Tournament[] = [
+  {
+    season: 1,
+    name: 'Masters championship',
+    prizes: [400000, 200000, 100000, 100000, 50000, 50000, 50000, 50000],
+    cup: 'Master',
+    description: '',
+    points: [100, 50, 25, 25, 10, 10, 10, 10],
+    period: 1,
+  },
+  {
+    season: 1,
+    name: 'Crown',
+    prizes: [200000, 100000, 50000, 50000, 25000, 25000, 25000, 25000],
+    points: [100, 50, 25, 25, 10, 10, 10, 10],
+    description: '',
+    cup: 'Crown',
+    period: 2,
+  },
+  {
+    season: 1,
+    name: 'World Qualifications',
+    prizes: [170000, 110000, 50000, 50000, 30000, 30000, 30000, 30000],
+    points: [150, 75, 40, 40, 15, 15, 15, 15],
+    cup: 'WorldCupQualification',
+    description: '',
+    period: 3,
+  },
+  {
+    season: 1,
+    name: 'Globe championship',
+    prizes: [250000, 150000, 90000, 90000, 30000, 30000, 30000, 30000],
+    points: [100, 50, 25, 25, 10, 10, 10, 10],
+    description: '',
+    cup: 'Globe',
+    period: 4,
+  },
+  {
+    season: 1,
+    name: 'Cyber Stage',
+    prizes: [150000, 60000, 30000, 30000, 7500, 7500, 7500, 7500],
+    points: [100, 50, 25, 25, 10, 10, 10, 10],
+    description: '',
+    cup: 'Cyber',
+    period: 5,
+  },
+  {
+    season: 1,
+    name: 'World Championship',
+    prizes: [200000, 140000, 60000, 60000, 35000, 35000, 35000, 35000],
+    points: [150, 75, 40, 40, 15, 15, 15, 15],
+    cup: 'WorldCupChampionship',
+    grid: [],
+    description: '',
+    period: 6,
+  },
+  {
+    season: 1,
+    name: 'Major',
+    prizes: [500000, 200000, 100000, 100000, 25000, 25000, 25000, 25000],
+    points: [200, 100, 50, 50, 20, 20, 20, 20],
+    cup: 'Major',
+    description: '',
+    period: 7,
+  },
+]
+
+export default tournamentsDefault

@@ -2,6 +2,7 @@ import { StyleSheet, View } from 'react-native'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import TournamentScreen from './screens/application/TournamentScreen'
+import TournamentsScreen from './screens/application/TournamentsScreen'
 
 export default function App() {
   return (
@@ -12,7 +13,8 @@ export default function App() {
         renderItem={RenderGunItem}
         showsVerticalScrollIndicator={false}
       /> */}
-        <TournamentScreen />
+        {/* <TournamentScreen /> */}
+        <TournamentsScreen />
       </View>
     </Provider>
   )

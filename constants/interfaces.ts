@@ -85,10 +85,11 @@ export interface MatchResult {
 export interface Tournament {
   season: number
   name: string
-  prizes?: any[]
+  prizes: any[]
   // winner?: Team | string
-  cup: number
+  cup: string
   description: string
   grid?: any
-  points?: any[]
+  points: any[]
+  period: number
 }

@@ -492,7 +492,7 @@ export default function TournamentScreen() {
         season: 1,
         name: 'first',
         prizes: [],
-        cup: 0,
+        cup: '',
         description: 'desription',
         grid: MakeTournamentGrid([
           team1,
@@ -505,6 +505,7 @@ export default function TournamentScreen() {
           team8,
         ]),
         points: [],
+        period: 0,
       },
     ]
     dispatch(updateTournaments(newTournamentsData))

@@ -93,3 +93,19 @@ export function UpdateGridAfterMatch(
   })
   return newTournamentData
 }
+
+export function GetTournamentsBySeason(tournaments: Tournament[]) {
+  const tArr: any = []
+  tournaments.map((t: any) => {
+    if (!tArr.length) {
+      tArr.push(t)
+    } else {
+      if (t.season !== tArr[0].season) {
+        tArr.unshift(t)
+      } else {
+        tArr.splice(t.cup - 1, 0, t)
+      }
+    }
+  })
+  return tArr
+}
