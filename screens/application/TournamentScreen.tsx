@@ -1,5 +1,4 @@
 import {
-  Button,
   Dimensions,
   Modal,
   StyleSheet,
@@ -7,23 +6,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { MapResult, Team, Tournament } from '../../constants/interfaces'
-import MatchScreen from './MatchScreen'
-import {
-  GetMatchScoreByTeams,
-  GetMatchWinner,
-  InstantMatchResults,
-  PrepareForMapResults,
-} from '../../functions/gameFunctions'
-import { useEffect, useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import { Team, Tournament } from '../../constants/interfaces'
 import colors from '../../constants/colors'
-import MatchPairBlock from '../../components/tournamentComponents/MatchPairBlock'
 import { MakeTournamentGrid } from '../../functions/tournamentFunctions'
 import TournamentGridBlock from '../../components/tournamentComponents/TournamentGridBlock'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { updateTournaments } from '../../redux/tournaments'
+import { useState } from 'react'
+import ContentPickerBlock from '../../components/tournamentComponents/ContentPickerBlock'
+import TournamentInfoBlock from '../../components/tournamentComponents/TournamentInfoBlock'
+import BackHeader from '../../components/tournamentComponents/BackHeader'
 
 const width = Dimensions.get('screen').width
 
@@ -476,17 +469,13 @@ const team8: Team = {
 }
 
 const bestOfMaps = 3
+
 export default function TournamentScreen({ navigation, route }: any) {
   const tournaments: Tournament[] = useSelector(
     (state: RootState) => state.tournaments
   )
   const dispatch = useDispatch()
-
-  // function MatchResults(mapsResultsLog: MapResult[]) {
-  //   setMapResults(mapsResultsLog)
-  //   console.log(GetMatchWinner(mapsResultsLog))
-  //   console.log(GetMatchScoreByTeams(mapsResultsLog))
-  // }
+  const [showContent, setShowContent] = useState<string>('Grid')
 
   function StartTournament() {
     const newTournamentsData: Tournament[] = tournaments.map(
@@ -529,12 +518,26 @@ export default function TournamentScreen({ navigation, route }: any) {
 
   return (
     <View style={styles.container}>
+      <BackHeader tournamentName={route.params.tournament.name} />
+      <TournamentInfoBlock tournament={route.params.tournament} />
+      <ContentPickerBlock
+        showContentsData={['Grid', 'Prize distribution']}
+        showContent={showContent}
+        setShowContent={(value: string) => setShowContent(value)}
+      />
+
       {GetCurrentTournament() &&
       GetCurrentTournament()?.grid &&
       GetCurrentTournament()?.grid.length ? (
-        <TournamentGridBlock
-          tournament={GetCurrentTournament() as Tournament}
-        />
+        <>
+          {showContent === 'Grid' ? (
+            <TournamentGridBlock
+              tournament={GetCurrentTournament() as Tournament}
+            />
+          ) : (
+            <></>
+          )}
+        </>
       ) : (
         <>
           <TouchableOpacity
@@ -558,11 +561,12 @@ export default function TournamentScreen({ navigation, route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e5e5e5',
+    backgroundColor: '#fefefe',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     width: '100%',
   },
+
   startTournamentButton: {
     width: '95%',
     alignItems: 'center',

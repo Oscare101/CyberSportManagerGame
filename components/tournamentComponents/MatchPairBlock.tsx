@@ -51,7 +51,7 @@ export default function MatchPairBlock(props: MatchPairProps) {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'flex-start',
-          paddingLeft: '2%',
+          paddingLeft: '4%',
         }}
       >
         <Text
@@ -77,8 +77,10 @@ export default function MatchPairBlock(props: MatchPairProps) {
                 GetMatchWinner(props.mapResults) !== pair.team.name
                   ? 0.3
                   : 1,
+              flex: 1,
             },
           ]}
+          numberOfLines={1}
         >
           {pair.team.name}
         </Text>
@@ -128,6 +130,9 @@ export default function MatchPairBlock(props: MatchPairProps) {
           overflow: 'hidden',
           backgroundColor: '#fff',
           margin: width * 0.02,
+          elevation: 2,
+          borderWidth: 1,
+          borderColor: '#eee',
         }}
       >
         <PairTeam team={props.team1} opponent={props.team2} />

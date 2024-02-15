@@ -14,7 +14,7 @@ import {
   Prestige1,
   Prestige2,
   Prestige3,
-} from '../../constants/images/cups'
+} from '../constants/images/cups'
 
 export default function CupsImage(props: { cup: string }) {
   switch (props.cup) {

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
-import CupsImage from '../../components/tournamentComponents/CupsImage'
+import CupsImage from '../../components/CupsImage'
 import tournamentsDefault from '../../constants/tournamentsDefault'
 import { GetTournamentsBySeason } from '../../functions/tournamentFunctions'
 
