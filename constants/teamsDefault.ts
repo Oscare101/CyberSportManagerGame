@@ -7,7 +7,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Oscare',
         stat: {
-          role: 'capitan',
+          role: 'sniper',
           reaction: 0.292,
           accuracy: 0.742,
           sprayControl: 0.828,
@@ -27,7 +27,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Modest',
         stat: {
-          role: 'rifler',
+          role: 'capitan',
           reaction: 0.209,
           accuracy: 0.555,
           sprayControl: 0.521,
@@ -37,7 +37,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Olaph',
         stat: {
-          role: 'capitan',
+          role: 'rifler',
           reaction: 0.24,
           accuracy: 0.773,
           sprayControl: 0.577,
@@ -62,7 +62,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Collector',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.231,
           accuracy: 0.638,
           sprayControl: 0.78,
@@ -117,7 +117,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Octopus',
         stat: {
-          role: 'rifler',
+          role: 'capitan',
           reaction: 0.225,
           accuracy: 0.559,
           sprayControl: 0.536,
@@ -127,7 +127,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Rossander',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.298,
           accuracy: 0.605,
           sprayControl: 0.881,
@@ -172,7 +172,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Cloudy',
         stat: {
-          role: 'support',
+          role: 'sniper',
           reaction: 0.233,
           accuracy: 0.502,
           sprayControl: 0.852,
@@ -257,7 +257,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Focus',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.291,
           accuracy: 0.689,
           sprayControl: 0.553,
@@ -312,7 +312,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Faker',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.22,
           accuracy: 0.683,
           sprayControl: 0.585,
@@ -337,7 +337,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Gepard',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.233,
           accuracy: 0.593,
           sprayControl: 0.81,
@@ -392,7 +392,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Soul',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.237,
           accuracy: 0.899,
           sprayControl: 0.767,
@@ -447,7 +447,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Bad',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.255,
           accuracy: 0.71,
           sprayControl: 0.733,
@@ -512,7 +512,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Wong',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.224,
           accuracy: 0.806,
           sprayControl: 0.848,
@@ -557,7 +557,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Rosh',
         stat: {
-          role: 'support',
+          role: 'sniper',
           reaction: 0.211,
           accuracy: 0.593,
           sprayControl: 0.757,
@@ -612,7 +612,7 @@ const teamsDefault: Team[] = [
       {
         name: 'FGod',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.218,
           accuracy: 0.862,
           sprayControl: 0.513,
@@ -677,7 +677,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Timely',
         stat: {
-          role: 'support',
+          role: 'sniper',
           reaction: 0.249,
           accuracy: 0.816,
           sprayControl: 0.63,
@@ -722,7 +722,7 @@ const teamsDefault: Team[] = [
       {
         name: 'LoseIt',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.286,
           accuracy: 0.86,
           sprayControl: 0.523,
@@ -777,7 +777,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Uppper',
         stat: {
-          role: 'support',
+          role: 'sniper',
           reaction: 0.273,
           accuracy: 0.856,
           sprayControl: 0.521,
@@ -832,7 +832,7 @@ const teamsDefault: Team[] = [
       {
         name: 'Leon',
         stat: {
-          role: 'rifler',
+          role: 'sniper',
           reaction: 0.221,
           accuracy: 0.844,
           sprayControl: 0.874,

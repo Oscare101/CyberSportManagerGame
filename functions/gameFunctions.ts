@@ -221,7 +221,14 @@ function GetNewGun(player: InRoundPlayer, side: string, cash: number) {
       (a: Gun, b: Gun) =>
         b.damage.withoutArmor.head - a.damage.withoutArmor.head
     )
-  const topGun = availableGuns[0] || false
+  const topGun =
+    player.stat.role === 'sniper' && availableGuns.length
+      ? availableGuns[0].name !== 'AWP'
+        ? Math.random() > 0.5
+          ? availableGuns[0]
+          : false
+        : availableGuns[0]
+      : availableGuns[0]
   const chanceOfSkipBuy =
     cash < rules.cashToChanceOfSkipBuyGun && Math.random() > 0.5
 
