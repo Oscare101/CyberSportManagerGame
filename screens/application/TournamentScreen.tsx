@@ -22,6 +22,7 @@ import TournamentInfoBlock from '../../components/tournamentComponents/Tournamen
 import BackHeader from '../../components/tournamentComponents/BackHeader'
 import RenderPrizes from '../../components/tournamentComponents/RenserPrizes'
 import { ScrollView } from 'react-native-gesture-handler'
+import TournamentRatingBlock from '../../components/tournamentComponents/TournamentRatingBlock'
 
 const width = Dimensions.get('screen').width
 
@@ -97,6 +98,8 @@ export default function TournamentScreen({ navigation, route }: any) {
               <TournamentGridBlock
                 tournament={GetCurrentTournament() as Tournament}
               />
+            ) : showContent === 'Ratings' ? (
+              <TournamentRatingBlock tournament={GetCurrentTournament()} />
             ) : (
               <></>
             )}

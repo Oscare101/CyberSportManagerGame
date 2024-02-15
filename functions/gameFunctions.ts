@@ -806,3 +806,67 @@ export function NumberOfMap(map: number) {
     ? '2nd'
     : '1st'
 }
+
+export function PlayerSumStat(
+  mapResults: MapResult[],
+  teamNumber: number,
+  playerName: string
+) {
+  let playerStat: InRoundPlayer[] = []
+  let mapRounds: number[] = []
+  mapResults.forEach((map: MapResult) => {
+    const mapPlayer: any = map[
+      teamNumber === 1 ? 'team1Players' : 'team2Players'
+    ].find((playerData: InRoundPlayer) => playerData.name === playerName)
+    playerStat.push(mapPlayer)
+    mapRounds.push(map.team1Score + map.team2Score)
+  })
+
+  const ADR = +(
+    playerStat
+      .map((stat: InRoundPlayer, index: number) => {
+        return CalculateRating(stat, mapRounds[index]).ADR
+      })
+      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
+  ).toFixed(1)
+
+  const KAST = +(
+    playerStat
+      .map((stat: InRoundPlayer, index: number) => {
+        return CalculateRating(stat, mapRounds[index]).KAST
+      })
+      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
+  ).toFixed(1)
+
+  const rating = +(
+    playerStat
+      .map((stat: InRoundPlayer, index: number) => {
+        return CalculateRating(stat, mapRounds[index]).rating
+      })
+      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
+  ).toFixed(2)
+
+  const kills = playerStat.reduce(
+    (sum: number, stat: InRoundPlayer) => sum + stat.kills,
+    0
+  )
+
+  const death = playerStat.reduce(
+    (sum: number, stat: InRoundPlayer) => sum + stat.death,
+    0
+  )
+
+  return {
+    ADR: ADR,
+    KAST: KAST,
+    rating: rating,
+    kills: kills,
+    death: death,
+  } as {
+    ADR: number
+    KAST: number
+    rating: number
+    kills: number
+    death: number
+  }
+}

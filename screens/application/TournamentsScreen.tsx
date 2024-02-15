@@ -18,6 +18,7 @@ import TournamentWinner, {
 } from '../../functions/tournamentFunctions'
 import { updateTournaments } from '../../redux/tournaments'
 import { Tournament } from '../../constants/interfaces'
+import TeamImage from '../../components/TeamImage'
 
 const width = Dimensions.get('screen').width
 
@@ -39,12 +40,6 @@ export default function TournamentsScreen({ navigation }: any) {
   }
 
   useEffect(() => {
-    console.log(
-      !!(
-        tournaments.length &&
-        tournaments.find((t: Tournament) => !TournamentWinner(t))
-      )
-    )
     if (
       !!(
         tournaments.length &&
@@ -60,11 +55,13 @@ export default function TournamentsScreen({ navigation }: any) {
     const sum = item.prizes.reduce(function (a: any, b: any) {
       return a + b
     })
-    const canStartTournament: boolean = false
+    const canStartTournament: boolean =
+      OnlyCurrentSeason(tournaments)[index - 1]?.grid.length &&
+      !!TournamentWinner(OnlyCurrentSeason(tournaments)[index - 1])
 
     return (
       <>
-        {index === 0 || tournaments[index - 1].season === item.season ? (
+        {index === 0 && false ? (
           <View
             style={{
               width: '92%',
@@ -127,7 +124,8 @@ export default function TournamentsScreen({ navigation }: any) {
             <View style={[styles.tournamentsInfoCell, { width: '30%' }]}>
               {TournamentWinner(item) ? (
                 <>
-                  <Text>{TournamentWinner(item)}</Text>
+                  <TeamImage team={TournamentWinner(item) as string} />
+                  <Text style={styles.tournamentsInfoName}>Winner</Text>
                 </>
               ) : // <Teams team={item.winner.team.name} />
               item.grid?.length ? (
@@ -137,8 +135,6 @@ export default function TournamentsScreen({ navigation }: any) {
                   {canStartTournament ? 'Start' : '-'}
                 </Text>
               )}
-
-              <Text style={styles.tournamentsInfoName}>Winner</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -168,7 +164,8 @@ export default function TournamentsScreen({ navigation }: any) {
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
-        data={OnlyCurrentSeason(tournaments)}
+        data={tournaments}
+        // data={OnlyCurrentSeason(tournaments)}
         renderItem={RenderTournamentItem}
       />
       {/* <NewSeasonModal

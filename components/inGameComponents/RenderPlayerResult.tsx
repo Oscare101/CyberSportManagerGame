@@ -1,59 +1,19 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import { InRoundPlayer, MapResult } from '../../constants/interfaces'
-import { CalculateRating } from '../../functions/gameFunctions'
+import { CalculateRating, PlayerSumStat } from '../../functions/gameFunctions'
 import colors from '../../constants/colors'
 
 const width = Dimensions.get('screen').width
 
 export default function RenderPlayerResults(
   player: InRoundPlayer,
-  rounds: number,
   mapResults: MapResult[],
   teamNumber: number
 ) {
-  let playerStat: InRoundPlayer[] = []
-  let mapRounds: number[] = []
-
-  mapResults.forEach((map: MapResult) => {
-    const mapPlayer: any = map[
-      teamNumber === 1 ? 'team1Players' : 'team2Players'
-    ].find((playerData: InRoundPlayer) => playerData.name === player.name)
-    playerStat.push(mapPlayer)
-    mapRounds.push(map.team1Score + map.team2Score)
-  })
-
-  const ADR = (
-    playerStat
-      .map((stat: InRoundPlayer, index: number) => {
-        return CalculateRating(stat, mapRounds[index]).ADR
-      })
-      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
-  ).toFixed(1)
-
-  const KAST = (
-    playerStat
-      .map((stat: InRoundPlayer, index: number) => {
-        return CalculateRating(stat, mapRounds[index]).KAST
-      })
-      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
-  ).toFixed(1)
-
-  const rating = (
-    playerStat
-      .map((stat: InRoundPlayer, index: number) => {
-        return CalculateRating(stat, mapRounds[index]).rating
-      })
-      .reduce((sum: number, a: number) => sum + a, 0) / playerStat.length
-  ).toFixed(2)
-
-  const kills = playerStat.reduce(
-    (sum: number, stat: InRoundPlayer) => sum + stat.kills,
-    0
-  )
-
-  const death = playerStat.reduce(
-    (sum: number, stat: InRoundPlayer) => sum + stat.death,
-    0
+  const { ADR, KAST, rating, kills, death } = PlayerSumStat(
+    mapResults,
+    teamNumber,
+    player.name
   )
 
   return (
