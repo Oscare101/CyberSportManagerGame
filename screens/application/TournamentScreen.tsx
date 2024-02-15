@@ -8,15 +8,26 @@ import {
 } from 'react-native'
 import { Team, Tournament } from '../../constants/interfaces'
 import colors from '../../constants/colors'
-import { MakeTournamentGrid } from '../../functions/tournamentFunctions'
+import {
+  AutoMatchColumn,
+  MakeTournamentGrid,
+  SetAllMatcherInColumn,
+  UpdateGridAfterMatch,
+} from '../../functions/tournamentFunctions'
 import TournamentGridBlock from '../../components/tournamentComponents/TournamentGridBlock'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { updateTournaments } from '../../redux/tournaments'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ContentPickerBlock from '../../components/tournamentComponents/ContentPickerBlock'
 import TournamentInfoBlock from '../../components/tournamentComponents/TournamentInfoBlock'
 import BackHeader from '../../components/tournamentComponents/BackHeader'
+import rules from '../../constants/rules'
+import {
+  GetMatchWinner,
+  InstantMatchResults,
+  PrepareForMapResults,
+} from '../../functions/gameFunctions'
 
 const width = Dimensions.get('screen').width
 
@@ -513,8 +524,16 @@ export default function TournamentScreen({ navigation, route }: any) {
         t.season === route.params.tournament.season &&
         t.period === route.params.tournament.period &&
         t.name === route.params.tournament.name
-    )
+    ) as Tournament
   }
+
+  useEffect(() => {
+    dispatch(
+      updateTournaments(
+        AutoMatchColumn(GetCurrentTournament(), tournaments, bestOfMaps)
+      )
+    )
+  }, [tournaments])
 
   return (
     <View style={styles.container}>

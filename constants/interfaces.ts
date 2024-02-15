@@ -89,7 +89,7 @@ export interface Tournament {
   // winner?: Team | string
   cup: string
   description: string
-  grid?: any
+  grid: any
   points: any[]
   period: number
 }

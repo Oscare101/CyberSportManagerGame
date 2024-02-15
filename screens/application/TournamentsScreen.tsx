@@ -9,10 +9,14 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CupsImage from '../../components/CupsImage'
 import tournamentsDefault from '../../constants/tournamentsDefault'
-import { GetTournamentsBySeason } from '../../functions/tournamentFunctions'
+import TournamentWinner, {
+  GetTournamentsBySeason,
+} from '../../functions/tournamentFunctions'
+import { updateTournaments } from '../../redux/tournaments'
+import { Tournament } from '../../constants/interfaces'
 
 const width = Dimensions.get('screen').width
 
@@ -20,33 +24,46 @@ export default function TournamentsScreen({ navigation }: any) {
   const tournaments: any = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
-  const [newSeasonModal, setNewSeasonModal] = useState<boolean>(false)
+  // const [newSeasonModal, setNewSeasonModal] = useState<boolean>(false)
 
-  // async function StartNewSeason() {
-  //   const newSeason = tournamentsDefault.map((t: any) => {
-  //     return {
-  //       ...t,
-  //       season: tournaments[tournaments.length - 1].season + 1,
-  //     }
-  //   })
-  //   const newTournaments = tournaments.concat(newSeason)
-  //   dispatch(updateTournaments(newTournaments))
-  //   AsyncStorage.setItem('tournaments', JSON.stringify(newTournaments))
-  // }
+  async function StartNewSeason() {
+    const newSeason = tournamentsDefault.map((t: any) => {
+      return {
+        ...t,
+        season: tournaments[tournaments.length - 1].season + 1,
+      }
+    })
+    const newTournaments = tournaments.concat(newSeason)
+    dispatch(updateTournaments(newTournaments))
+  }
+
+  // useEffect(() => {
+  //   console.log(
+  //     !!(
+  //       tournaments.length &&
+  //       tournaments.find((t: Tournament) => !TournamentWinner(t))
+  //     )
+  //   )
+  //   if (
+  //     !!(
+  //       tournaments.length &&
+  //       tournaments.find((t: Tournament) => !TournamentWinner(t))
+  //     )
+  //   ) {
+  //   } else {
+  //     StartNewSeason()
+  //   }
+  // }, [tournaments])
 
   function RenderTournamentItem({ item, index }: any) {
     const sum = item.prizes.reduce(function (a: any, b: any) {
       return a + b
     })
     const canStartTournament: boolean = false
-    // index === 0 || GetTournamentsBySeason(tournaments)[index - 1].winner
-    //   ? true
-    //   : false
+
     return (
       <>
-        {index === 0 ||
-        GetTournamentsBySeason(tournaments)[index - 1].season !==
-          item.season ? (
+        {index === 0 || tournaments[index - 1].season !== item.season ? (
           <View
             style={{
               width: '92%',
@@ -107,8 +124,10 @@ export default function TournamentsScreen({ navigation }: any) {
               <Text style={styles.tournamentsInfoName}>Teams</Text>
             </View>
             <View style={[styles.tournamentsInfoCell, { width: '30%' }]}>
-              {item.winner ? (
-                <></>
+              {TournamentWinner(item) ? (
+                <>
+                  <Text>{TournamentWinner(item)}</Text>
+                </>
               ) : // <Teams team={item.winner.team.name} />
               item.grid?.length ? (
                 <Ionicons name="time-outline" size={24} color="black" />
@@ -128,7 +147,7 @@ export default function TournamentsScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      {tournaments.find((t: any) => !t.winner) ? (
+      {/* {tournaments.find((t: any) => !t.winner) ? (
         <></>
       ) : (
         <TouchableOpacity
@@ -144,7 +163,7 @@ export default function TournamentsScreen({ navigation }: any) {
         >
           <Text style={{ fontSize: 28, color: '#fff' }}>Start new season</Text>
         </TouchableOpacity>
-      )}
+      )} */}
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}

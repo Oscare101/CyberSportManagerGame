@@ -12,11 +12,8 @@ export default function LaunchScreen({ navigation }: any) {
 
   function SetData() {
     const tournamentsData = storage.getString('tournaments')
-    console.log(tournamentsData)
 
     if (tournamentsData !== undefined && JSON.parse(tournamentsData).length) {
-      console.log(JSON.parse(tournamentsData))
-
       dispatch(updateTournaments(JSON.parse(tournamentsData)))
     } else {
       dispatch(updateTournaments(tournamentsDefault))

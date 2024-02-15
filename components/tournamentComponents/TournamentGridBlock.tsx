@@ -33,7 +33,7 @@ export default function TournamentGridBlock(props: TournamentGridProps) {
           marginBottom: 40,
         }}
       >
-        {props.tournament.grid ? (
+        {props.tournament.grid?.length ? (
           props.tournament.grid.map((grid: any, indexI: number) => (
             <View
               key={indexI}
@@ -43,8 +43,8 @@ export default function TournamentGridBlock(props: TournamentGridProps) {
                 justifyContent: 'space-around',
               }}
             >
-              <Text>{GetStageName(grid.length)}</Text>
-              {grid.map((pair: any, indexJ: number) => (
+              <Text>{GetStageName(grid?.length)}</Text>
+              {grid?.map((pair: any, indexJ: number) => (
                 <MatchPairBlock
                   key={indexJ}
                   tournament={props.tournament}

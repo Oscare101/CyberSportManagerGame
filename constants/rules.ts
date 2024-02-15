@@ -15,4 +15,5 @@ export default {
   armorCost: 1000,
   cashNadesPurchaseSkip: 1000,
   cashToChanceOfSkipBuyGun: 1500,
+  yourTeam: 'NOVA',
 }

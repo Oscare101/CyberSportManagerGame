@@ -609,29 +609,29 @@ export function PrepareForMapResults(
     bestOfMaps: bestOfMaps,
   } as InstantMatchResultProps
 
-  return {
-    preparedTeam1Players: team1Players,
-    preparedTeam2Players: team2Players,
-    preparedScore1: 0,
-    preparedScore2: 0,
-    preparedOvertimes: 0,
-    preparedTeam1Sideplay: CalculateSide(1)[0],
-    preparedTeam2Sideplay: CalculateSide(1)[1],
-    preparedWinLogs: [],
-    preparedMapsResultsLog: [],
-    preparedBestOfMaps: bestOfMaps,
-  } as {
-    preparedTeam1Players: InRoundPlayer[]
-    preparedTeam2Players: InRoundPlayer[]
-    preparedScore1: number
-    preparedScore2: number
-    preparedOvertimes: number
-    preparedTeam1Sideplay: 'CT' | 'T'
-    preparedTeam2Sideplay: 'CT' | 'T'
-    preparedWinLogs: string[]
-    preparedMapsResultsLog: MapResult[]
-    preparedBestOfMaps: number
-  }
+  // return {
+  //   preparedTeam1Players: team1Players,
+  //   preparedTeam2Players: team2Players,
+  //   preparedScore1: 0,
+  //   preparedScore2: 0,
+  //   preparedOvertimes: 0,
+  //   preparedTeam1Sideplay: CalculateSide(1)[0],
+  //   preparedTeam2Sideplay: CalculateSide(1)[1],
+  //   preparedWinLogs: [],
+  //   preparedMapsResultsLog: [],
+  //   preparedBestOfMaps: bestOfMaps,
+  // } as {
+  //   preparedTeam1Players: InRoundPlayer[]
+  //   preparedTeam2Players: InRoundPlayer[]
+  //   preparedScore1: number
+  //   preparedScore2: number
+  //   preparedOvertimes: number
+  //   preparedTeam1Sideplay: 'CT' | 'T'
+  //   preparedTeam2Sideplay: 'CT' | 'T'
+  //   preparedWinLogs: string[]
+  //   preparedMapsResultsLog: MapResult[]
+  //   preparedBestOfMaps: number
+  // }
 }
 
 export function CalculateRating(player: InRoundPlayer, rounds: number) {

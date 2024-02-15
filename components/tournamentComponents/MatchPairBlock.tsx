@@ -15,6 +15,7 @@ import { RootState } from '../../redux'
 import { updateTournaments } from '../../redux/tournaments'
 import { UpdateGridAfterMatch } from '../../functions/tournamentFunctions'
 import MatchScreen from '../../screens/application/MatchScreen'
+import rules from '../../constants/rules'
 
 interface MatchPairProps {
   team1: Team
@@ -88,6 +89,11 @@ export default function MatchPairBlock(props: MatchPairProps) {
     )
   }
 
+  const accentPair: boolean =
+    (props.team1.name === rules.yourTeam ||
+      props.team2.name === rules.yourTeam) &&
+    props.mapResults.length === 0
+
   return (
     <>
       <Modal style={{ flex: 1 }} transparent visible={modal}>
@@ -119,7 +125,14 @@ export default function MatchPairBlock(props: MatchPairProps) {
         onPress={() => {
           setModal(true)
         }}
-        disabled={!props.team1 || !props.team2}
+        disabled={
+          !(props.team1 && props.team2) ||
+          !(
+            props.team1.name === rules.yourTeam ||
+            props.team2.name === rules.yourTeam ||
+            props.mapResults.length
+          )
+        }
         style={{
           width: width * 0.3,
           height: width * 0.15,
@@ -130,9 +143,9 @@ export default function MatchPairBlock(props: MatchPairProps) {
           overflow: 'hidden',
           backgroundColor: '#fff',
           margin: width * 0.02,
-          elevation: 2,
+          elevation: accentPair ? 5 : 1,
           borderWidth: 1,
-          borderColor: '#eee',
+          borderColor: accentPair ? '#000' : '#eee',
         }}
       >
         <PairTeam team={props.team1} opponent={props.team2} />

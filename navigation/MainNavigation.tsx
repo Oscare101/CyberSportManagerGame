@@ -165,13 +165,6 @@ export default function MainNavigation() {
         name="TournamentScreen"
         component={TournamentScreen}
       />
-      {/* <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name="PlayerInfoScreen"
-        component={PlayerInfoScreen}
-      /> */}
     </Stack.Navigator>
   )
 

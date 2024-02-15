@@ -9,15 +9,17 @@ const tournamentsDefault: Tournament[] = [
     description: '',
     points: [100, 50, 25, 25, 10, 10, 10, 10],
     period: 1,
+    grid: [],
   },
   {
     season: 1,
-    name: 'Crown',
+    name: 'Crown tournamentship',
     prizes: [200000, 100000, 50000, 50000, 25000, 25000, 25000, 25000],
     points: [100, 50, 25, 25, 10, 10, 10, 10],
     description: '',
     cup: 'Crown',
     period: 2,
+    grid: [],
   },
   {
     season: 1,
@@ -27,6 +29,7 @@ const tournamentsDefault: Tournament[] = [
     cup: 'WorldCupQualification',
     description: '',
     period: 3,
+    grid: [],
   },
   {
     season: 1,
@@ -36,6 +39,7 @@ const tournamentsDefault: Tournament[] = [
     description: '',
     cup: 'Globe',
     period: 4,
+    grid: [],
   },
   {
     season: 1,
@@ -45,6 +49,7 @@ const tournamentsDefault: Tournament[] = [
     description: '',
     cup: 'Cyber',
     period: 5,
+    grid: [],
   },
   {
     season: 1,
@@ -52,9 +57,9 @@ const tournamentsDefault: Tournament[] = [
     prizes: [200000, 140000, 60000, 60000, 35000, 35000, 35000, 35000],
     points: [150, 75, 40, 40, 15, 15, 15, 15],
     cup: 'WorldCupChampionship',
-    grid: [],
     description: '',
     period: 6,
+    grid: [],
   },
   {
     season: 1,
@@ -64,6 +69,7 @@ const tournamentsDefault: Tournament[] = [
     cup: 'Major',
     description: '',
     period: 7,
+    grid: [],
   },
 ]
 
