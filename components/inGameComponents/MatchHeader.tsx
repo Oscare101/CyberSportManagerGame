@@ -7,6 +7,7 @@ import {
 import { InRoundPlayer, MapResult } from '../../constants/interfaces'
 import colors from '../../constants/colors'
 import rules from '../../constants/rules'
+import TeamImage from '../TeamImage'
 
 interface MatchHeaderProps {
   team1: InRoundPlayer[]
@@ -42,7 +43,9 @@ export default function MatchHeader(props: MatchHeaderProps) {
           </Text>
         </>
       ) : (
-        <></>
+        <>
+          <TeamImage team={props.team1[0].team} />
+        </>
       )}
 
       <Text style={styles.scoreTitle}>
@@ -98,7 +101,9 @@ export default function MatchHeader(props: MatchHeaderProps) {
           </Text>
         </>
       ) : (
-        <></>
+        <>
+          <TeamImage team={props.team2[0].team} />
+        </>
       )}
     </View>
   )

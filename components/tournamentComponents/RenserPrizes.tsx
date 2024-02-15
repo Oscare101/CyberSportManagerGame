@@ -4,6 +4,7 @@ import { RootState } from '../../redux'
 import { Tournament } from '../../constants/interfaces'
 import TournamentWinner from '../../functions/tournamentFunctions'
 import { GetMatchWinner } from '../../functions/gameFunctions'
+import TeamImageBig from '../TeamImageBig'
 
 const width = Dimensions.get('screen').width
 
@@ -41,7 +42,7 @@ export default function RenderPrizes(props: PrizesProps) {
     return (
       <View
         style={{
-          backgroundColor: '#ddd',
+          backgroundColor: '#eee',
           width: (width * 0.92) / 2 - width * 0.02,
           marginLeft: item.index % 2 == 1 ? width * 0.04 : 0,
           marginTop: width * 0.04,
@@ -53,7 +54,7 @@ export default function RenderPrizes(props: PrizesProps) {
           overflow: 'hidden',
         }}
       >
-        <Text>
+        <Text style={{ fontSize: width * 0.04 }}>
           {item.index === 0
             ? '1st'
             : item.index === 1
@@ -67,14 +68,18 @@ export default function RenderPrizes(props: PrizesProps) {
             : ''}
         </Text>
 
-        <Text style={{ fontSize: 20, fontWeight: '500' }}>
+        {/* <Text style={{ fontSize: 20, fontWeight: '500' }}>
           {GetTeamsInPlaces()[item.index]}
-        </Text>
-        <View style={{ position: 'absolute', zIndex: -1, opacity: 0.1 }}>
-          {/* <TeamBig team={GetTeamsInPlaces()[item.index]} /> */}
-        </View>
+        </Text> */}
+        {GetTeamsInPlaces()[item.index] ? (
+          <View style={{ position: 'absolute', zIndex: -1, opacity: 0.15 }}>
+            <TeamImageBig team={GetTeamsInPlaces()[item.index]} />
+          </View>
+        ) : (
+          <></>
+        )}
 
-        <Text style={{ fontSize: 20 }}>
+        <Text style={{ fontSize: width * 0.05, fontWeight: '500' }}>
           {item.item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} $
         </Text>
       </View>
