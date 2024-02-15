@@ -195,7 +195,10 @@ export function AutoMatchColumn(
 export default function TournamentWinner(tournament: Tournament) {
   if (
     tournament.grid.length > 0 &&
-    tournament.grid[tournament.grid.length - 1].length > 0
+    tournament.grid[tournament.grid.length - 1].length > 0 &&
+    tournament.grid[tournament.grid.length - 1][
+      tournament.grid[tournament.grid.length - 1].length - 1
+    ].mapResults
   ) {
     return GetMatchWinner(
       tournament.grid[tournament.grid.length - 1][

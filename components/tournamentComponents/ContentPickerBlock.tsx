@@ -21,7 +21,7 @@ export default function ContentPickerBlock(props: ConatentPickerProps) {
         <TouchableOpacity
           key={index}
           style={{
-            width: `${100 / 2}%`,
+            width: `${100 / props.showContentsData.length}%`,
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: item === props.showContent ? '#fff' : '#00000000',

@@ -4,6 +4,8 @@ import { MMKV } from 'react-native-mmkv'
 import { useDispatch } from 'react-redux'
 import { updateTournaments } from '../../redux/tournaments'
 import tournamentsDefault from '../../constants/tournamentsDefault'
+import teamsDefault from '../../constants/teamsDefault'
+import { updateTeams } from '../../redux/teams'
 
 export const storage = new MMKV()
 
@@ -12,11 +14,17 @@ export default function LaunchScreen({ navigation }: any) {
 
   function SetData() {
     const tournamentsData = storage.getString('tournaments')
-
     if (tournamentsData !== undefined && JSON.parse(tournamentsData).length) {
       dispatch(updateTournaments(JSON.parse(tournamentsData)))
     } else {
       dispatch(updateTournaments(tournamentsDefault))
+    }
+
+    const teamsData = storage.getString('teams')
+    if (teamsData !== undefined && JSON.parse(teamsData).length) {
+      dispatch(updateTeams(JSON.parse(teamsData)))
+    } else {
+      dispatch(updateTeams(teamsDefault))
     }
   }
 

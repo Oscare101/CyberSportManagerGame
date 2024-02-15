@@ -15,11 +15,18 @@ export default function App() {
     const tournaments: any = useSelector(
       (state: RootState) => state.tournaments
     )
+    const teams: any = useSelector((state: RootState) => state.teams)
     useEffect(() => {
       if (tournaments.length) {
         storage.set('tournaments', JSON.stringify(tournaments))
       }
     }, [tournaments])
+
+    useEffect(() => {
+      if (teams.length) {
+        storage.set('teams', JSON.stringify(teams))
+      }
+    }, [teams])
 
     return <StatusBar backgroundColor={'#fefefe'} />
   }
