@@ -1,5 +1,6 @@
 import { MapResult, Team, Tournament } from '../constants/interfaces'
 import rules from '../constants/rules'
+import tournaments from '../redux/tournaments'
 import {
   GetMatchWinner,
   InstantMatchResults,
@@ -115,23 +116,10 @@ export function GetTournamentsBySeason(tournaments: Tournament[]) {
   return tArr
 }
 
-export function SetAllMatcherInColumn(
-  grid: any[],
-  index: number,
-  betOfMaps: number
-) {
-  return grid[index].map((g: any) => {
-    if (g.mapResults.length) {
-      return g
-    } else {
-      return {
-        ...g,
-        mapResults: InstantMatchResults(
-          PrepareForMapResults(g.team1, g.team2, betOfMaps)
-        ),
-      }
-    }
-  })
+export function OnlyCurrentSeason(tournaments: Tournament[]) {
+  return tournaments.filter(
+    (t: Tournament) => t.season === tournaments[tournaments.length - 1].season
+  )
 }
 
 export function AutoMatchColumn(

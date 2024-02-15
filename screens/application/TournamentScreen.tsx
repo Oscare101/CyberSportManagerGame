@@ -11,8 +11,6 @@ import colors from '../../constants/colors'
 import {
   AutoMatchColumn,
   MakeTournamentGrid,
-  SetAllMatcherInColumn,
-  UpdateGridAfterMatch,
 } from '../../functions/tournamentFunctions'
 import TournamentGridBlock from '../../components/tournamentComponents/TournamentGridBlock'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,12 +20,6 @@ import { useEffect, useState } from 'react'
 import ContentPickerBlock from '../../components/tournamentComponents/ContentPickerBlock'
 import TournamentInfoBlock from '../../components/tournamentComponents/TournamentInfoBlock'
 import BackHeader from '../../components/tournamentComponents/BackHeader'
-import rules from '../../constants/rules'
-import {
-  GetMatchWinner,
-  InstantMatchResults,
-  PrepareForMapResults,
-} from '../../functions/gameFunctions'
 
 const width = Dimensions.get('screen').width
 

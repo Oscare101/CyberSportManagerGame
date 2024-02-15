@@ -14,6 +14,7 @@ import CupsImage from '../../components/CupsImage'
 import tournamentsDefault from '../../constants/tournamentsDefault'
 import TournamentWinner, {
   GetTournamentsBySeason,
+  OnlyCurrentSeason,
 } from '../../functions/tournamentFunctions'
 import { updateTournaments } from '../../redux/tournaments'
 import { Tournament } from '../../constants/interfaces'
@@ -37,23 +38,23 @@ export default function TournamentsScreen({ navigation }: any) {
     dispatch(updateTournaments(newTournaments))
   }
 
-  // useEffect(() => {
-  //   console.log(
-  //     !!(
-  //       tournaments.length &&
-  //       tournaments.find((t: Tournament) => !TournamentWinner(t))
-  //     )
-  //   )
-  //   if (
-  //     !!(
-  //       tournaments.length &&
-  //       tournaments.find((t: Tournament) => !TournamentWinner(t))
-  //     )
-  //   ) {
-  //   } else {
-  //     StartNewSeason()
-  //   }
-  // }, [tournaments])
+  useEffect(() => {
+    console.log(
+      !!(
+        tournaments.length &&
+        tournaments.find((t: Tournament) => !TournamentWinner(t))
+      )
+    )
+    if (
+      !!(
+        tournaments.length &&
+        tournaments.find((t: Tournament) => !TournamentWinner(t))
+      )
+    ) {
+    } else {
+      StartNewSeason()
+    }
+  }, [tournaments])
 
   function RenderTournamentItem({ item, index }: any) {
     const sum = item.prizes.reduce(function (a: any, b: any) {
@@ -63,7 +64,7 @@ export default function TournamentsScreen({ navigation }: any) {
 
     return (
       <>
-        {index === 0 || tournaments[index - 1].season !== item.season ? (
+        {index === 0 || tournaments[index - 1].season === item.season ? (
           <View
             style={{
               width: '92%',
@@ -167,7 +168,7 @@ export default function TournamentsScreen({ navigation }: any) {
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
-        data={GetTournamentsBySeason(tournaments)}
+        data={OnlyCurrentSeason(tournaments)}
         renderItem={RenderTournamentItem}
       />
       {/* <NewSeasonModal
