@@ -166,22 +166,24 @@ export function AutoMatchColumn(
         gridI.find((g: any) => g.mapResults.length === 0)
       ) {
         gridI.map((pair: any, indexJ: number) => {
-          tournamentsData = UpdateGridAfterMatch(
-            tournamentsData,
-            tournamentsData.find(
-              (t: Tournament) =>
-                t.season === currentTournament.season &&
-                t.name === currentTournament.name &&
-                t.period === currentTournament.period
-            ) as Tournament,
-            indexI,
-            indexJ,
-            InstantMatchResults(
-              PrepareForMapResults(pair.team1, pair.team2, bestOfMaps)
-            ),
-            pair.team1,
-            pair.team2
-          )
+          if (pair.mapResults.length === 0) {
+            tournamentsData = UpdateGridAfterMatch(
+              tournamentsData,
+              tournamentsData.find(
+                (t: Tournament) =>
+                  t.season === currentTournament.season &&
+                  t.name === currentTournament.name &&
+                  t.period === currentTournament.period
+              ) as Tournament,
+              indexI,
+              indexJ,
+              InstantMatchResults(
+                PrepareForMapResults(pair.team1, pair.team2, bestOfMaps)
+              ),
+              pair.team1,
+              pair.team2
+            )
+          }
         })
       }
     })
