@@ -2,7 +2,9 @@ import { Dimensions, FlatList, Text, View } from 'react-native'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { Tournament } from '../../constants/interfaces'
-import TournamentWinner from '../../functions/tournamentFunctions'
+import TournamentWinner, {
+  GetTeamsInPlaces,
+} from '../../functions/tournamentFunctions'
 import { GetMatchWinner } from '../../functions/gameFunctions'
 import TeamImageBig from '../TeamImageBig'
 
@@ -13,31 +15,6 @@ interface PrizesProps {
 }
 
 export default function RenderPrizes(props: PrizesProps) {
-  function GetTeamsInPlaces() {
-    TournamentWinner(props.tournament)
-    let teamsArr: any = TournamentWinner(props.tournament)
-      ? [TournamentWinner(props.tournament)]
-      : ['']
-    if (props.tournament.grid) {
-      for (let i = props.tournament.grid.length - 1; i >= 0; i--) {
-        props.tournament.grid[i].forEach((pair: any) => {
-          if (pair?.mapResults?.length) {
-            teamsArr.push(
-              GetMatchWinner(pair.mapResults) === pair.team1.name
-                ? pair.team2.name
-                : pair.team1.name
-            )
-          } else {
-            teamsArr.push('')
-          }
-        })
-      }
-      return teamsArr
-    } else {
-      return []
-    }
-  }
-
   function RenderPrizeItem(item: any) {
     return (
       <View
@@ -68,12 +45,11 @@ export default function RenderPrizes(props: PrizesProps) {
             : ''}
         </Text>
 
-        {/* <Text style={{ fontSize: 20, fontWeight: '500' }}>
-          {GetTeamsInPlaces()[item.index]}
-        </Text> */}
-        {GetTeamsInPlaces()[item.index] ? (
+        {GetTeamsInPlaces(props.tournament)[item.index] ? (
           <View style={{ position: 'absolute', zIndex: -1, opacity: 0.15 }}>
-            <TeamImageBig team={GetTeamsInPlaces()[item.index]} />
+            <TeamImageBig
+              team={GetTeamsInPlaces(props.tournament)[item.index]}
+            />
           </View>
         ) : (
           <></>

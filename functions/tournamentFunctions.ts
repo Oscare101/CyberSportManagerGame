@@ -4,6 +4,7 @@ import tournaments from '../redux/tournaments'
 import {
   GetMatchWinner,
   InstantMatchResults,
+  PlayerSumStat,
   PrepareForMapResults,
 } from './gameFunctions'
 
@@ -209,5 +210,80 @@ export default function TournamentWinner(tournament: Tournament) {
     )
   } else {
     return false
+  }
+}
+
+export function GetPlayersByRating(tournament: Tournament) {
+  let allPlayers: any[] = []
+  tournament.grid[0].forEach((pair: any) => {
+    const team1 = pair.team1.players.map((player: any) => {
+      return { name: player.name, team: pair.team1.name }
+    })
+    const team2 = pair.team2.players.map((player: any) => {
+      return { name: player.name, team: pair.team2.name }
+    })
+
+    allPlayers = allPlayers.concat([...team1, ...team2])
+  })
+
+  let playersStat: any[] = []
+
+  allPlayers.forEach((playerObj: any) => {
+    const rating: any[] = []
+    let mapsPlayed: number = 0
+    tournament.grid.forEach((gridI: any[], indexI: number) => {
+      gridI.forEach((gridJ: any, indexJ: number) => {
+        if (gridJ.team1.name === playerObj.team && gridJ.mapResults.length) {
+          rating.push({
+            rating: PlayerSumStat(gridJ.mapResults, 1, playerObj.name).rating,
+            opponentsTeam: gridJ.team2.name,
+          })
+          mapsPlayed += gridJ.mapResults.length
+        } else if (
+          gridJ.team2.name === playerObj.team &&
+          gridJ.mapResults.length
+        ) {
+          //   PlayerSumStat(gridJ.mapResults, 2, playerObj.name).rating
+          rating.push({
+            rating: PlayerSumStat(gridJ.mapResults, 2, playerObj.name).rating,
+            opponentsTeam: gridJ.team1.name,
+          })
+          mapsPlayed += gridJ.mapResults.length
+        }
+      })
+    })
+    playersStat.push({
+      playerName: playerObj.name,
+      team: playerObj.team,
+      ratings: rating,
+      mapsPlayed: mapsPlayed,
+    })
+  })
+
+  return [...playersStat]
+}
+
+export function GetTeamsInPlaces(tournament: Tournament) {
+  TournamentWinner(tournament)
+  let teamsArr: any = TournamentWinner(tournament)
+    ? [TournamentWinner(tournament)]
+    : ['']
+  if (tournament.grid) {
+    for (let i = tournament.grid.length - 1; i >= 0; i--) {
+      tournament.grid[i].forEach((pair: any) => {
+        if (pair?.mapResults?.length) {
+          teamsArr.push(
+            GetMatchWinner(pair.mapResults) === pair.team1.name
+              ? pair.team2.name
+              : pair.team1.name
+          )
+        } else {
+          teamsArr.push('')
+        }
+      })
+    }
+    return teamsArr
+  } else {
+    return []
   }
 }
