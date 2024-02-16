@@ -7,12 +7,16 @@ import {
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import { PlayerSumStat } from '../../functions/gameFunctions'
 import TeamImage from '../TeamImage'
+import RenderPlayerTournamentRating from './RenderPlayerTournamentRating'
+import { useState } from 'react'
 
 const width = Dimensions.get('screen').width
 
 export default function TournamentRatingBlock(props: {
   tournament: Tournament
 }) {
+  const [openedPlayers, setOpenedPlayers] = useState<number[]>([])
+
   function GetPlayersByRating() {
     let allPlayers: any[] = []
     props.tournament.grid[0].forEach((pair: any) => {
@@ -63,21 +67,15 @@ export default function TournamentRatingBlock(props: {
     return [...playersStat]
   }
 
-  function RenderPlayer(item: any) {
-    return (
-      <View style={styles.ratingBlock}>
-        <Text>{item.index + 1}</Text>
-        <TeamImage team={item.item.team} />
-        <Text>{item.item.playerName}</Text>
-        <Text>{item.item.mapsPlayed}</Text>
-        <Text>
-          {(
-            item.item.ratings.reduce((a: any, b: any) => a + b.rating, 0) /
-            item.item.ratings.length
-          ).toFixed(2)}
-        </Text>
-      </View>
-    )
+  function ToggleOpenedPlayers(index: number) {
+    if (openedPlayers.includes(index)) {
+      const newOpenedPlayers = openedPlayers.filter(
+        (player: number) => player !== index
+      )
+      setOpenedPlayers(newOpenedPlayers)
+    } else {
+      setOpenedPlayers([...openedPlayers, index])
+    }
   }
 
   return (
@@ -90,16 +88,16 @@ export default function TournamentRatingBlock(props: {
           first.ratings.reduce((a: any, b: any) => a + b.rating, 0) /
             first.ratings.length
       )}
-      renderItem={RenderPlayer}
+      renderItem={({ item, index }) => (
+        <RenderPlayerTournamentRating
+          item={item}
+          index={index}
+          openedPlayers={openedPlayers}
+          onRatingPress={(value: number) => ToggleOpenedPlayers(value)}
+          navigate={() => {}}
+          currentTournamentGrid={props.tournament.grid}
+        />
+      )}
     />
   )
 }
-const styles = StyleSheet.create({
-  ratingBlock: {
-    width: '95%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: width * 0.01,
-  },
-})
