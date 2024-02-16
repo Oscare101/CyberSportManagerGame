@@ -16,6 +16,7 @@ import { updateTournaments } from '../../redux/tournaments'
 import { UpdateGridAfterMatch } from '../../functions/tournamentFunctions'
 import MatchScreen from '../../screens/application/MatchScreen'
 import rules from '../../constants/rules'
+import MatchModal from './MatchModal'
 
 interface MatchPairProps {
   team1: Team
@@ -33,8 +34,6 @@ const width = Dimensions.get('screen').width
 
 export default function MatchPairBlock(props: MatchPairProps) {
   const [modal, setModal] = useState<boolean>(false)
-  const tournaments = useSelector((state: RootState) => state.tournaments)
-  const dispatch = useDispatch()
 
   function PairTeam(pair: any) {
     return (
@@ -96,30 +95,17 @@ export default function MatchPairBlock(props: MatchPairProps) {
 
   return (
     <>
-      <Modal style={{ flex: 1 }} transparent visible={modal}>
-        <MatchScreen
-          onMatchResults={(value: MapResult[]) => {
-            // MatchResults(value)
-            setModal(false)
-            let newTournamentData = UpdateGridAfterMatch(
-              tournaments,
-              props.tournament,
-              props.indexI,
-              props.indexJ,
-              value,
-              props.team1,
-              props.team2
-            )
-
-            dispatch(updateTournaments(newTournamentData))
-          }}
-          team1={props.team1}
-          team2={props.team2}
-          bestOfMaps={props.bestOfMaps}
-          onBack={() => setModal(false)}
-          mapResults={props.mapResults}
-        />
-      </Modal>
+      <MatchModal
+        team1={props.team1}
+        team2={props.team2}
+        bestOfMaps={props.bestOfMaps}
+        mapResults={props.mapResults}
+        modal={modal}
+        setModal={(value: boolean) => setModal(value)}
+        tournament={props.tournament}
+        indexI={props.indexI}
+        indexJ={props.indexJ}
+      />
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {

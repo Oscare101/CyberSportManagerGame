@@ -2,7 +2,7 @@ import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native'
 import TeamImage from '../TeamImage'
 import colors from '../../constants/colors'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Team } from '../../constants/interfaces'
+import { Ionicons } from '@expo/vector-icons'
 
 const width = Dimensions.get('screen').width
 
@@ -11,7 +11,7 @@ export default function RenderPlayerTournamentRating(props: {
   index: number
   openedPlayers: number[]
   onRatingPress: any
-  navigate: any
+  openModal: any
   currentTournamentGrid: any
 }) {
   const rating: number = +(
@@ -20,19 +20,22 @@ export default function RenderPlayerTournamentRating(props: {
   ).toFixed(2)
 
   function GetTournamentPair(team1: string, team2: string) {
-    const pair = props.currentTournamentGrid.map(
-      (gridI: any[], indexI: number) => {
-        gridI.map((gridJ: any, indexJ: number) => {
-          if (
-            (gridJ.team1.name === team1 || gridJ.team2.name === team1) &&
-            (gridJ.team1.name === team2 || gridJ.team2.name === team2)
-          ) {
-            return gridJ
-          }
-        })
-      }
-    )
-    props.navigate(pair.team1, pair.team2, pair.mapResults)
+    props.currentTournamentGrid.forEach((gridI: any[], indexI: number) => {
+      gridI.map((gridJ: any, indexJ: number) => {
+        if (
+          (gridJ.team1.name === team1 || gridJ.team2.name === team1) &&
+          (gridJ.team1.name === team2 || gridJ.team2.name === team2)
+        ) {
+          props.openModal(
+            gridJ.team1,
+            gridJ.team2,
+            gridJ.mapResults,
+            indexI,
+            indexJ
+          )
+        }
+      })
+    })
   }
 
   function RenderMapRatings({ item }: any) {
@@ -42,6 +45,7 @@ export default function RenderPlayerTournamentRating(props: {
         activeOpacity={0.8}
         onPress={() => GetTournamentPair(props.item.team, item.opponentsTeam)}
       >
+        <Ionicons name="open-outline" size={width * 0.04} color="black" />
         <Text style={styles.opponent}>against {item.opponentsTeam}</Text>
         <TeamImage team={item.opponentsTeam} />
 
@@ -129,6 +133,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingVertical: width * 0.01,
+    paddingLeft: '7%',
   },
-  opponent: { flex: 1, textAlign: 'right', marginRight: '5%', opacity: 0.6 },
+  opponent: { flex: 1, textAlign: 'left', marginLeft: '5%', opacity: 0.6 },
 })
