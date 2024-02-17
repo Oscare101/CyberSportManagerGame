@@ -45,7 +45,7 @@ export default function RenderPlayerTournamentRating(props: {
         activeOpacity={0.8}
         onPress={() => GetTournamentPair(props.item.team, item.opponentsTeam)}
       >
-        <Ionicons name="open-outline" size={width * 0.04} color="black" />
+        <Ionicons name="open-outline" size={width * 0.035} color="black" />
         <Text style={styles.opponent}>against {item.opponentsTeam}</Text>
         <TeamImage team={item.opponentsTeam} />
 
@@ -59,6 +59,7 @@ export default function RenderPlayerTournamentRating(props: {
                   : rating < 1
                   ? colors.errorColor
                   : colors.warningColor,
+              fontSize: width * 0.035,
             },
           ]}
         >
@@ -79,9 +80,9 @@ export default function RenderPlayerTournamentRating(props: {
         <TeamImage team={props.item.team} />
         <Text style={styles.name}>{props.item.playerName}</Text>
         {props.openedPlayers.includes(props.index) ? (
-          <Ionicons name="chevron-up" size={24} color="black" />
+          <Ionicons name="chevron-up" size={width * 0.04} color="black" />
         ) : (
-          <Ionicons name="chevron-down" size={24} color="black" />
+          <Ionicons name="chevron-down" size={width * 0.04} color="black" />
         )}
         <Text style={styles.mapPlayed}>{props.item.mapsPlayed} maps</Text>
         <Text
@@ -128,10 +129,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: width * 0.01,
   },
-  number: { width: '7%', opacity: 0.6 },
-  name: { flex: 1, paddingLeft: '3%' },
-  mapPlayed: { width: '20%', textAlign: 'right' },
-  rating: { width: '15%', marginLeft: '5%' },
+  number: { width: '7%', opacity: 0.6, fontSize: width * 0.03 },
+  name: { flex: 1, paddingLeft: '3%', fontSize: width * 0.04 },
+  mapPlayed: { width: '20%', textAlign: 'right', fontSize: width * 0.035 },
+  rating: {
+    width: '15%',
+    marginLeft: '5%',
+    fontSize: width * 0.04,
+  },
   openedRatingBlock: {
     width: '95%',
     flexDirection: 'row',
@@ -140,5 +145,11 @@ const styles = StyleSheet.create({
     paddingVertical: width * 0.01,
     paddingLeft: '7%',
   },
-  opponent: { flex: 1, textAlign: 'left', marginLeft: '5%', opacity: 0.6 },
+  opponent: {
+    flex: 1,
+    textAlign: 'left',
+    marginLeft: '5%',
+    opacity: 0.6,
+    fontSize: width * 0.035,
+  },
 })
