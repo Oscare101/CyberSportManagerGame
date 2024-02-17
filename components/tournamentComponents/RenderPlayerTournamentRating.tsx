@@ -78,6 +78,11 @@ export default function RenderPlayerTournamentRating(props: {
         <Text style={styles.number}>{props.index + 1}</Text>
         <TeamImage team={props.item.team} />
         <Text style={styles.name}>{props.item.playerName}</Text>
+        {props.openedPlayers.includes(props.index) ? (
+          <Ionicons name="chevron-up" size={24} color="black" />
+        ) : (
+          <Ionicons name="chevron-down" size={24} color="black" />
+        )}
         <Text style={styles.mapPlayed}>{props.item.mapsPlayed} maps</Text>
         <Text
           style={[
