@@ -23,6 +23,7 @@ import BackHeader from '../../components/tournamentComponents/BackHeader'
 import RenderPrizes from '../../components/tournamentComponents/RenserPrizes'
 import { ScrollView } from 'react-native-gesture-handler'
 import TournamentRatingBlock from '../../components/tournamentComponents/TournamentRatingBlock'
+import LoadModal from '../../components/tournamentComponents/LoadModal'
 
 const width = Dimensions.get('screen').width
 
@@ -66,16 +67,21 @@ export default function TournamentScreen({ navigation, route }: any) {
     ) as Tournament
   }
 
-  useEffect(() => {
+  function AutoMatch() {
     dispatch(
       updateTournaments(
         AutoMatchColumn(GetCurrentTournament(), tournaments, bestOfMaps)
       )
     )
-  }, [tournaments])
+  }
+
+  useEffect(AutoMatch, [tournaments])
 
   return (
-    <ScrollView style={{ flex: 1, width: '100%', backgroundColor: '#fefefe' }}>
+    <ScrollView
+      style={{ flex: 1, width: '100%', backgroundColor: '#fefefe' }}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.container}>
         <BackHeader tournamentName={route.params.tournament.name} />
         <TournamentInfoBlock tournament={route.params.tournament} />

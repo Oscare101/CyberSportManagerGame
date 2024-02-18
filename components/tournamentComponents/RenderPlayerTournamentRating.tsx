@@ -54,9 +54,9 @@ export default function RenderPlayerTournamentRating(props: {
             styles.rating,
             {
               color:
-                rating > 1.1
+                item.rating > 1.1
                   ? colors.succesColor
-                  : rating < 1
+                  : item.rating < 1
                   ? colors.errorColor
                   : colors.warningColor,
               fontSize: width * 0.035,

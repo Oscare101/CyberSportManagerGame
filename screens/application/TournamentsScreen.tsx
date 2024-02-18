@@ -61,7 +61,9 @@ export default function TournamentsScreen({ navigation }: any) {
 
     return (
       <>
-        {index === 0 && false ? (
+        {index === 0 ||
+        GetTournamentsBySeason(tournaments)[index - 1].season !==
+          item.season ? (
           <View
             style={{
               width: '92%',
@@ -164,8 +166,8 @@ export default function TournamentsScreen({ navigation }: any) {
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
-        data={tournaments}
-        // data={OnlyCurrentSeason(tournaments)}
+        // data={tournaments}
+        data={GetTournamentsBySeason(tournaments)}
         renderItem={RenderTournamentItem}
       />
       {/* <NewSeasonModal

@@ -1,20 +1,11 @@
-import { Dimensions, Modal, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native'
 import { MapResult, Team, Tournament } from '../../constants/interfaces'
 import {
   GetMatchScoreByTeams,
   GetMatchWinner,
-  InstantMatchResultProps,
-  InstantMatchResults,
-  PrepareForMapResults,
 } from '../../functions/gameFunctions'
 import colors from '../../constants/colors'
-import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { RootState } from '../../redux'
-import { updateTournaments } from '../../redux/tournaments'
-import { UpdateGridAfterMatch } from '../../functions/tournamentFunctions'
-import MatchScreen from '../../screens/application/MatchScreen'
 import rules from '../../constants/rules'
 import MatchModal from './MatchModal'
 
@@ -106,6 +97,7 @@ export default function MatchPairBlock(props: MatchPairProps) {
         indexI={props.indexI}
         indexJ={props.indexJ}
       />
+
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
