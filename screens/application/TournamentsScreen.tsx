@@ -61,35 +61,6 @@ export default function TournamentsScreen({ navigation }: any) {
 
     return (
       <>
-        {index === 0 ||
-        GetTournamentsBySeason(tournaments)[index - 1].season !==
-          item.season ? (
-          <View
-            style={{
-              width: '92%',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              alignSelf: 'center',
-            }}
-          >
-            <View style={{ flex: 1, height: 1, backgroundColor: '#666' }} />
-            <Text
-              style={{
-                fontSize: 20,
-                padding: 5,
-                color: '#666',
-                fontWeight: '400',
-                letterSpacing: 1,
-              }}
-            >
-              season {item.season}
-            </Text>
-            <View style={{ flex: 1, height: 1, backgroundColor: '#666' }} />
-          </View>
-        ) : (
-          <></>
-        )}
         <TouchableOpacity
           style={[styles.tournamentBlock]}
           activeOpacity={0.8}
@@ -146,33 +117,17 @@ export default function TournamentsScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      {/* {tournaments.find((t: any) => !t.winner) ? (
-        <></>
-      ) : (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => setNewSeasonModal(true)}
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 10,
-            backgroundColor: '#9dbef2',
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ fontSize: 28, color: '#fff' }}>Start new season</Text>
-        </TouchableOpacity>
-      )} */}
       <View
         style={{
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           height: width * 0.08,
           paddingHorizontal: '5%',
         }}
       >
+        <Text style={{ fontSize: width * 0.05 }}>Tournaments</Text>
         <TouchableOpacity
           style={{
             height: '100%',
@@ -193,14 +148,6 @@ export default function TournamentsScreen({ navigation }: any) {
         data={GetTournamentsBySeason(ActiveTournaments(tournaments))}
         renderItem={RenderTournamentItem}
       />
-      {/* <NewSeasonModal
-        visible={newSeasonModal}
-        onClose={() => setNewSeasonModal(false)}
-        onSuccess={() => {
-          setNewSeasonModal(false)
-          StartNewSeason()
-        }}
-      /> */}
     </View>
   )
 }

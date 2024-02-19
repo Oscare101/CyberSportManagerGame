@@ -653,10 +653,9 @@ export function CalculateRating(player: InRoundPlayer, rounds: number) {
   const rating = +(
     (0.0073 * KAST) / 100 +
     (-0.5329 * DPR) / 3 +
-    0.86 * KPR +
+    0.9 * KPR +
     APR +
-    0.0032 * ADR +
-    0.1584
+    0.0032 * ADR
   ).toFixed(2)
   return {
     ADR: ADR,
