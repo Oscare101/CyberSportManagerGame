@@ -28,8 +28,6 @@ export default function TournamentsScreen({ navigation }: any) {
   const tournaments: any = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
-  // const [newSeasonModal, setNewSeasonModal] = useState<boolean>(false)
-
   async function StartNewSeason() {
     const newSeason = tournamentsDefault.map((t: any) => {
       return {
@@ -100,8 +98,7 @@ export default function TournamentsScreen({ navigation }: any) {
                   <TeamImage team={TournamentWinner(item) as string} />
                   <Text style={styles.tournamentsInfoName}>Winner</Text>
                 </>
-              ) : // <Teams team={item.winner.team.name} />
-              item.grid?.length ? (
+              ) : item.grid?.length ? (
                 <Ionicons name="time-outline" size={24} color="black" />
               ) : (
                 <Text style={styles.tournamentsInfoTitle}>
@@ -144,7 +141,6 @@ export default function TournamentsScreen({ navigation }: any) {
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
-        // data={tournaments}
         data={GetTournamentsBySeason(ActiveTournaments(tournaments))}
         renderItem={RenderTournamentItem}
       />

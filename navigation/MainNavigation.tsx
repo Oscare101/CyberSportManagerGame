@@ -92,20 +92,6 @@ export default function MainNavigation() {
     )
   }
 
-  // function InformationNavigation() {
-  //   return (
-  //     <Stack.Navigator>
-  //       <Stack.Screen
-  //         options={{
-  //           headerShown: false,
-  //         }}
-  //         name="InformationScreen"
-  //         component={InformationScreen}
-  //       />
-  //     </Stack.Navigator>
-  //   )
-  // }
-
   function TournamentsNavigation() {
     return (
       <Stack.Navigator>
@@ -130,13 +116,6 @@ export default function MainNavigation() {
             headerShown: false,
           }}
         />
-        {/* <Tab.Screen
-          name="InformationNavigation"
-          component={InformationNavigation}
-          options={{
-            headerShown: false,
-          }}
-        /> */}
       </Tab.Navigator>
     )
   }

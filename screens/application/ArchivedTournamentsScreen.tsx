@@ -28,8 +28,6 @@ export default function ArchivedTournamentsScreen({ navigation }: any) {
   const tournaments: any = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
-  // const [newSeasonModal, setNewSeasonModal] = useState<boolean>(false)
-
   async function StartNewSeason() {
     const newSeason = tournamentsDefault.map((t: any) => {
       return {
