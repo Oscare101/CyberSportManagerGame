@@ -10,6 +10,7 @@ import { Team, Tournament } from '../../constants/interfaces'
 import colors from '../../constants/colors'
 import {
   AutoMatchColumn,
+  CanStartTournament,
   MakeTournamentGrid,
 } from '../../functions/tournamentFunctions'
 import TournamentGridBlock from '../../components/tournamentComponents/TournamentGridBlock'
@@ -113,18 +114,26 @@ export default function TournamentScreen({ navigation, route }: any) {
         ) : (
           <>
             {showContent === 'Grid' ? (
-              <TouchableOpacity
-                style={styles.startTournamentButton}
-                activeOpacity={0.8}
-                onPress={StartTournament}
-              >
-                <Text style={styles.startTournamentButtonTitle}>
-                  Start the tournament
-                </Text>
-                <Text style={styles.startTournamentButtonComment}>
-                  Prepare and shuffle teams
-                </Text>
-              </TouchableOpacity>
+              <>
+                {CanStartTournament(tournaments, route.params.tournament) ? (
+                  <TouchableOpacity
+                    style={styles.startTournamentButton}
+                    activeOpacity={0.8}
+                    onPress={StartTournament}
+                  >
+                    <Text style={styles.startTournamentButtonTitle}>
+                      Start the tournament
+                    </Text>
+                    <Text style={styles.startTournamentButtonComment}>
+                      Prepare and shuffle teams
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <Text style={styles.cantStartTournamentText}>
+                    Fisrt finish previous tournament
+                  </Text>
+                )}
+              </>
             ) : (
               <></>
             )}
@@ -157,4 +166,9 @@ const styles = StyleSheet.create({
   },
   startTournamentButtonTitle: { fontSize: width * 0.05 },
   startTournamentButtonComment: { fontSize: width * 0.03 },
+  cantStartTournamentText: {
+    fontSize: width * 0.04,
+    color: colors.warningColor,
+    marginTop: width * 0.05,
+  },
 })

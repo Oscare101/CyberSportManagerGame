@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons'
 import TournamentsScreen from '../screens/application/TournamentsScreen'
 import LaunchScreen from '../screens/launch/LaunchScreen'
 import TournamentScreen from '../screens/application/TournamentScreen'
+import ArchivedTournamentsScreen from '../screens/application/ArchivedTournamentsScreen'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -164,6 +165,13 @@ export default function MainNavigation() {
         }}
         name="TournamentScreen"
         component={TournamentScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="ArchivedTournamentsScreen"
+        component={ArchivedTournamentsScreen}
       />
     </Stack.Navigator>
   )

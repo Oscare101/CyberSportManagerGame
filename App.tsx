@@ -28,7 +28,7 @@ export default function App() {
       }
     }, [teams])
 
-    return <StatusBar backgroundColor={'#fefefe'} />
+    return <StatusBar backgroundColor={'#fefefe'} barStyle={'dark-content'} />
   }
 
   return (

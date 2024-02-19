@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import CupsImage from '../../components/CupsImage'
 import tournamentsDefault from '../../constants/tournamentsDefault'
 import TournamentWinner, {
-  ActiveTournaments,
+  ArchivedTournaments,
   CanStartTournament,
   GetTournamentsBySeason,
   OnlyCurrentSeason,
@@ -24,7 +24,7 @@ import TeamImage from '../../components/TeamImage'
 
 const width = Dimensions.get('screen').width
 
-export default function TournamentsScreen({ navigation }: any) {
+export default function ArchivedTournamentsScreen({ navigation }: any) {
   const tournaments: any = useSelector((state: RootState) => state.tournaments)
   const dispatch = useDispatch()
 
@@ -57,13 +57,12 @@ export default function TournamentsScreen({ navigation }: any) {
     const sum = item.prizes.reduce(function (a: any, b: any) {
       return a + b
     })
-    const canStartTournament: boolean = CanStartTournament(tournaments, item)
 
     return (
       <>
         {index === 0 ||
-        GetTournamentsBySeason(tournaments)[index - 1].season !==
-          item.season ? (
+        GetTournamentsBySeason(ArchivedTournaments(tournaments))[index - 1]
+          .season !== item.season ? (
           <View
             style={{
               width: '92%',
@@ -129,13 +128,8 @@ export default function TournamentsScreen({ navigation }: any) {
                   <TeamImage team={TournamentWinner(item) as string} />
                   <Text style={styles.tournamentsInfoName}>Winner</Text>
                 </>
-              ) : // <Teams team={item.winner.team.name} />
-              item.grid?.length ? (
-                <Ionicons name="time-outline" size={24} color="black" />
               ) : (
-                <Text style={styles.tournamentsInfoTitle}>
-                  {canStartTournament ? 'Start' : '-'}
-                </Text>
+                <></>
               )}
             </View>
           </View>
@@ -146,29 +140,12 @@ export default function TournamentsScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      {/* {tournaments.find((t: any) => !t.winner) ? (
-        <></>
-      ) : (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => setNewSeasonModal(true)}
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 10,
-            backgroundColor: '#9dbef2',
-            borderRadius: 10,
-          }}
-        >
-          <Text style={{ fontSize: 28, color: '#fff' }}>Start new season</Text>
-        </TouchableOpacity>
-      )} */}
       <View
         style={{
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-end',
+          justifyContent: 'flex-start',
           height: width * 0.08,
           paddingHorizontal: '5%',
         }}
@@ -181,26 +158,18 @@ export default function TournamentsScreen({ navigation }: any) {
             justifyContent: 'center',
           }}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('ArchivedTournamentsScreen')}
+          onPress={() => navigation.goBack()}
         >
-          <Ionicons name="archive-outline" size={width * 0.06} color="black" />
+          <Ionicons name="chevron-back" size={width * 0.06} color="black" />
         </TouchableOpacity>
+        <Text style={{ fontSize: width * 0.05 }}>Archived tournaments</Text>
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
-        // data={tournaments}
-        data={GetTournamentsBySeason(ActiveTournaments(tournaments))}
+        data={GetTournamentsBySeason(ArchivedTournaments(tournaments))}
         renderItem={RenderTournamentItem}
       />
-      {/* <NewSeasonModal
-        visible={newSeasonModal}
-        onClose={() => setNewSeasonModal(false)}
-        onSuccess={() => {
-          setNewSeasonModal(false)
-          StartNewSeason()
-        }}
-      /> */}
     </View>
   )
 }
