@@ -21,6 +21,7 @@ import TournamentWinner, {
 import { updateTournaments } from '../../redux/tournaments'
 import { Tournament } from '../../constants/interfaces'
 import TeamImage from '../../components/TeamImage'
+import colors from '../../constants/colors'
 
 const width = Dimensions.get('screen').width
 
@@ -38,18 +39,6 @@ export default function TournamentsScreen({ navigation }: any) {
     const newTournaments = tournaments.concat(newSeason)
     dispatch(updateTournaments(newTournaments))
   }
-
-  useEffect(() => {
-    if (
-      !!(
-        tournaments.length &&
-        tournaments.find((t: Tournament) => !TournamentWinner(t))
-      )
-    ) {
-    } else {
-      StartNewSeason()
-    }
-  }, [tournaments])
 
   function RenderTournamentItem({ item, index }: any) {
     const sum = item.prizes.reduce(function (a: any, b: any) {
@@ -138,6 +127,19 @@ export default function TournamentsScreen({ navigation }: any) {
           <Ionicons name="archive-outline" size={width * 0.06} color="black" />
         </TouchableOpacity>
       </View>
+      {tournaments.length &&
+      tournaments.every((t: Tournament) => TournamentWinner(t)) ? (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={StartNewSeason}
+          style={styles.newSeasonButton}
+        >
+          <Text style={styles.newSeasonTitle}>Start New Season</Text>
+        </TouchableOpacity>
+      ) : (
+        <></>
+      )}
+
       <FlatList
         showsVerticalScrollIndicator={false}
         style={{ width: '100%' }}
@@ -202,4 +204,14 @@ const styles = StyleSheet.create({
   },
   tournamentsInfoTitle: { fontSize: width * 0.04, fontWeight: '500' },
   tournamentsInfoName: { fontSize: width * 0.035, fontWeight: '300' },
+  newSeasonButton: {
+    backgroundColor: '#fff',
+    width: '92%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: width * 0.03,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  newSeasonTitle: { fontSize: width * 0.06 },
 })

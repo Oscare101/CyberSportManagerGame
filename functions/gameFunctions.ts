@@ -619,9 +619,9 @@ export function PrepareForMapResults(
 
 export function CalculateRating(player: InRoundPlayer, rounds: number) {
   const ADR = +(player.totalDamage / rounds).toFixed(2)
-  const DPR = player.death / rounds
-  const KPR = player.kills / rounds
-  const APR = player.assist / rounds
+  const DPR = +(player.death / rounds).toFixed(2)
+  const KPR = +(player.kills / rounds).toFixed(2)
+  const APR = +(player.assist / rounds).toFixed(2)
   const KAST = +(
     (player.roundsWithKAST.filter(onlyUniqueRounds).length * 100) /
     rounds

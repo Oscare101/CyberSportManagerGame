@@ -86,7 +86,6 @@ export interface Tournament {
   season: number
   name: string
   prizes: any[]
-  // winner?: Team | string
   cup: string
   description: string
   grid: any
