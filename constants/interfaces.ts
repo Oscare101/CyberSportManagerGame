@@ -38,6 +38,10 @@ export interface PlayerStatistic {
   accuracy: number // 0 - 1
   sprayControl: number // 0 - 1
   flicksControl: number // 0 - 1
+  nades: number // 0 - 1
+  aggression: number // 0 - 1
+  tactics: number // 0 - 1
+  stamina: number // 0 - 1
 }
 
 export interface InRoundPlayer {
