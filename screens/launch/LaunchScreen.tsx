@@ -29,11 +29,11 @@ export default function LaunchScreen({ navigation }: any) {
   }
 
   useEffect(() => {
-    SetData()
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'NavigationApp' }],
-    })
+    // SetData()
+    // navigation.reset({
+    //   index: 0,
+    //   routes: [{ name: 'NavigationApp' }],
+    // })
   }, [])
   return <View></View>
 }

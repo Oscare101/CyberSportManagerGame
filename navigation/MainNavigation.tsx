@@ -6,10 +6,7 @@ import {
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import TournamentsScreen from '../screens/application/TournamentsScreen'
 import LaunchScreen from '../screens/launch/LaunchScreen'
-import TournamentScreen from '../screens/application/TournamentScreen'
-import ArchivedTournamentsScreen from '../screens/application/ArchivedTournamentsScreen'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -92,33 +89,33 @@ export default function MainNavigation() {
     )
   }
 
-  function TournamentsNavigation() {
-    return (
-      <Stack.Navigator>
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-          name="TournamentsScreen"
-          component={TournamentsScreen}
-        />
-      </Stack.Navigator>
-    )
-  }
+  // function TournamentsNavigation() {
+  //   return (
+  //     <Stack.Navigator>
+  //       <Stack.Screen
+  //         options={{
+  //           headerShown: false,
+  //         }}
+  //         name="TournamentsScreen"
+  //         component={TournamentsScreen}
+  //       />
+  //     </Stack.Navigator>
+  //   )
+  // }
 
-  function NavigationApp() {
-    return (
-      <Tab.Navigator tabBar={(props: any) => <TabBar {...props} />}>
-        <Tab.Screen
-          name="TournamentsNavigation"
-          component={TournamentsNavigation}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Tab.Navigator>
-    )
-  }
+  // function NavigationApp() {
+  //   return (
+  //     <Tab.Navigator tabBar={(props: any) => <TabBar {...props} />}>
+  //       <Tab.Screen
+  //         name="TournamentsNavigation"
+  //         component={TournamentsNavigation}
+  //         options={{
+  //           headerShown: false,
+  //         }}
+  //       />
+  //     </Tab.Navigator>
+  //   )
+  // }
 
   const navigationLogIn = (
     <Stack.Navigator initialRouteName="LaunchScreen">
@@ -129,16 +126,16 @@ export default function MainNavigation() {
         name="LaunchScreen"
         component={LaunchScreen}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{
           headerShown: false,
           headerLeft: () => null,
         }}
         name="NavigationApp"
         component={NavigationApp}
-      />
+      /> */}
       {/* other screens then must apear without bottom tab navigation */}
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{
           headerShown: false,
         }}
@@ -151,7 +148,7 @@ export default function MainNavigation() {
         }}
         name="ArchivedTournamentsScreen"
         component={ArchivedTournamentsScreen}
-      />
+      /> */}
     </Stack.Navigator>
   )
 
