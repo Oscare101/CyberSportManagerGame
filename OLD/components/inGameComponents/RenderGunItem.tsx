@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import GunImage from '../GunImage'
+import GunImage from '../../../components/icons/GunImage'
 import { Gun } from '../../../constants/interfaces'
 import { Ionicons } from '@expo/vector-icons'
 

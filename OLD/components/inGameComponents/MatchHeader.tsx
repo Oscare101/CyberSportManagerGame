@@ -7,7 +7,7 @@ import {
 import { InRoundPlayer, MapResult } from '../../../constants/interfaces'
 import colors from '../../../constants/colors'
 import rules from '../../../constants/rules'
-import TeamImage from '../TeamImage'
+import TeamImage from '../../../components/icons/TeamImage'
 
 interface MatchHeaderProps {
   team1: InRoundPlayer[]

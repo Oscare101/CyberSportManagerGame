@@ -57,7 +57,6 @@ export interface InRoundPlayer {
   name: string
   team: string
   stat: PlayerStatistic
-  //
   totalDamage: number
   roundsWithKAST: number[]
 }

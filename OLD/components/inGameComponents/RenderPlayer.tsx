@@ -1,6 +1,6 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import HealthBlock from './HealthBlock'
-import GunImage from '../GunImage'
+import GunImage from '../../../components/icons/GunImage'
 import NadesBlock from './NadesBlock'
 import { InRoundPlayer } from '../../../constants/interfaces'
 import colors from '../../../constants/colors'

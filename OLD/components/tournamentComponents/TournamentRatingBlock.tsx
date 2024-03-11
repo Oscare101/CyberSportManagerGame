@@ -7,7 +7,7 @@ import {
 } from '../../../constants/interfaces'
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
 import { PlayerSumStat } from '../../functions/gameFunctions'
-import TeamImage from '../TeamImage'
+import TeamImage from '../../../components/icons/TeamImage'
 import RenderPlayerTournamentRating from './RenderPlayerTournamentRating'
 import { useState } from 'react'
 import MatchModal from './MatchModal'

@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../redux'
 import { Ionicons } from '@expo/vector-icons'
 import { useEffect, useState } from 'react'
-import CupsImage from '../components/CupsImage'
+import CupsImage from '../../components/icons/CupsImage'
 import tournamentsDefault from '../../constants/tournamentsDefault'
 import TournamentWinner, {
   ArchivedTournaments,
@@ -20,7 +20,7 @@ import TournamentWinner, {
 } from '../functions/tournamentFunctions'
 import { updateTournaments } from '../../redux/tournaments'
 import { Tournament } from '../../constants/interfaces'
-import TeamImage from '../components/TeamImage'
+import TeamImage from '../../components/icons/TeamImage'
 
 const width = Dimensions.get('screen').width
 

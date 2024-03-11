@@ -1,5 +1,5 @@
 import { Dimensions, FlatList, StyleSheet, Text, View } from 'react-native'
-import TeamImage from '../TeamImage'
+import TeamImage from '../../../components/icons/TeamImage'
 import colors from '../../../constants/colors'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'

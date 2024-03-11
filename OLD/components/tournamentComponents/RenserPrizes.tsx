@@ -6,7 +6,7 @@ import TournamentWinner, {
   GetTeamsInPlaces,
 } from '../../functions/tournamentFunctions'
 import { GetMatchWinner } from '../../functions/gameFunctions'
-import TeamImageBig from '../TeamImageBig'
+import TeamImageBig from '../../../components/icons/TeamImageBig'
 
 const width = Dimensions.get('screen').width
 

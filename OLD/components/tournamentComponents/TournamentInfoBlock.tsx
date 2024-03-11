@@ -1,5 +1,5 @@
 import { Dimensions, StyleSheet, Text, View } from 'react-native'
-import CupsBigImage from '../CupsBigImage'
+import CupsBigImage from '../../../components/icons/CupsBigImage'
 import { Tournament } from '../../../constants/interfaces'
 
 const width = Dimensions.get('screen').width
