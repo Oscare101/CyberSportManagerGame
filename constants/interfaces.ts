@@ -95,3 +95,15 @@ export interface Tournament {
   points: any[]
   period: number
 }
+
+export interface StatName {
+  stat:
+    | 'reaction'
+    | 'accuracy'
+    | 'spray'
+    | 'flick'
+    | 'nade'
+    | 'aggression'
+    | 'tactic'
+    | 'stamina'
+}

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { View } from 'react-native'
+import { FlatList, Text, View } from 'react-native'
 import { MMKV } from 'react-native-mmkv'
 import { useDispatch } from 'react-redux'
 import { updateTournaments } from '../../redux/tournaments'

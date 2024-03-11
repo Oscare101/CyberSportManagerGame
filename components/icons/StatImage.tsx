@@ -16,9 +16,10 @@ import {
   TacticsDark,
   StaminaDark,
 } from '../../constants/images/stats'
+import { StatName } from '../../constants/interfaces'
 
 export default function StatImage(props: {
-  stat: string
+  stat: StatName['stat']
   theme: 'dark' | 'light'
 }) {
   const stats: any = {
