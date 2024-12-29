@@ -1,8 +1,4 @@
-import {Nade, NadeName} from './nadeInterfaces';
-
-interface NadesData {
-  [key: string]: Nade;
-}
+import {Nade, NadeName} from './interfaces/nadeInterfaces';
 
 const nades: Record<NadeName, Nade> = {
   Hegrenade: {

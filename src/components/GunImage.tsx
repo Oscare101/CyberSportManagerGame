@@ -1,5 +1,5 @@
 import {Image} from 'react-native';
-import {GunName} from '../constants/gunInterfaces';
+import {GunName} from '../constants/interfaces/gunInterfaces';
 
 interface GunImageProps {
   name: GunName;

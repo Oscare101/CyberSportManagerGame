@@ -1,4 +1,4 @@
-import {Gun, GunName} from './gunInterfaces';
+import {Gun, GunName} from './interfaces/gunInterfaces';
 
 const guns: Record<GunName, Gun> = {
   // Pistols

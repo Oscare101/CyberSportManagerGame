@@ -1,5 +1,5 @@
 import {Image} from 'react-native';
-import {NadeName} from '../constants/nadeInterfaces';
+import {NadeName} from '../constants/interfaces/nadeInterfaces';
 
 interface NadeImageProps {
   name: NadeName;
