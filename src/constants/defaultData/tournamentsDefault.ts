@@ -1,4 +1,4 @@
-import {Tournament} from './interfaces/tournamentInterfaces';
+import {Tournament} from '../interfaces/tournamentInterfaces';
 
 const tournamentsDefault: Tournament[] = [
   // TIER 1

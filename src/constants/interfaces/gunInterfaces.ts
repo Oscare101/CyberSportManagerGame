@@ -27,6 +27,47 @@ export type GunName =
   | 'P90'
   | 'PP-Bizon';
 
+export type TGunName =
+  | 'Desert Eagle'
+  | 'R8 Revolver'
+  | 'Tec-9'
+  | 'CZ75-Auto'
+  | 'Dual Berettas'
+  | 'P250'
+  | 'Glock-18'
+  | 'Galil'
+  | 'AK-47'
+  | 'SG 553'
+  | 'AWP'
+  | 'SSG 08'
+  | 'G3SG1'
+  | 'MAC-10'
+  | 'MP7'
+  | 'UMP-45'
+  | 'P90'
+  | 'PP-Bizon';
+export type CTGunName =
+  | 'Desert Eagle'
+  | 'R8 Revolver'
+  | 'Five-SeveN'
+  | 'CZ75-Auto'
+  | 'Dual Berettas'
+  | 'P250'
+  | 'P2000'
+  | 'USP-S'
+  | 'M4A1-S'
+  | 'M4A4'
+  | 'AUG'
+  | 'FAMAS'
+  | 'AWP'
+  | 'SSG 08'
+  | 'SCAR-20'
+  | 'MP9'
+  | 'MP7'
+  | 'UMP-45'
+  | 'P90'
+  | 'PP-Bizon';
+
 export type GunSide = 'T' | 'CT' | 'T CT';
 export type GunType = 'Rifle' | 'Sniper Rifle' | 'Pistol' | 'SMG';
 
