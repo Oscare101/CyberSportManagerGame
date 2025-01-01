@@ -1,10 +1,18 @@
 import {ArmorType} from './armorInterfaces';
-import {CTGunName, GunName, TGunName} from './gunInterfaces';
+import {CTGunName, TGunName} from './gunInterfaces';
 import {NadeName} from './nadeInterfaces';
 
 // scenarios for different buys in different cases
 
-export type BuyType = 'Full' | 'Eco' | 'Force' | 'Half' | 'No';
+export type CustomBuyTypeName = string;
+
+export type BuyTypeNane =
+  | 'Full'
+  | 'Eco'
+  | 'Force'
+  | 'Half'
+  | 'No'
+  | CustomBuyTypeName;
 
 export interface RoleBuy {
   gun: {
@@ -18,8 +26,8 @@ export interface RoleBuy {
   };
 }
 
-export interface Buy {
-  name: BuyType;
+export interface BuyType {
+  name: BuyTypeNane;
   sniper: RoleBuy;
   rifler: RoleBuy;
   support: RoleBuy;
@@ -27,6 +35,8 @@ export interface Buy {
 }
 
 export interface BuyScenarios {
-  afterLose: BuyType[];
+  afterPistolWin: BuyType[];
+  afterPistolLose: BuyType[];
   afterWin: BuyType[];
+  afterLose: BuyType[];
 }
